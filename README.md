@@ -2,4 +2,3 @@
 Halvor Njåstad
 Ingrid Ljosland Waale
 Hifza Mehmood
-Hei
