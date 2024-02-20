@@ -1,4 +1,4 @@
 ### verktøy 
 
 kommunikasjon: Slack / messenger
-scrum/kanban-board: github projects
+scrum/kanban-board: trello (look into github projects)
