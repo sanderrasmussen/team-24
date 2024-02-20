@@ -2,3 +2,5 @@
 Halvor Njåstad
 Ingrid Ljosland Waale
 Sander Rasmussen 
+Hifza Mehmood
+
