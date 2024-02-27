@@ -1,5 +1,5 @@
 ## Team members
-Halvor Njåsta  
+Halvor Njåsad  
 Ingrid Ljosland Waale  
 Sander Rasmussen  
 Hifza Mehmood  
