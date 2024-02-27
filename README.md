@@ -1,6 +1,6 @@
 ## Team members
-Halvor Njåstad
-Ingrid Ljosland Waale
-Sander Rasmussen 
-Hifza Mehmood
-Uma Shivali Kumar
+Halvor Njåsta  
+Ingrid Ljosland Waale  
+Sander Rasmussen  
+Hifza Mehmood  
+Uma Shivali Kumar  
