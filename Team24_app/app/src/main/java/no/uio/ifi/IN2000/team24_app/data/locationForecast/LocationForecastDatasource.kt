@@ -1,7 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
-import android.location.Location
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -12,9 +10,9 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class locationForecastDatasource {
+class LocationForecastDatasource {
 
-    suspend fun getLocationForecastData(lat:Double, lon: Double): location_forecast?{
+    suspend fun getLocationForecastData(lat:Double, lon: Double): LocationForecast?{
         val client = HttpClient(Android) {
             install(ContentNegotiation) {
                 json(Json {
@@ -26,25 +24,24 @@ class locationForecastDatasource {
             }
         }
 
-        var forecast: location_forecast? = null;
+        var forecast: LocationForecast? = null;
 
 
 
         try {
-   var URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}"
+   val URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}"
             val response: HttpResponse =
                 client.get(URL)
             println(response.status)
             if (response.status.isSuccess()) {
-                   val content: location_forecast = response.body();
+                   val content: LocationForecast = response.body();
                 forecast = content;
 
 
             }
 
-            println(forecast)
         }
-        catch(e: Exception){
+        catch(e: Exception){    //TODO better exception handling
           e.printStackTrace()
         }
 
@@ -52,7 +49,6 @@ class locationForecastDatasource {
         client.close()
     }
         return forecast
-
     }
 
 

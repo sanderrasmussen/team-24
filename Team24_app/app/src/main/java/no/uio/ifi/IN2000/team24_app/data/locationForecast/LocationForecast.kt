@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class location_forecast (
+data class LocationForecast (
 
   @SerialName("type"       ) var type       : String?     = null,
   @SerialName("geometry"   ) var geometry   : Geometry?   = Geometry(),
