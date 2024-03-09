@@ -1,10 +1,11 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class When (
 
-  @SerializedName("interval" ) var interval : ArrayList<String> = arrayListOf()
+  @SerialName("interval" ) var interval : ArrayList<String> = arrayListOf()
 
 )

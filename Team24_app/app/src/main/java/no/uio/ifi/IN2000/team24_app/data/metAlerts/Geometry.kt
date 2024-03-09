@@ -1,11 +1,12 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class Geometry (
 
-  @SerializedName("coordinates" ) var coordinates : ArrayList<ArrayList<ArrayList<Double>>> = arrayListOf(),
-  @SerializedName("type"        ) var type        : String?                                 = null
+  @SerialName("coordinates" ) var coordinates : ArrayList<ArrayList<ArrayList<Double>>> = arrayListOf(),
+  @SerialName("type"        ) var type        : String?                                 = null
 
 )
