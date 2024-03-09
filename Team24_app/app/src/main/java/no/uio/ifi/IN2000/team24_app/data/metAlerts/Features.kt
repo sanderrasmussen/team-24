@@ -1,13 +1,14 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class Features (
 
-  @SerializedName("geometry"   ) var geometry   : Geometry?   = Geometry(),
-  @SerializedName("properties" ) var properties : Properties? = Properties(),
-  @SerializedName("type"       ) var type       : String?     = null,
-  @SerializedName("when"       ) var when       : When?       = When()
+  @SerialName("geometry"   ) var geometry   : Geometry?   = Geometry(),
+  @SerialName("properties" ) var properties : Properties? = Properties(),
+  @SerialName("type"       ) var type       : String?     = null,
+  @SerialName("when"       ) var wen       : When?       = When()
 
 )
