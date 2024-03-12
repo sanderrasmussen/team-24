@@ -7,6 +7,8 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class LocationTracker(
     private val fusedLocationClient: FusedLocationProviderClient,
@@ -35,6 +37,24 @@ class LocationTracker(
         if(!isGpsEnabled && !hasAccessCoarseLocationPermission){
             return null
         }
-        //TODO actually get location
+
+        //yeah, this looks a bit complex, took me a while to wrap my head around the thing but i trust it now
+        //this allows for suspension of the coroutine while the lastlocation-api responds
+        return suspendCancellableCoroutine { continuation->
+            fusedLocationClient.lastLocation.apply {
+                if(isComplete){ //if the lastLocation() is complete
+                    if(isSuccessful){
+                        continuation.resume(result) //if the task was a success we return the result of lastLocation(the location object)
+                    }else{
+                        continuation.resume(null)   //otherwise we go back with a null to be handled elsewhere
+                    }
+                    return@suspendCancellableCoroutine  //like a goto - specifies which point to return to. An ordinary return would return to apply{}, but we don't need listeners as we were already successfull
+                }
+                //waiting because the lastLocation()-call wasn't complete yet
+                addOnSuccessListener { continuation.resume(it) }    //if it was a success, resume processing with the response(location object)
+                addOnFailureListener{ continuation.resume(null) }   //again otherwise, null
+                addOnCanceledListener { continuation.cancel() } //if the api-call is canceled externally, we cancel this coroutine
+            }
+        }
     }
 }

@@ -61,5 +61,6 @@ dependencies {
 
     //location
     implementation ("com.google.android.gms:play-services-location:17.0.0")
+    implementation ("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 
 }
