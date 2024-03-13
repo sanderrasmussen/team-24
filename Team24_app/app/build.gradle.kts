@@ -7,7 +7,12 @@ plugins {
 
 android {
 
-
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.7"
+    }
 
     namespace = "no.uio.ifi.IN2000.team24_app"
     compileSdk = 34

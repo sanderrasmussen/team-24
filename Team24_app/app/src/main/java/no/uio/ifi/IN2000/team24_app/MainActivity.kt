@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.halvorin.oblig2
+package no.uio.ifi.IN2000.team24_app
 
 import android.os.Bundle
 import android.view.Surface
@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
 import no.uio.ifi.IN2000.team24_app.ui.theme.Team24_appTheme
 
 
@@ -33,7 +34,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-
+                    NavHost(navController=navController, startDestination = "HomeScreen"){
+                        composable("HomeScreen"){ HomeScreen(navController = navController)}
+                    }
                 }
             }
         }

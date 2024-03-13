@@ -22,15 +22,13 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDataso
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
-    private val fusedLocationClient: FusedLocationProviderClient,
-
     //this state and the calling function are more just to check that the LocationTracker functions, cant test in junit as it needs the actual application
     private val _weatherState: MutableStateFlow<LocationForecast>,
     var weatherState:StateFlow<LocationForecast> = _weatherState.asStateFlow()
 
 ): ViewModel(){
 
-     fun getPosition(context:Context){
+     fun getWeather(context:Context){
          viewModelScope.launch(Dispatchers.IO){
             val pos = LocationTracker( context).getLocation()
 
