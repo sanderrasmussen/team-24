@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="25842465-1033-4524-b2b6-f97f2124cb25" name="Changes" comment="Created and Added locationforecastRepository file">
+    <list default="true" id="25842465-1033-4524-b2b6-f97f2124cb25" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" afterDir="false" />
     </list>
@@ -115,7 +115,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710364950185</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="working on caching and organizing forecasts into hashmaps of dates and times">
+      <option name="closed" value="true" />
+      <created>1710369714775</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1710369714775</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -132,6 +140,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created and Added locationforecastRepository file" />
     <MESSAGE value="wrote getLocationforecastObject , (first method in class)" />
-    <option name="LAST_COMMIT_MESSAGE" value="wrote getLocationforecastObject , (first method in class)" />
+    <MESSAGE value="working on caching and organizing forecasts into hashmaps of dates and times" />
+    <option name="LAST_COMMIT_MESSAGE" value="working on caching and organizing forecasts into hashmaps of dates and times" />
   </component>
 </project>
