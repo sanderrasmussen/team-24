@@ -1,5 +1,7 @@
 package no.uio.ifi.IN2000.team24_app
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.Surface
 import androidx.activity.ComponentActivity
@@ -10,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -33,13 +36,40 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(navController=navController, startDestination = "HomeScreen"){
-                        composable("HomeScreen"){ HomeScreen(navController = navController)}
-                    }
+                    Controller()
                 }
             }
         }
 
     }
+
+
+    @Composable
+    fun Controller() {
+        val navController = rememberNavController()
+        val context = LocalContext.current
+        val isNetworkAvailable = isNetworkAvailable(context)
+
+        NavHost(navController = navController, startDestination = "HomeScreen") {
+            composable("HomeScreen") {
+                HomeScreen(
+                    navController,
+                    isNetworkAvailable = isNetworkAvailable
+                )
+            }
+        }
+
+    }
+
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnectedOrConnecting
+
+    }
+
 }
+
+
