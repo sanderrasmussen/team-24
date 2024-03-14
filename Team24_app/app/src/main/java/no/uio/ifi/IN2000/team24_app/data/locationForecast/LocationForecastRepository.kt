@@ -20,7 +20,7 @@ class LocationForecastRepository{
     val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     //still unsure how often this hould be updated
     var locationForecast : LocationForecast? = null
-    var ForecastMap : HashMap<String?, ArrayList<Timeseries>>? = HashMap<String?, ArrayList<Timeseries>>() //dato som nøkkel og timeseries som verdi
+    var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>() //dato som nøkkel og timeseries som verdi
 
     //re-fetching api every hour is what i have in mind
     suspend fun FetchLocationForecast(lat:Double, lon: Double) {
@@ -36,7 +36,7 @@ class LocationForecastRepository{
         return getProperties()?.timeseries
     }
 
-    fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails? {
+    fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
         //HUSK SKRIVE TRY CATCH
         var time: String? = getTimeseries()?.get(timeseries_Index)?.time
         var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
@@ -65,19 +65,24 @@ class LocationForecastRepository{
         return createWeatherDetailObject(0)
     }
     fun organizeForecastIntoMapByDay(){
-        getTimeseries()?.forEach{
-            var date = it.time?.split("T")?.get(0)
-            var time = it.time?.split("T")?.get(1)
-            time = time?.replace("Z", "")
 
+        getTimeseries()?.forEachIndexed { index, e ->
+            var weatherObject : WeatherDetails = createWeatherDetailObject(index)
+            var date = e.time?.split("T")?.get(0)
+            var time = e.time?.split("T")?.get(1)
+            time = time?.replace("Z", "")
+            weatherObject.time= time
             if (ForecastMap?.containsKey(date)!=null){
-                ForecastMap!![date] = arrayListOf<Timeseries>()
+                ForecastMap!![date] = arrayListOf<WeatherDetails>()
             }
-            ForecastMap?.get(date)?.add(it)
+            ForecastMap?.get(date)?.add(weatherObject)
         }
     }
 
-
+    fun get_ForecastMap(): HashMap<String?, ArrayList<WeatherDetails>>? {
+        organizeForecastIntoMapByDay()
+        return ForecastMap
+    }
 
 
 }

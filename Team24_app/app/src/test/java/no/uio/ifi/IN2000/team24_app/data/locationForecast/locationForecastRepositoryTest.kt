@@ -11,7 +11,7 @@ class locationForecastRepositoryTest {
         runBlocking{
             repo.FetchLocationForecast(59.0, 10.0)
             var weatherNow : WeatherDetails? = repo.getWeatherNow()
-
+            var map = repo.get_ForecastMap()
 
             println("-------------- Test start ---------------")
             println(weatherNow?.time)
@@ -24,6 +24,7 @@ class locationForecastRepositoryTest {
             println(weatherNow?.next_1_hours_symbol_code)
             println(weatherNow?.next_1_hours_precipitation_amount)
 
+            println(map?.get("2024-03-14")?.size)
             println("-------------- Test slutt ---------------")
         }
     }
