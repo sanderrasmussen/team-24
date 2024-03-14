@@ -1,7 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
-import kotlinx.serialization.SerialName
-
 
 data class WeatherNow(
     var time : String? = null,
@@ -17,9 +15,9 @@ class LocationForecastRepository{
     //still unsure how often this hould be updated
     var locationForecast : LocationForecast? = null
     var ForecastMap : HashMap<String?, ArrayList<Timeseries>>? = HashMap<String?, ArrayList<Timeseries>>() //dato som nøkkel og timeseries som verdi
-    var weatherNow : WeatherNow? = null
+
     //re-fetching api every hour is what i have in mind
-    suspend fun UpdateLocationForecastObject(lat:Double, lon: Double) {
+    suspend fun FetchLocationForecast(lat:Double, lon: Double) {
         //get forecast object
         if (locationForecast==null){
             locationForecast = dataSource.getLocationForecastData(lat, lon)
@@ -32,7 +30,19 @@ class LocationForecastRepository{
         return getProperties()?.timeseries
     }
 
-   
+    fun getWeatherNow(): WeatherNow? {
+        var time: String? = getTimeseries()?.get(0)?.time
+        var details: InstantDetails? = getTimeseries()?.get(0)?.data?.instant?.details
+        return WeatherNow(
+            time,
+            details?.air_pressure_at_sea_level,
+            details?.air_temperature,
+            details?.cloud_area_fraction,
+            details?.relative_humidity,
+            details?.wind_from_direction,
+            details?.wind_speed
+        )
+    }
     fun organizeForecastIntoMapByDay(){
         getTimeseries()?.forEach{
             var date = it.time?.split("T")?.get(0)
