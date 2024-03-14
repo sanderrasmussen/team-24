@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25842465-1033-4524-b2b6-f97f2124cb25" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/InstantDetails.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Details.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/SummaryDetails.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Summary.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Summary.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +85,20 @@
       <recent name="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="build.gradle.kts" type="KotlinStandaloneScriptRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <module name="team-24" />
+      <option name="filePath" value="$PROJECT_DIR$/Team24_app/app/build.gradle.kts" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Kotlin script (Beta).build.gradle.kts" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -123,7 +140,23 @@
       <option name="project" value="LOCAL" />
       <updated>1710369714775</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Endret en del, og la til iconer i drawable">
+      <option name="closed" value="true" />
+      <created>1710371459780</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710371459780</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Organisert timeseries i hashmap med dato som nøkkel">
+      <option name="closed" value="true" />
+      <created>1710373869675</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1710373869676</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -141,6 +174,8 @@
     <MESSAGE value="Created and Added locationforecastRepository file" />
     <MESSAGE value="wrote getLocationforecastObject , (first method in class)" />
     <MESSAGE value="working on caching and organizing forecasts into hashmaps of dates and times" />
-    <option name="LAST_COMMIT_MESSAGE" value="working on caching and organizing forecasts into hashmaps of dates and times" />
+    <MESSAGE value="Endret en del, og la til iconer i drawable" />
+    <MESSAGE value="Organisert timeseries i hashmap med dato som nøkkel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Organisert timeseries i hashmap med dato som nøkkel" />
   </component>
 </project>

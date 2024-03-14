@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Summary (
-
+  @SerialName("details" ) var details : SummaryDetails = SummaryDetails()
   @SerialName("symbol_code" ) var symbolCode : String? = null
 
 )
