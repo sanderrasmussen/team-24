@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 data class Next1Hours (
 
   @SerialName("summary" ) var summary : Summary? = Summary(),
-  @SerialName("details" ) var details : Details? = Details()
+  @SerialName("details" ) var details : SummaryDetails? = SummaryDetails()
 
 )
