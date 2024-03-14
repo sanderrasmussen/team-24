@@ -60,7 +60,7 @@ class LocationForecastRepository{
             next_12_hours_details?.details?.precipitationAmount
         )
     }
-    
+
     fun getWeatherNow(): WeatherDetails? {
         return createWeatherDetailObject(0)
     }
@@ -76,6 +76,7 @@ class LocationForecastRepository{
             ForecastMap?.get(date)?.add(it)
         }
     }
+
 
 
 
