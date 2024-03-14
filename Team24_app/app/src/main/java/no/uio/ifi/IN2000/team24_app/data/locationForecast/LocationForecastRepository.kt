@@ -20,7 +20,7 @@ class LocationForecastRepository{
     val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     //still unsure how often this hould be updated
     var locationForecast : LocationForecast? = null
-    var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>() //dato som nøkkel og timeseries som verdi
+
 
     //re-fetching api every hour is what i have in mind
     suspend fun FetchLocationForecast(lat:Double, lon: Double) {
@@ -64,24 +64,28 @@ class LocationForecastRepository{
     fun getWeatherNow(): WeatherDetails? {
         return createWeatherDetailObject(0)
     }
-    fun organizeForecastIntoMapByDay(){
-
+    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
+        var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
             var weatherObject : WeatherDetails = createWeatherDetailObject(index)
             var date = e.time?.split("T")?.get(0)
             var time = e.time?.split("T")?.get(1)
             time = time?.replace("Z", "")
             weatherObject.time= time
-            if (ForecastMap?.containsKey(date)!=null){
-                ForecastMap!![date] = arrayListOf<WeatherDetails>()
+
+            if (ForecastMap != null) {
+                if (!ForecastMap.containsKey(date)){
+                    ForecastMap!![date] = arrayListOf<WeatherDetails>()
+                }
             }
-            ForecastMap?.get(date)?.add(weatherObject)
+            ForecastMap!![date]?.add(weatherObject)
         }
+        return ForecastMap
     }
 
     fun get_ForecastMap(): HashMap<String?, ArrayList<WeatherDetails>>? {
-        organizeForecastIntoMapByDay()
-        return ForecastMap
+        return organizeForecastIntoMapByDay()
+
     }
 
 

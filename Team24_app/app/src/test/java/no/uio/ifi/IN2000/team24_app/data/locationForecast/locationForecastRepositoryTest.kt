@@ -23,8 +23,9 @@ class locationForecastRepositoryTest {
             println(weatherNow?.wind_speed)
             println(weatherNow?.next_1_hours_symbol_code)
             println(weatherNow?.next_1_hours_precipitation_amount)
-
+            println("----mapTest----")
             println(map?.get("2024-03-14")?.size)
+            println(map?.get("2024-03-14")?.get(0)?.time)
             println("-------------- Test slutt ---------------")
         }
     }
