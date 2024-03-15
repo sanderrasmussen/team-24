@@ -64,7 +64,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Render the UI based on weatherState and network availability
+
     if (!isNetworkAvailable) {
         LaunchedEffect(Unit) {
             scope.launch {
@@ -204,12 +204,6 @@ fun ActualHomeScreen(
                 }
 
             }
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-                .background(color = blue)){
-                navBar()
-            }
         }
     }
 }
@@ -281,10 +275,10 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Itererer gjennom alle værdetaljer
+
         for (index in 0 until 24) {
             val hourToShow = (currentHour + index) % 24
-            // Finn værdetaljene for det gjeldende timetallet hvis de er tilgjengelige
+
             val weatherDetail = weatherDetails.getOrNull(index)
             if (weatherDetail != null) {
                 WeatherCardToday(
@@ -329,7 +323,7 @@ fun WeatherCardToday(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            // Display weather details here
+
             Text(
                 text = "${weatherDetail.air_temperature}°C",
                 color = Color.Black,
@@ -377,6 +371,6 @@ fun navBar(){
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview(){
-    val isNetworkAvailable = true // Set network availability status for preview
+    val isNetworkAvailable = true
     HomeScreen(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
 }
