@@ -53,7 +53,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen1(
+fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
     //navController: NavController,
     isNetworkAvailable: Boolean
@@ -342,7 +342,7 @@ fun WeatherCardToday(
 @Composable
 fun HomeScreenPreview(){
     val isNetworkAvailable = true // Set network availability status for preview
-    HomeScreen1(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
+    HomeScreen(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
