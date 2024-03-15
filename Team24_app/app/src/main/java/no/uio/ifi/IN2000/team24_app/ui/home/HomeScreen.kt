@@ -14,7 +14,6 @@ fun HomeScreen(
     navController: NavController
 ){
     viewModel.getCurrentWeather(LocalContext.current)
-
     Column {
         Text(text="AYO")
     }

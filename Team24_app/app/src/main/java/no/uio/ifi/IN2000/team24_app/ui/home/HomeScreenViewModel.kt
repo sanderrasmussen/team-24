@@ -24,24 +24,29 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
-
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
 
     //this state and the calling function are more just to check that the LocationTracker functions, cant test in junit as it needs the actual application
-    private val _weatherState: MutableStateFlow<WeatherDetails> = MutableStateFlow(WeatherDetails()),
-    var weatherState:StateFlow<WeatherDetails> = _weatherState.asStateFlow()
+    private val _weatherState: MutableStateFlow<WeatherDetails?> = MutableStateFlow(WeatherDetails()),
+    var weatherState:StateFlow<WeatherDetails?> = _weatherState.asStateFlow()
 
 ): ViewModel(){
 
-
      fun getCurrentWeather(context:Context){
-         viewModelScope.launch(Dispatchers.IO){
-            val position = LocationTracker( context).getLocation()
-             Log.d(TAG, position.toString())
-             //todo pause execution (await) where neccesary to allow the sequential calls?
-            locationForecastRepo.fetchLocationForecast(position?.latitude ?:59.913868, position?.longitude ?:10.752245)  //default to oslo S for now if pos is null
-             val weather:WeatherDetails? = locationForecastRepo.getWeatherNow()
-             Log.d(TAG, weather.toString())
+         if(_weatherState.value == null){
+             viewModelScope.launch(Dispatchers.IO) {
+                 val position = LocationTracker(context).getLocation()
+                 Log.d(TAG, position.toString())
+                 locationForecastRepo.fetchLocationForecast(
+                     position?.latitude ?: 59.913868,
+                     position?.longitude ?: 10.752245
+                 )  //default to oslo S for now if pos is null
+                 val weather: WeatherDetails? = locationForecastRepo.getWeatherNow()
+                 Log.d(TAG, weather.toString())
+                 _weatherState.update { weather }
+            }
+         }else{
+             Log.d(TAG, "already got weather state")
          }
     }
 }

@@ -9,7 +9,7 @@ class locationForecastRepositoryTest {
     @Test
     fun testCurrentWeather(){
         runBlocking{
-            repo.FetchLocationForecast(59.0, 10.0)
+            repo.fetchLocationForecast(59.0, 10.0)
             var weatherNow : WeatherDetails? = repo.getWeatherNow()
             var map = repo.get_ForecastMap()
 
