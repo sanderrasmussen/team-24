@@ -35,6 +35,9 @@ class LocationForecastRepository{
         if (locationForecast==null){
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
+        getTodayWeather()
+        organizeForecastIntoMapByDay()
+        getWeatherNow()
     }
     private fun getProperties(): Properties? {
         return locationForecast?.properties
@@ -73,10 +76,7 @@ class LocationForecastRepository{
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
-    fun getTodayDate() : String?{
-        var date = getTimeseries()?.get(0)?.time?.split("T")?.get(0)
-        return date
-    }
+
     private fun getTodayWeather(): ArrayList<WeatherDetails>? {
         var data = getTimeseries()?.subList(0,24)
         var todayDate = data?.get(0)?.time?.split("T")?.get(0)
@@ -91,6 +91,7 @@ class LocationForecastRepository{
                 todayWeather?.add(weather)
             }
         }
+        updateTodayForecast(todayWeather)
         return todayWeather
     }
 
@@ -116,7 +117,7 @@ class LocationForecastRepository{
     }
 
 
-    fun updateForecastMapStateFlow(newMap : HashMap<String?, ArrayList<WeatherDetails>>?){
+    private fun updateForecastMapStateFlow(newMap : HashMap<String?, ArrayList<WeatherDetails>>?){
         _forecastMap.update {
             newMap!!
         }
@@ -124,16 +125,16 @@ class LocationForecastRepository{
     }
     fun ObserveForecastMap(): StateFlow<HashMap<String?, ArrayList<WeatherDetails>>> = _forecastMap.asStateFlow()
 
-    fun updateCurrentWeatherStateFlow(weather :  WeatherDetails?){
+    private fun updateCurrentWeatherStateFlow(weather :  WeatherDetails?){
         _currentWeather.update {
             weather!!
         }
     }
     fun ObserveCurrentWeather(): StateFlow<WeatherDetails?> = _currentWeather.asStateFlow()
 
-    fun updateTodayForecast(){
+    private fun updateTodayForecast(forecast : ArrayList<WeatherDetails>?){
         _todayForecast.update {
-            getTodayWeather()
+            forecast!!
         }
     }
     fun ObserveTodayWeather(): StateFlow<ArrayList<WeatherDetails>?> = _todayForecast.asStateFlow()
