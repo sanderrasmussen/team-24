@@ -10,7 +10,9 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class LocationForecastDatasource {
+class LocationForecastDatasource (
+    private val TAG:String ="LocationForecastDatasource"
+){
 
     suspend fun getLocationForecastData(lat:Double, lon: Double): LocationForecast?{
         val client = HttpClient(Android) {
@@ -32,7 +34,6 @@ class LocationForecastDatasource {
    val URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}"
             val response: HttpResponse =
                 client.get(URL)
-            println(response.status)
             if (response.status.isSuccess()) {
                    val content: LocationForecast = response.body();
                 forecast = content;

@@ -37,12 +37,11 @@ class HomeScreenViewModel(
      fun getCurrentWeather(context:Context){
          viewModelScope.launch(Dispatchers.IO){
             val position = LocationTracker( context).getLocation()
-
-             //todo pause execution (await) where neccesary to allow the sequential calls
+             Log.d(TAG, position.toString())
+             //todo pause execution (await) where neccesary to allow the sequential calls?
             locationForecastRepo.fetchLocationForecast(position?.latitude ?:59.913868, position?.longitude ?:10.752245)  //default to oslo S for now if pos is null
              val weather:WeatherDetails? = locationForecastRepo.getWeatherNow()
              Log.d(TAG, weather.toString())
-             println(weather)
          }
     }
 }

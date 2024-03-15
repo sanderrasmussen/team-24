@@ -13,6 +13,8 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = viewModel(),
     navController: NavController
 ){
+    viewModel.getCurrentWeather(LocalContext.current)
+
     Column {
         Text(text="AYO")
     }

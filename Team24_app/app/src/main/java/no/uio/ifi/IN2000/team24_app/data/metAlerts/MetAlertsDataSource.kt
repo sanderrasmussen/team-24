@@ -14,7 +14,9 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-class MetAlertsDataSource {
+class MetAlertsDataSource(
+    private val TAG:String = "MetAlertsDataSource"
+) {
 
     suspend fun getMetAlertData(): MetAlerts?{
         val client = HttpClient(Android) {
