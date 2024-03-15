@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-
 data class WeatherDetails(
     var time : String? = null,
     var air_pressure_at_sea_level : Double? = null,
@@ -108,6 +107,5 @@ class LocationForecastRepository{
         }
     }
     fun ObserveCurrentWeather(): StateFlow<WeatherDetails?> = _currentWeather.asStateFlow()
-
 
 }
