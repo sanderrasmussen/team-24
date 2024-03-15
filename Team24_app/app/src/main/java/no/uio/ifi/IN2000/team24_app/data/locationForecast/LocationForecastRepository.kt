@@ -21,13 +21,14 @@ data class WeatherDetails(
     var next_12_hours_precipitation_amount : Double? = null
 )
 class LocationForecastRepository{
-    val dataSource : LocationForecastDatasource = LocationForecastDatasource()
+    private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     //still unsure how often this hould be updated
-    var locationForecast : LocationForecast? = null
+    private var locationForecast : LocationForecast? = null
 
     //denne skal sendes videre til viewmodel og observeres
     private val _forecastMap = MutableStateFlow<HashMap<String?, ArrayList<WeatherDetails>>>(HashMap())
     private val _currentWeather = MutableStateFlow<WeatherDetails?>(null)
+    private val _todayForecast = MutableStateFlow<ArrayList<WeatherDetails>?>(null)
     //re-fetching api every hour is what i have in mind
     suspend fun FetchLocationForecast(lat:Double, lon: Double) {
         //get forecast object
@@ -35,14 +36,14 @@ class LocationForecastRepository{
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
     }
-    fun getProperties(): Properties? {
+    private fun getProperties(): Properties? {
         return locationForecast?.properties
     }
-    fun getTimeseries(): ArrayList<Timeseries>? {
+    private fun getTimeseries(): ArrayList<Timeseries>? {
         return getProperties()?.timeseries
     }
 
-    fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
+    private fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
         //HUSK SKRIVE TRY CATCH
         var time: String? = getTimeseries()?.get(timeseries_Index)?.time
         var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
@@ -67,12 +68,34 @@ class LocationForecastRepository{
         )
     }
 
-    fun getWeatherNow(): WeatherDetails? {
+    private fun getWeatherNow(): WeatherDetails? {
         var weatherNow =  createWeatherDetailObject(0)
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
-    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
+    fun getTodayDate() : String?{
+        var date = getTimeseries()?.get(0)?.time?.split("T")?.get(0)
+        return date
+    }
+    private fun getTodayWeather(): ArrayList<WeatherDetails>? {
+        var data = getTimeseries()?.subList(0,24)
+        var todayDate = data?.get(0)?.time?.split("T")?.get(0)
+        var todayWeather : ArrayList<WeatherDetails>? = ArrayList<WeatherDetails>()
+
+        data?.forEachIndexed { index, e ->
+            var date = e.time?.split("T")?.get(0)
+            var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
+            if (date==todayDate){
+                var weather : WeatherDetails = createWeatherDetailObject(index)
+                weather.time= time
+                todayWeather?.add(weather)
+            }
+        }
+        return todayWeather
+    }
+
+
+    private fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
         var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
             var weatherObject : WeatherDetails = createWeatherDetailObject(index)
@@ -108,4 +131,10 @@ class LocationForecastRepository{
     }
     fun ObserveCurrentWeather(): StateFlow<WeatherDetails?> = _currentWeather.asStateFlow()
 
+    fun updateTodayForecast(){
+        _todayForecast.update {
+            getTodayWeather()
+        }
+    }
+    fun ObserveTodayWeather(): StateFlow<ArrayList<WeatherDetails>?> = _todayForecast.asStateFlow()
 }
