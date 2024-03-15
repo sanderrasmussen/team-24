@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -34,6 +35,7 @@ class LocationForecastDatasource (
    val URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}"
             val response: HttpResponse =
                 client.get(URL)
+            Log.d(TAG, response.status.toString())
             if (response.status.isSuccess()) {
                    val content: LocationForecast = response.body();
                 forecast = content;
