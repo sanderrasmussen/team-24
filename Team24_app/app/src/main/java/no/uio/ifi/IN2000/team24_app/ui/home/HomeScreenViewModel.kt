@@ -26,24 +26,27 @@ class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
 
-    //this state and the calling function are more just to check that the LocationTracker functions, cant test in junit as it needs the actual application
-    private val _weatherState: MutableStateFlow<WeatherDetails?> = MutableStateFlow(WeatherDetails()),
+    //TODO change these to observe the repo states
+    private val _weatherState: MutableStateFlow<WeatherDetails?> = MutableStateFlow(null),
     var weatherState:StateFlow<WeatherDetails?> = _weatherState.asStateFlow()
 
 ): ViewModel(){
 
      fun getCurrentWeather(context:Context){
-         if(_weatherState.value == null){
+         Log.d(TAG,"getCurrentWeather called, state value: ${_weatherState.value.toString()}")
+         if(_weatherState.value?.time == null){
              viewModelScope.launch(Dispatchers.IO) {
                  val position = LocationTracker(context).getLocation()
-                 Log.d(TAG, position.toString())
+                 Log.d(TAG, "Position: ${position.toString()}")
                  locationForecastRepo.fetchLocationForecast(
                      position?.latitude ?: 59.913868,
                      position?.longitude ?: 10.752245
                  )  //default to oslo S for now if pos is null
                  val weather: WeatherDetails? = locationForecastRepo.getWeatherNow()
                  Log.d(TAG, weather.toString())
-                 _weatherState.update { weather }
+                 _weatherState.update {
+                     Log.d(TAG, "in weatherstate.update")
+                     weather }
             }
          }else{
              Log.d(TAG, "already got weather state")
