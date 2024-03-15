@@ -19,20 +19,28 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
+
+    private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
+
     //this state and the calling function are more just to check that the LocationTracker functions, cant test in junit as it needs the actual application
-    private val _weatherState: MutableStateFlow<LocationForecast>,
-    var weatherState:StateFlow<LocationForecast> = _weatherState.asStateFlow()
+    private val _weatherState: MutableStateFlow<WeatherDetails> = MutableStateFlow(WeatherDetails()),
+    var weatherState:StateFlow<WeatherDetails> = _weatherState.asStateFlow()
 
 ): ViewModel(){
 
-     fun getWeather(context:Context){
-         viewModelScope.launch(Dispatchers.IO){
-            val pos = LocationTracker( context).getLocation()
 
-             val weather : LocationForecast? = LocationForecastDatasource().getLocationForecastData(pos?.latitude ?:59.913868, pos?.longitude ?:10.752245)  //default to oslo S for now if pos is null
+     fun getCurrentWeather(context:Context){
+         viewModelScope.launch(Dispatchers.IO){
+            val position = LocationTracker( context).getLocation()
+
+             //todo pause execution (await) where neccesary to allow the sequential calls
+            locationForecastRepo.fetchLocationForecast(position?.latitude ?:59.913868, position?.longitude ?:10.752245)  //default to oslo S for now if pos is null
+             val weather:WeatherDetails? = locationForecastRepo.getWeatherNow()
              Log.d(TAG, weather.toString())
              println(weather)
          }
