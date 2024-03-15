@@ -72,7 +72,7 @@ fun HomeScreen(
             }
         }
     } else {
-        ActualHomeScreen(weatherState = weatherState, viewModel = homevm)
+        ActualHomeScreen(weatherState = weatherState)
     }
 }
 
@@ -116,7 +116,6 @@ fun getCurrentHour(): Int {
 @Composable
 fun ActualHomeScreen(
     weatherState: ArrayList<WeatherDetails>?,
-    viewModel: HomeScreenViewModel = viewModel()
 ) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
@@ -126,10 +125,6 @@ fun ActualHomeScreen(
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSevenDays by remember { mutableStateOf(false) }
 
-    // Fetch current weather data when the composable is first composed
-    // LaunchedEffect(Unit) {
-    //     viewModel.getCurrentWeather(LocalContext.current)
-    // }
 
     Column(
         modifier = Modifier
@@ -271,7 +266,6 @@ fun WeatherCardNextDay(
 
 @Composable
 fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
-    val hoursLeft = 24 - currentHour
     val scrollState = rememberScrollState()
 
     Row(
@@ -280,13 +274,18 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        weatherDetails.forEachIndexed { index, weatherDetail ->
+        // Itererer gjennom alle værdetaljer
+        for (index in 0 until 24) {
             val hourToShow = (currentHour + index) % 24
-            WeatherCardToday(
-                hour = hourToShow,
-                currentHour = currentHour,
-                weatherDetail = weatherDetail
-            )
+            // Finn værdetaljene for det gjeldende timetallet hvis de er tilgjengelige
+            val weatherDetail = weatherDetails.getOrNull(index)
+            if (weatherDetail != null) {
+                WeatherCardToday(
+                    hour = hourToShow,
+                    currentHour = currentHour,
+                    weatherDetail = weatherDetail
+                )
+            }
         }
     }
 }
@@ -343,9 +342,4 @@ fun WeatherCardToday(
 fun HomeScreenPreview(){
     val isNetworkAvailable = true // Set network availability status for preview
     HomeScreen(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun main() = runBlocking {
-    getCurrentHour()
 }
