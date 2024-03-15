@@ -16,10 +16,10 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = viewModel(),
     navController: NavController
 ){
-    viewModel.getCurrentWeather(LocalContext.current)
+    viewModel.getCurrentWeather(LocalContext.current)   //this line needs to be here!
 
-    val testState : WeatherDetails? by viewModel.weatherState.collectAsState()
+    val weatherState : ArrayList<WeatherDetails>? by viewModel.weatherState.collectAsState()
     Column {
-        Text(text = testState?.time ?:"loading")
+        Text(text = weatherState?.get(0)?.time ?:"loading")
     }
 }

@@ -25,31 +25,36 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
-
-    //TODO change these to observe the repo states
-    private val _weatherState: MutableStateFlow<WeatherDetails?> = MutableStateFlow(null),
-    var weatherState:StateFlow<WeatherDetails?> = _weatherState.asStateFlow()
+    //private val metAlertsRepo: MetalertsRepo = MetalertsRepo(),
+    private var _userLocation : Location? = null,
 
 ): ViewModel(){
+    var weatherState:StateFlow<ArrayList<WeatherDetails>?> =
+        locationForecastRepo.ObserveTodayWeather();
 
-     fun getCurrentWeather(context:Context){
-         Log.d(TAG,"getCurrentWeather called, state value: ${_weatherState.value.toString()}")
-         if(_weatherState.value?.time == null){
+    fun getCurrentWeather(context:Context){
+
              viewModelScope.launch(Dispatchers.IO) {
-                 val position = LocationTracker(context).getLocation()
-                 Log.d(TAG, "Position: ${position.toString()}")
+                 //!position broke, todo look into LocationTracker
+                 if(_userLocation ==null) {
+                     _userLocation = LocationTracker(context).getLocation()
+                 }
+                 Log.d(TAG, "Position: ${_userLocation.toString()}")
                  locationForecastRepo.fetchLocationForecast(
-                     position?.latitude ?: 59.913868,
-                     position?.longitude ?: 10.752245
-                 )  //default to oslo S for now if pos is null
-                 val weather: WeatherDetails? = locationForecastRepo.getWeatherNow()
-                 Log.d(TAG, weather.toString())
-                 _weatherState.update {
-                     Log.d(TAG, "in weatherstate.update")
-                     weather }
+                     _userLocation?.latitude ?: 59.913868,
+                     _userLocation?.longitude ?: 10.752245
+                 )
+
             }
-         }else{
-             Log.d(TAG, "already got weather state")
-         }
+     }
+
+    fun getRelevantAlerts(context: Context){
+        viewModelScope.launch(Dispatchers.IO) {
+            //!position broke, todo look into LocationTracker
+            if (_userLocation == null) {
+                _userLocation = LocationTracker(context).getLocation()
+            }
+            //metAlertsRepo.getRelevantAlerts(_userLocation)
+        }
     }
 }
