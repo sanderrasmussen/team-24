@@ -24,8 +24,9 @@ class locationForecastRepositoryTest {
             println(weatherNow?.next_1_hours_symbol_code)
             println(weatherNow?.next_1_hours_precipitation_amount)
             println("----mapTest----")
-            println(map?.get("2024-03-14")?.size)
-            println(map?.get("2024-03-14")?.get(0)?.time)
+            //oops datoen i testfilen må endres frem i tid slik at den ikke blir null
+            println(map?.get("2024-03-18")?.size)
+            println(map?.get("2024-03-18")?.get(0)?.time)
             println("-------------- Test slutt ---------------")
         }
     }

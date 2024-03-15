@@ -1,5 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+
 
 data class WeatherDetails(
     var time : String? = null,
@@ -21,7 +26,9 @@ class LocationForecastRepository{
     //still unsure how often this hould be updated
     var locationForecast : LocationForecast? = null
 
-
+    //denne skal sendes videre til viewmodel og observeres
+    private val _forecastMap = MutableStateFlow<HashMap<String?, ArrayList<WeatherDetails>>>(HashMap())
+    private val _currentWeather = MutableStateFlow<WeatherDetails?>(null)
     //re-fetching api every hour is what i have in mind
     suspend fun FetchLocationForecast(lat:Double, lon: Double) {
         //get forecast object
@@ -62,7 +69,9 @@ class LocationForecastRepository{
     }
 
     fun getWeatherNow(): WeatherDetails? {
-        return createWeatherDetailObject(0)
+        var weatherNow =  createWeatherDetailObject(0)
+        updateCurrentWeatherStateFlow(weatherNow)
+        return weatherNow
     }
     fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
         var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
@@ -80,12 +89,25 @@ class LocationForecastRepository{
             }
             ForecastMap!![date]?.add(weatherObject)
         }
+        updateForecastMapStateFlow(ForecastMap)
         return ForecastMap
     }
 
-    fun get_ForecastMap(): HashMap<String?, ArrayList<WeatherDetails>>? {
-        return organizeForecastIntoMapByDay()
+
+    fun updateForecastMapStateFlow(newMap : HashMap<String?, ArrayList<WeatherDetails>>?){
+        _forecastMap.update {
+            newMap!!
+        }
 
     }
+    fun ObserveForecastMap(): StateFlow<HashMap<String?, ArrayList<WeatherDetails>>> = _forecastMap.asStateFlow()
+
+    fun updateCurrentWeatherStateFlow(weather :  WeatherDetails?){
+        _currentWeather.update {
+            weather!!
+        }
+    }
+    fun ObserveCurrentWeather(): StateFlow<WeatherDetails?> = _currentWeather.asStateFlow()
+
 
 }
