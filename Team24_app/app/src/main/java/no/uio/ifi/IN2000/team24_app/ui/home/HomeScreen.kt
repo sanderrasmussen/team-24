@@ -202,6 +202,13 @@ fun ActualHomeScreen(
                 } else {
                     NextSevenDays()
                 }
+
+            }
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .background(color = blue)){
+                navBar()
             }
         }
     }
@@ -334,6 +341,36 @@ fun WeatherCardToday(
 
         }
     }
+}
+
+@Composable
+fun navBar(){
+
+    Row(modifier = Modifier
+        .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)){
+        Text(
+            text = "kl",
+            modifier = Modifier.padding(16.dp),
+            color = Color.Black
+        )
+        Text(
+            text = "kl",
+            modifier = Modifier.padding(16.dp),
+            color = Color.Black
+        )
+        Text(
+            text = "kl",
+            modifier = Modifier.padding(16.dp),
+            color = Color.Black
+        )
+        Text(
+            text = "kl",
+            modifier = Modifier.padding(16.dp),
+            color = Color.Black
+        )
+    }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
