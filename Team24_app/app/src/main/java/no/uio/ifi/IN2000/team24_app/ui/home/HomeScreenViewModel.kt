@@ -19,22 +19,42 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
-    //this state and the calling function are more just to check that the LocationTracker functions, cant test in junit as it needs the actual application
-    private val _weatherState: MutableStateFlow<LocationForecast>,
-    var weatherState:StateFlow<LocationForecast> = _weatherState.asStateFlow()
+    private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
+    //private val metAlertsRepo: MetalertsRepo = MetalertsRepo(),
+    private var _userLocation : Location? = null,
 
 ): ViewModel(){
+    var weatherState:StateFlow<ArrayList<WeatherDetails>?> =
+        locationForecastRepo.ObserveTodayWeather();
 
-     fun getWeather(context:Context){
-         viewModelScope.launch(Dispatchers.IO){
-            val pos = LocationTracker( context).getLocation()
+    fun getCurrentWeather(context:Context){
 
-             val weather : LocationForecast? = LocationForecastDatasource().getLocationForecastData(pos?.latitude ?:59.913868, pos?.longitude ?:10.752245)  //default to oslo S for now if pos is null
-             Log.d(TAG, weather.toString())
-             println(weather)
-         }
+             viewModelScope.launch(Dispatchers.IO) {
+                 //!position broke, todo look into LocationTracker
+                 if(_userLocation ==null) {
+                     _userLocation = LocationTracker(context).getLocation()
+                 }
+                 Log.d(TAG, "Position: ${_userLocation.toString()}")
+                 locationForecastRepo.fetchLocationForecast(
+                     _userLocation?.latitude ?: 59.913868,
+                     _userLocation?.longitude ?: 10.752245
+                 )
+
+            }
+     }
+
+    fun getRelevantAlerts(context: Context){
+        viewModelScope.launch(Dispatchers.IO) {
+            //!position broke, todo look into LocationTracker
+            if (_userLocation == null) {
+                _userLocation = LocationTracker(context).getLocation()
+            }
+            //metAlertsRepo.getRelevantAlerts(_userLocation)
+        }
     }
 }

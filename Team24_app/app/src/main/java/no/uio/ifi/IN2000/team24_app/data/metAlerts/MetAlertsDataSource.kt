@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -14,7 +15,9 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-class MetAlertsDataSource {
+class MetAlertsDataSource(
+    private val TAG:String = "MetAlertsDataSource"
+) {
 
     suspend fun getMetAlertData(): MetAlerts?{
         val client = HttpClient(Android) {
@@ -46,7 +49,7 @@ class MetAlertsDataSource {
             val URL = "https://api.met.no/weatherapi/metalerts/2.0/current.json"
             val response: HttpResponse =
                 client.get(URL)
-            println(response.status)
+            Log.d(TAG, response.status.toString())
             if (response.status.isSuccess()) {
                 val content: MetAlerts = response.body();
                 alert = content;

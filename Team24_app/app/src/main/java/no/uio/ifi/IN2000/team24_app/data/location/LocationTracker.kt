@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -11,8 +12,11 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 class LocationTracker(
-    private val context: Context
-){
+    private val context: Context,
+
+    ){
+    private val TAG:String ="LocationTracker"
+
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
     //if this returns null, remember to create a default
@@ -44,6 +48,7 @@ class LocationTracker(
         return suspendCancellableCoroutine { continuation->
             fusedLocationClient.lastLocation.apply {
                 if(isComplete){ //if the lastLocation() is complete
+                    Log.d(TAG, "in isComplete")
                     if(isSuccessful){
                         continuation.resume(result) //if the task was a success we return the result of lastLocation(the location object)
                     }else{
@@ -51,10 +56,20 @@ class LocationTracker(
                     }
                     return@suspendCancellableCoroutine  //like a goto - specifies which point to return to. An ordinary return would return to apply{}, but we don't need listeners as we were already successfull
                 }
+                Log.d(TAG, "was not already complete")
+
                 //waiting because the lastLocation()-call wasn't complete yet
-                addOnSuccessListener { continuation.resume(it) }    //if it was a success, resume processing with the response(location object)
-                addOnFailureListener{ continuation.resume(null) }   //again otherwise, null
-                addOnCanceledListener { continuation.cancel() } //if the api-call is canceled externally, we cancel this coroutine
+                addOnSuccessListener {
+                    Log.d(TAG, "onsuccess called")
+                    continuation.resume(it) //if it was a success, resume processing with the response(location object)
+                }
+                addOnFailureListener{
+                    Log.d(TAG, "onFailure called")
+                    continuation.resume(null)  //again otherwise, null
+                }
+                addOnCanceledListener {
+                    continuation.cancel()  //if the api-call is canceled externally, we cancel this coroutine
+                }
             }
         }
     }

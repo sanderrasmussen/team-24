@@ -45,25 +45,37 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(
-    navController: NavController,
+fun HomeScreen1(
     homevm: HomeScreenViewModel = viewModel(),
+    //navController: NavController,
     isNetworkAvailable: Boolean
-) {
+){
+    homevm.getCurrentWeather(LocalContext.current)   //this line needs to be here!
+
+    val weatherState : ArrayList<WeatherDetails>? by homevm.weatherState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Render the UI based on weatherState and network availability
     if (!isNetworkAvailable) {
         LaunchedEffect(Unit) {
             scope.launch {
                 snackbarHostState.showSnackbar("No internet connection")
             }
         }
-
+    } else {
+        ActualHomeScreen(weatherState = weatherState, viewModel = homevm)
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun getNextSevenDays(): List<String> {
@@ -100,12 +112,12 @@ fun getCurrentHour(): Int {
     return LocalTime.now().hour
 }
 
-
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ActualHomeScreen() {
+fun ActualHomeScreen(
+    weatherState: ArrayList<WeatherDetails>?,
+    viewModel: HomeScreenViewModel = viewModel()
+) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
     val currentHour = getCurrentHour()
@@ -113,6 +125,11 @@ fun ActualHomeScreen() {
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSevenDays by remember { mutableStateOf(false) }
+
+    // Fetch current weather data when the composable is first composed
+    // LaunchedEffect(Unit) {
+    //     viewModel.getCurrentWeather(LocalContext.current)
+    // }
 
     Column(
         modifier = Modifier
@@ -183,8 +200,10 @@ fun ActualHomeScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 if (showToday) {
-                    WeatherCardsToday(currentHour)
+                    weatherState?.let { WeatherCardsToday(currentHour, it) }
                 } else {
                     NextSevenDays()
                 }
@@ -192,7 +211,6 @@ fun ActualHomeScreen() {
         }
     }
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -251,9 +269,8 @@ fun WeatherCardNextDay(
     }
 }
 
-
 @Composable
-fun WeatherCardsToday(currentHour: Int) {
+fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val hoursLeft = 24 - currentHour
     val scrollState = rememberScrollState()
 
@@ -263,11 +280,12 @@ fun WeatherCardsToday(currentHour: Int) {
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        repeat(hoursLeft) { index ->
+        weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
             WeatherCardToday(
                 hour = hourToShow,
-                currentHour = currentHour
+                currentHour = currentHour,
+                weatherDetail = weatherDetail
             )
         }
     }
@@ -277,7 +295,7 @@ fun WeatherCardsToday(currentHour: Int) {
 fun WeatherCardToday(
     hour: Int,
     currentHour: Int,
-
+    weatherDetail: WeatherDetails
 ) {
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
@@ -293,20 +311,38 @@ fun WeatherCardToday(
             containerColor = backgroundColor
         )
     ) {
-        Text(
-            text = "kl. ${if (hour < 10) "0$hour" else hour}",
+        Column(
             modifier = Modifier.padding(16.dp),
-            color = Color.Black
-        )
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "kl. ${if (hour < 10) "0$hour" else hour}",
+                color = Color.Black,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            // Display weather details here
+            Text(
+                text = "${weatherDetail.air_temperature}°C",
+                color = Color.Black,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+        }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview(){
-    ActualHomeScreen()
+    val isNetworkAvailable = true // Set network availability status for preview
+    HomeScreen1(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class Details (
+data class SummaryDetails (
 
   @SerialName("precipitation_amount" ) var precipitationAmount : Double? = null
 
