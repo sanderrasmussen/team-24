@@ -59,7 +59,7 @@ fun HomeScreen(
     //navController: NavController,
     isNetworkAvailable: Boolean
 ){
-    homevm.getCurrentWeather(LocalContext.current)   //this line needs to be here!
+    homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
 
     val weatherState : ArrayList<WeatherDetails>? by homevm.weatherState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -224,6 +224,9 @@ fun ActualHomeScreen(
                 } else {
                     NextSevenDays()
                 }
+
+                navBar()
+
 
             }
         }
@@ -424,17 +427,32 @@ fun getDrawableResourceId(iconName: String): Int {
         packageName
     )
 }
-/*@Composable
+@Composable
 fun navBar(){
-
-    Row(modifier = Modifier
-        .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)){
-        Text(
-        )
+    var isClicked by remember { mutableStateOf(false) }
+    Spacer(modifier=Modifier.padding(8.dp))
+    Row(modifier = Modifier.padding(8.dp)
+        .fillMaxWidth()
+        .background(Color.White),
+        horizontalArrangement = Arrangement.SpaceEvenly){
+        Box(modifier = Modifier
+            .clickable { isClicked = true }
+        ){
+        Icon("quiz")}
+        Spacer(modifier= Modifier.padding(8.dp))
+        Box(modifier = Modifier
+            .clickable { isClicked = true }
+            ){
+        Icon("home")}
+        Spacer(modifier= Modifier.padding(8.dp))
+        Box(modifier = Modifier
+            .clickable { isClicked = true }
+            ){
+        Icon("settings")}
     }
+    //Spacer(modifier=Modifier.padding(8.dp))
 
-}*/
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
