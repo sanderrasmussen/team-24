@@ -34,16 +34,16 @@ class locationForecastRepositoryTest {
                 println(weatherNow?.next_1_hours_symbol_code)
                 println(weatherNow?.next_1_hours_precipitation_amount)
             }"""
-            repo.ObserveTodayWeather().collect { weather ->
-                println(weather?.get(1)?.time)
-                println(weather?.get(1)?.air_pressure_at_sea_level)
-                println(weather?.get(1)?.air_temperature)
-                println(weather?.get(1)?.cloud_area_fraction)
-                println(weather?.get(1)?.relative_humidity)
-                println(weather?.get(1)?.wind_from_direction)
-                println(weather?.get(1)?.wind_speed)
-                println(weather?.get(1)?.next_1_hours_symbol_code)
-                println(weather?.get(1)?.next_1_hours_precipitation_amount)
+            repo.ObserveNext7DaysForecast().collect { day ->
+                println(day?.get(0)?.get(0)?.time)
+                println(day?.get(0)?.get(0)?.air_pressure_at_sea_level)
+                println(day?.get(0)?.get(0)?.air_temperature)
+                println(day?.get(0)?.get(0)?.cloud_area_fraction)
+                println(day?.get(0)?.get(0)?.relative_humidity)
+                println(day?.get(0)?.get(0)?.wind_from_direction)
+                println(day?.get(0)?.get(0)?.wind_speed)
+                println(day?.get(0)?.get(0)?.next_1_hours_symbol_code)
+                println(day?.get(0)?.get(0)?.next_1_hours_precipitation_amount)
             }
             """
             println(weatherNow?.time)
