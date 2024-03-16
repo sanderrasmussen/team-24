@@ -15,6 +15,9 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -29,7 +32,7 @@ class LocationTracker(
     //var userLocation
     //if this returns null, remember to create a default
     suspend fun getLocation(): Location?{
-
+        Log.d(TAG, "context in tracker: $context")
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
         val hasAccessCoarseLocationPermission = ContextCompat.checkSelfPermission(
             context,
@@ -54,15 +57,19 @@ class LocationTracker(
         }
         Log.d(TAG, "had coarsePermissions: ${hasAccessCoarseLocationPermission}")
 
-        var location : Location? = null
-        fusedLocationClient.lastLocation.addOnSuccessListener {
-            Log.d(TAG, "in onSuccess w/ it: $it")
-            location = it
-        }
-        fusedLocationClient.lastLocation.addOnFailureListener{
-            Log.d(TAG, "in onFailure")
+        var userLocation : Location? = null
+        val cancellationToken : CancellationToken = CancellationTokenSource().token
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationToken)
+            .addOnSuccessListener { location->
+                Log.d(TAG, "in onSuccessListener w/ lotation: $location")
+                if(location==null){
+                    Log.e(TAG, "successListener for getCurrentLocation recieved null")
+                }
+                userLocation = location
+            }
 
-        }
-        return location
+
+        Log.d(TAG, "returning userLocation: $userLocation")
+        return userLocation
     }
 }

@@ -21,6 +21,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
+import kotlin.reflect.typeOf
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
@@ -37,6 +38,9 @@ class HomeScreenViewModel(
              viewModelScope.launch(Dispatchers.IO) {
                  //!position broke, todo look into LocationTracker
                  if(_userLocation ==null) {
+                     Log.d(TAG, "context in viewModel: $context")
+                     Log.d(TAG, "typeof context in viewModel: ${context.javaClass}")
+
                      _userLocation = LocationTracker(context).getLocation()
                  }
                  Log.d(TAG, "Position: ${_userLocation.toString()}")
