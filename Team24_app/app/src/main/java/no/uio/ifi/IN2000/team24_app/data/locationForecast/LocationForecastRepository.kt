@@ -52,7 +52,7 @@ class LocationForecastRepository{
         organizeForecastIntoMapByDay()
         getWeatherNow()
         getNext7DaysForecast()
-        //keepFirstIndexUpToDate()
+        keepFirstIndexUpToDate()
     }
     private fun getProperties(): Properties? {
         return locationForecast?.properties
@@ -97,15 +97,12 @@ class LocationForecastRepository{
             while (true) {
                 // Sjekk og fjern utdaterte værdata
                 val currentTime = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("HH-mm-ss")
+                val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
                 val formattedTime = currentTime.format(formatter)
-
-                // while (getTimeseries()?.get(0).time < formattedTime){
-
-                //}
+               
 
 
-                delay(60000)} // cheking every minute
+
             }
         }
     }
