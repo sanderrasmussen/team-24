@@ -1,8 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import java.time.LocalDate
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,16 +41,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 
 
@@ -121,10 +122,13 @@ fun ActualHomeScreen(
     val white = Color.White
     val currentHour = getCurrentHour()
 
+    print(weatherState)
+
+    val currentWeatherDetails = weatherState?.firstOrNull()
+
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSevenDays by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier
@@ -132,22 +136,42 @@ fun ActualHomeScreen(
             .background(blue)
             .padding(16.dp)
     ) {
-        val formattedDate = date()
-        Text(
-            text = formattedDate ?: "",
-            modifier = Modifier.padding(bottom = 8.dp),
-            color = Color.Black,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
 
-        val formattedDay = day()
-        Text(
-            text = formattedDay ?: "",
-            color = Color.Black,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Normal
-        )
+            Column(
+                modifier = Modifier.padding(18.dp)
+            ) {
+            val formattedDate = date()
+            Text(
+                text = formattedDate ?: "",
+                modifier = Modifier.padding(end = 8.dp),
+                color = Color.Black,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            val formattedDay = day()
+            Text(
+                text = formattedDay ?: "",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+            Spacer(modifier = Modifier.width(16.dp))
+
+
+            Column() {
+                CurrentWeatherInfo(
+                    currentTemperature = currentWeatherDetails?.air_temperature,
+                    currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
+                )}
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -195,8 +219,6 @@ fun ActualHomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (showToday) {
                     weatherState?.let { WeatherCardsToday(currentHour, it) }
                 } else {
@@ -207,7 +229,6 @@ fun ActualHomeScreen(
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -226,6 +247,43 @@ fun NextSevenDays() {
             if (today != null) {
                 WeatherCardNextDay(day = day)
             }
+        }
+    }
+}
+
+@Composable
+fun CurrentWeatherInfo(
+    currentTemperature: Double?,
+    currentWeatherIcon: String?
+) {
+
+    if (currentTemperature == null || currentWeatherIcon.isNullOrEmpty()) {
+        Text(
+            text = "Nåværende temperatur: Ukjent",
+            color = Color.Black,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+        )
+    } else {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Icon(
+                iconName = currentWeatherIcon,
+
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "$currentTemperature°C",
+                color = Color.Black,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
@@ -275,21 +333,17 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
-        for (index in 0 until 24) {
+        weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
-
-            val weatherDetail = weatherDetails.getOrNull(index)
-            if (weatherDetail != null) {
-                WeatherCardToday(
-                    hour = hourToShow,
-                    currentHour = currentHour,
-                    weatherDetail = weatherDetail
-                )
-            }
+            WeatherCardToday(
+                hour = hourToShow,
+                currentHour = currentHour,
+                weatherDetail = weatherDetail
+            )
         }
     }
 }
+
 
 @Composable
 fun WeatherCardToday(
@@ -300,12 +354,12 @@ fun WeatherCardToday(
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
     val backgroundColor = if (hour == currentHour) yellow else blue
-    val height = if (hour == currentHour) 120.dp else 118.dp
+   // val height = if (hour == currentHour) 120.dp else 118.dp
 
     Card(
         modifier = Modifier
             .padding(10.dp)
-            .height(height),
+            .height(150.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
@@ -313,59 +367,74 @@ fun WeatherCardToday(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "kl. ${if (hour < 10) "0$hour" else hour}",
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-
+            Spacer(modifier = Modifier.height(10.dp))
+            Icon(weatherDetail.next_1_hours_symbol_code)
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "${weatherDetail.air_temperature}°C",
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
         }
     }
 }
-
 @Composable
+fun Icon(iconName: String?) {
+    // Hvis iconName er null eller tom streng, vis standardikon
+    if (iconName.isNullOrEmpty()) {
+        return
+    }
+
+    // Få ressurs-IDen dynamisk ved å bruke navnet på ikonfilen
+    val resourceId = getDrawableResourceId(iconName)
+
+    // Tegn bildet hvis ressurs-IDen er gyldig
+    if (resourceId != 0) {
+        Image(
+            painter = painterResource(id = resourceId),
+            contentDescription = null,
+            modifier = Modifier.size(50.dp) // Juster størrelsen etter behov
+        )
+    }
+}
+
+@SuppressLint("DiscouragedApi")
+@Composable
+fun getDrawableResourceId(iconName: String): Int {
+    val context = LocalContext.current
+    val packageName = context.packageName
+
+    // Få ressurs-IDen for ikonet basert på navnet på ikonfilen
+    return context.resources.getIdentifier(
+        iconName,
+        "drawable",
+        packageName
+    )
+}
+/*@Composable
 fun navBar(){
 
     Row(modifier = Modifier
         .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)){
         Text(
-            text = "kl",
-            modifier = Modifier.padding(16.dp),
-            color = Color.Black
-        )
-        Text(
-            text = "kl",
-            modifier = Modifier.padding(16.dp),
-            color = Color.Black
-        )
-        Text(
-            text = "kl",
-            modifier = Modifier.padding(16.dp),
-            color = Color.Black
-        )
-        Text(
-            text = "kl",
-            modifier = Modifier.padding(16.dp),
-            color = Color.Black
         )
     }
 
-}
+}*/
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
