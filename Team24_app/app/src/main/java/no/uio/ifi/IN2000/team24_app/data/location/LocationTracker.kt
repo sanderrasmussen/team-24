@@ -52,7 +52,7 @@ class LocationTracker(
                 locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
         //if we can't get gps or coarse location, give up (handle error on received null in middleman-class
-        if(!isGpsEnabled && !hasAccessCoarseLocationPermission){
+        if(!hasAccessCoarseLocationPermission){
             return null
         }
         Log.d(TAG, "had coarsePermissions: ${hasAccessCoarseLocationPermission}")
