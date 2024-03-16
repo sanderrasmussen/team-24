@@ -5,6 +5,13 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -19,6 +26,7 @@ class LocationTracker(
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+    //var userLocation
     //if this returns null, remember to create a default
     suspend fun getLocation(): Location?{
 
@@ -27,6 +35,8 @@ class LocationTracker(
             context,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+
+
 
 
         val locationManager = context.getSystemService(
@@ -42,35 +52,17 @@ class LocationTracker(
         if(!isGpsEnabled && !hasAccessCoarseLocationPermission){
             return null
         }
+        Log.d(TAG, "had coarsePermissions: ${hasAccessCoarseLocationPermission}")
 
-        //yeah, this looks a bit complex, took me a while to wrap my head around the thing but i trust it now
-        //this allows for suspension of the coroutine while the lastlocation-api responds
-        return suspendCancellableCoroutine { continuation->
-            fusedLocationClient.lastLocation.apply {
-                if(isComplete){ //if the lastLocation() is complete
-                    Log.d(TAG, "in isComplete")
-                    if(isSuccessful){
-                        continuation.resume(result) //if the task was a success we return the result of lastLocation(the location object)
-                    }else{
-                        continuation.resume(null)   //otherwise we go back with a null to be handled elsewhere
-                    }
-                    return@suspendCancellableCoroutine  //like a goto - specifies which point to return to. An ordinary return would return to apply{}, but we don't need listeners as we were already successfull
-                }
-                Log.d(TAG, "was not already complete")
-
-                //waiting because the lastLocation()-call wasn't complete yet
-                addOnSuccessListener {
-                    Log.d(TAG, "onsuccess called")
-                    continuation.resume(it) //if it was a success, resume processing with the response(location object)
-                }
-                addOnFailureListener{
-                    Log.d(TAG, "onFailure called")
-                    continuation.resume(null)  //again otherwise, null
-                }
-                addOnCanceledListener {
-                    continuation.cancel()  //if the api-call is canceled externally, we cancel this coroutine
-                }
-            }
+        var location : Location? = null
+        fusedLocationClient.lastLocation.addOnSuccessListener {
+            Log.d(TAG, "in onSuccess w/ it: $it")
+            location = it
         }
+        fusedLocationClient.lastLocation.addOnFailureListener{
+            Log.d(TAG, "in onFailure")
+
+        }
+        return location
     }
 }
