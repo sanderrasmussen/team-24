@@ -1,10 +1,14 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -45,9 +49,10 @@ class LocationForecastRepository{
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
         getTodayWeather()
-        forecastMap = organizeForecastIntoMapByDay()
+        organizeForecastIntoMapByDay()
         getWeatherNow()
         getNext7DaysForecast()
+        //keepFirstIndexUpToDate()
     }
     private fun getProperties(): Properties? {
         return locationForecast?.properties
@@ -86,8 +91,23 @@ class LocationForecastRepository{
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
+    @SuppressLint("NewApi")
     private fun keepFirstIndexUpToDate() {
-        println("GJØR DENNE")
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                // Sjekk og fjern utdaterte værdata
+                val currentTime = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("HH-mm-ss")
+                val formattedTime = currentTime.format(formatter)
+
+                // while (getTimeseries()?.get(0).time < formattedTime){
+
+                //}
+
+
+                delay(60000)} // cheking every minute
+            }
+        }
     }
     private fun getTodayWeather(): ArrayList<WeatherDetails>? {
         var data = getTimeseries()?.subList(0,24)
@@ -110,7 +130,6 @@ class LocationForecastRepository{
     private fun getWeatherOnDate(date : String?) : ArrayList<WeatherDetails>? {
         return forecastMap?.get(date)
     }
-
 
     @SuppressLint("NewApi")
     private fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
@@ -144,6 +163,7 @@ class LocationForecastRepository{
             }
             ForecastMap!![date]?.add(weatherObject)
         }
+        forecastMap = ForecastMap
         updateForecastMapStateFlow(ForecastMap)
         return ForecastMap
     }
