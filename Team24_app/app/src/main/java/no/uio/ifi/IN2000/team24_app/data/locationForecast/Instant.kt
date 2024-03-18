@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Instant (
 
-  @SerialName("details" ) var details : Details? = Details()
+  @SerialName("details" ) var details : InstantDetails? = InstantDetails()
 
 )

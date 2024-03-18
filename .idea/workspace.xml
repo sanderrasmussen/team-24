@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25842465-1033-4524-b2b6-f97f2124cb25" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/MetAlerts.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/InstantDetails.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/ExampleJson2KtKotlin.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Features.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Features.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Geometry.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Geometry.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Properties.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Properties.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Resources.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/Resources.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/When.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts/When.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Details.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/SummaryDetails.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/LocationForecastRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Summary.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/locationForecast/Summary.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,31 +19,85 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/FEATURE005-Repository-for-LocationForecast" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="9431a135-047d-48b2-92e4-f599d7f93f12" />
+        <option name="url" value="https://github.uio.no/IN2000-V24/team-24.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2dNLzkvwKUnhrHEvvf4Ji3rj6lJ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;metalerts-fetchdata&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/himea/Documents/GitHub/team-24/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts&quot;
+    &quot;last_opened_file_path&quot;: &quot;/Volumes/LaCie/team-24&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/metAlerts" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="build.gradle.kts" type="KotlinStandaloneScriptRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <module name="team-24" />
+      <option name="filePath" value="$PROJECT_DIR$/Team24_app/app/build.gradle.kts" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Kotlin script (Beta).build.gradle.kts" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -57,6 +108,74 @@
       <option name="presentableId" value="Default" />
       <updated>1709843854944</updated>
     </task>
+    <task id="LOCAL-00001" summary="Created and Added locationforecastRepository file">
+      <option name="closed" value="true" />
+      <created>1710275821083</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1710275821083</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Created and Added locationforecastRepository file">
+      <option name="closed" value="true" />
+      <created>1710276886766</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1710276886767</updated>
+    </task>
+    <task id="LOCAL-00003" summary="wrote getLocationforecastObject , (first method in class)">
+      <option name="closed" value="true" />
+      <created>1710364950185</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1710364950185</updated>
+    </task>
+    <task id="LOCAL-00004" summary="working on caching and organizing forecasts into hashmaps of dates and times">
+      <option name="closed" value="true" />
+      <created>1710369714775</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1710369714775</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Endret en del, og la til iconer i drawable">
+      <option name="closed" value="true" />
+      <created>1710371459780</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710371459780</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Organisert timeseries i hashmap med dato som nøkkel">
+      <option name="closed" value="true" />
+      <created>1710373869675</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1710373869676</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Created and Added locationforecastRepository file" />
+    <MESSAGE value="wrote getLocationforecastObject , (first method in class)" />
+    <MESSAGE value="working on caching and organizing forecasts into hashmaps of dates and times" />
+    <MESSAGE value="Endret en del, og la til iconer i drawable" />
+    <MESSAGE value="Organisert timeseries i hashmap med dato som nøkkel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Organisert timeseries i hashmap med dato som nøkkel" />
   </component>
 </project>
