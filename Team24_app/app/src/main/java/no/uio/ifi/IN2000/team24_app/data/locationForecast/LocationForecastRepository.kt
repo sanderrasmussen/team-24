@@ -48,11 +48,13 @@ class LocationForecastRepository{
         if (locationForecast==null){
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
+        fetchApiDataEveryHour(lat, lon)
+        keepFirstIndexUpToDate()
         getTodayWeather()
         organizeForecastIntoMapByDay()
         getWeatherNow()
         getNext7DaysForecast()
-        keepFirstIndexUpToDate()
+
     }
     private fun getProperties(): Properties? {
         return locationForecast?.properties
