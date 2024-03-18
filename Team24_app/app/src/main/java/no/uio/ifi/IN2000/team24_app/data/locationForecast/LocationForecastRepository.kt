@@ -91,11 +91,23 @@ class LocationForecastRepository{
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
+    private fun fetchApiDataEveryHour(lat:Double, lon: Double) {
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                // re-fetch API-data
+                //get forecast object
+                locationForecast = dataSource.getLocationForecastData(lat, lon)
+                // wait one hour
+                delay(3600000)
+            }
+        }
+    }
     @SuppressLint("NewApi") //THIS CODE DEFFENITELY NEEDS REFACTORING HOWEVER IT SHOULD WORK FOR NOW
     private fun keepFirstIndexUpToDate() {
         CoroutineScope(Dispatchers.Default).launch {
+
             while (true) {
-                // Sjekk og fjern utdaterte værdata
+
                 var currentTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
 
@@ -104,7 +116,7 @@ class LocationForecastRepository{
                 forecast = forecast?.replace("T", ":")
                 var forecastTime = LocalDateTime.parse(forecast, formatter)
 
-                while (forecastTime.isBefore(currentTime)) {
+                while (forecastTime.isBefore(currentTime.minusHours(1))) {
 
                     // remove utdated weather data
                     getTimeseries()?.removeAt(0)
@@ -116,14 +128,14 @@ class LocationForecastRepository{
                     forecast = forecast?.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
 
-
                     // update stateflows based on new data
                     getTodayWeather()
                     organizeForecastIntoMapByDay()
                     getWeatherNow()
                     getNext7DaysForecast()
                 }
-
+                //THIS CAN DEFINIETELY BE IMPORVED TO FIND AMOUNT OF MINUTES TO NEXT HOUR AND CHECK EVERY
+                //WHOLE HOUR
                 // recheck every minute
                 delay(60000)
             }
