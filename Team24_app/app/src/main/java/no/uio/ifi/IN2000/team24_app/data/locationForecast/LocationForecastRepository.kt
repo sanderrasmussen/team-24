@@ -91,29 +91,40 @@ class LocationForecastRepository{
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
-    @SuppressLint("NewApi")
+    @SuppressLint("NewApi") //THIS CODE DEFFENITELY NEEDS REFACTORING HOWEVER IT SHOULD WORK FOR NOW
     private fun keepFirstIndexUpToDate() {
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
                 // Sjekk og fjern utdaterte værdata
                 var currentTime = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-                val formattedTime = currentTime.format(formatter)
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
 
-                var forecast = getTimeseries()?.get(0)
-                var date = forecast?.time?.split("T")?.get(0)
-                var time = forecast?.time?.split("T")?.get(1)
-                time = time?.replace("Z", "")
-
-                val forecastTime = LocalDateTime.parse(time, formatter)
-                currentTime = LocalDateTime.parse(formattedTime, formatter)
+                var forecast = getTimeseries()?.get(0)?.time
+                forecast = forecast?.replace("Z", "")
+                forecast = forecast?.replace("T", ":")
+                var forecastTime = LocalDateTime.parse(forecast, formatter)
 
                 while (forecastTime.isBefore(currentTime)) {
-                    // Fjern utdaterte værdata
+
+                    // remove utdated weather data
                     getTimeseries()?.removeAt(0)
 
+                    currentTime = LocalDateTime.now()
+
+                    var forecast = getTimeseries()?.get(0)?.time
+                    forecast = forecast?.replace("Z", "")
+                    forecast = forecast?.replace("T", ":")
+                    forecastTime = LocalDateTime.parse(forecast, formatter)
+
+
+                    // update stateflows based on new data
+                    getTodayWeather()
+                    organizeForecastIntoMapByDay()
+                    getWeatherNow()
+                    getNext7DaysForecast()
                 }
-                // Sjekk hver minutt
+
+                // recheck every minute
                 delay(60000)
             }
         }
