@@ -186,8 +186,8 @@ class LocationForecastRepository{
         getTimeseries()?.forEachIndexed { index, e ->
             var weatherObject : WeatherDetails = createWeatherDetailObject(index)
             var date = e.time?.split("T")?.get(0)
-            var time = e.time?.split("T")?.get(1)
-            time = time?.replace("Z", "")
+            var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
+
             weatherObject.time= time
 
             if (ForecastMap != null) {
