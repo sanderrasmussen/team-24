@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
+import java.lang.reflect.Array
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -30,6 +32,7 @@ data class WeatherDetails(
     var next_12_hours_symbol_code : String? = null,
     var next_12_hours_precipitation_amount : Double? = null
 )
+
 class LocationForecastRepository{
     private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     //still unsure how often this hould be updated
@@ -40,6 +43,7 @@ class LocationForecastRepository{
     private val _currentWeather = MutableStateFlow<WeatherDetails?>(null)
     private val _todayForecast = MutableStateFlow<ArrayList<WeatherDetails>?>(null)
     private val _next7DaysForecast = MutableStateFlow<ArrayList<ArrayList<WeatherDetails>?>?>(null)
+    private val _next6daysForecast = MutableStateFlow<ArrayList<WeatherDetails?>?>(null)
 
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
     //re-fetching api every hour is what i have in mind
@@ -53,6 +57,7 @@ class LocationForecastRepository{
         getTodayWeather()
         organizeForecastIntoMapByDay()
         getWeatherNow()
+        getNext6daysForecast()
         getNext7DaysForecast()
 
     }
@@ -134,6 +139,7 @@ class LocationForecastRepository{
                     getTodayWeather()
                     organizeForecastIntoMapByDay()
                     getWeatherNow()
+                    getNext6daysForecast()
                     getNext7DaysForecast()
                 }
                 //THIS CAN DEFINIETELY BE IMPORVED TO FIND AMOUNT OF MINUTES TO NEXT HOUR AND CHECK EVERY
@@ -169,7 +175,6 @@ class LocationForecastRepository{
     private fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
         var next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
 
-
         for (i in 0..6) {
             val current = LocalDateTime.now().plusDays(i.toLong())
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -180,7 +185,25 @@ class LocationForecastRepository{
         updateNext7DaysForecast(next7DaysForecast)
         return next7DaysForecast
     }
+    @SuppressLint("NewApi")
+    private fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
+        var next6DaysForecast = ArrayList<WeatherDetails?>()
+        for (i in 1..7) {
+            val current = LocalDateTime.now().plusDays(i.toLong())
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val date = current.format(formatter)
+            var weather = getWeatherOnDate(date)
+            weather?.forEach{
+                if (it?.time == "12"){
+                    next6DaysForecast.add(it)
+                }
+            }
+        }
+        updateNext6DayForecast(next6DaysForecast)
+        return next6DaysForecast
 
+
+    }
     private fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
         var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
@@ -188,7 +211,7 @@ class LocationForecastRepository{
             var date = e.time?.split("T")?.get(0)
             var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
 
-            weatherObject.time= time
+            weatherObject.time= time 
 
             if (ForecastMap != null) {
                 if (!ForecastMap.containsKey(date)){
@@ -232,4 +255,12 @@ class LocationForecastRepository{
     }
 
     fun ObserveNext7DaysForecast() : StateFlow<ArrayList<ArrayList<WeatherDetails>?>?> = _next7DaysForecast.asStateFlow()
+
+    private fun updateNext6DayForecast(forecast: ArrayList<WeatherDetails?>?){
+        _next6daysForecast.update {
+            forecast!!
+        }
+    }
+
+    fun ObserveNext6DaysForecast() : StateFlow<ArrayList<WeatherDetails?>?> = _next6daysForecast.asStateFlow()
 }
