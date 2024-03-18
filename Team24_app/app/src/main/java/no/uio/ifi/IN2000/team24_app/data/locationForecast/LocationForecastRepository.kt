@@ -96,13 +96,25 @@ class LocationForecastRepository{
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
                 // Sjekk og fjern utdaterte værdata
-                val currentTime = LocalDateTime.now()
+                var currentTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
                 val formattedTime = currentTime.format(formatter)
-               
 
+                var forecast = getTimeseries()?.get(0)
+                var date = forecast?.time?.split("T")?.get(0)
+                var time = forecast?.time?.split("T")?.get(1)
+                time = time?.replace("Z", "")
 
+                val forecastTime = LocalDateTime.parse(time, formatter)
+                currentTime = LocalDateTime.parse(formattedTime, formatter)
 
+                while (forecastTime.isBefore(currentTime)) {
+                    // Fjern utdaterte værdata
+                    getTimeseries()?.removeAt(0)
+
+                }
+                // Sjekk hver minutt
+                delay(60000)
             }
         }
     }
