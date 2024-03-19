@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
 
 abstract class Clothing (
     open val name:String,
@@ -19,6 +20,19 @@ abstract class Clothing (
     open val price: Int,
     val unlocked: Boolean = false
  )
+
+@Composable
+fun ClothingMenuCard(){
+    /*
+    Dialog(
+        onDismissRequest = { writeClothesToDisk()}
+
+    )
+     */
+}
+fun writeClothesToDisk(character: Character){
+
+}
 
 @Composable
 fun ClothingMenu(){
