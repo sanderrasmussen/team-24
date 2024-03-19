@@ -23,9 +23,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -41,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -50,53 +52,42 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
-
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
-    //navController: NavController,
-   // isNetworkAvailable: Boolean
 ){
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
-    val weatherState : ArrayList<WeatherDetails>? by homevm.todayWeatherState.collectAsState()
-    val next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>? by homevm.next7DaysWeatherState.collectAsState()
+    val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
+    val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
+    LocationPermissionCard()
 
-    ActualHomeScreen(weatherState = weatherState, next7DaysWeatherState = next7DaysWeatherState)
-    //ActualHomeScreen(weatherState = weatherState)
-    
+    ActualHomeScreen(currentWeatherState = currentWeatherState, next6DaysWeatherState = next6DaysWeatherState)
+
     
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-
-    /*if (!isNetworkAvailable) {
-        LaunchedEffect(Unit) {
-            scope.launch {
-                snackbarHostState.showSnackbar("No internet connection")
-            }
-        }
-    } else {
-        ActualHomeScreen(weatherState = weatherState)
-    }*/
 }
 
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun getNextSevenDays(): List<String> {
+fun getNextSixDays(): List<String> {
     val currentDay = LocalDate.now()
     val formatter = TextStyle.SHORT
     val locale = Locale("no", "NO")
     val days = mutableListOf<String>()
 
-    for (i in 0 until 7) {
+    for (i in 0 until 6) {
         val dayOfWeek = currentDay.plusDays(i.toLong()).dayOfWeek.getDisplayName(formatter, locale)
         days.add(dayOfWeek)
     }
-
     return days
 }
 
@@ -123,20 +114,20 @@ fun getCurrentHour(): Int {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActualHomeScreen(
-    weatherState: ArrayList<WeatherDetails>?,
-    next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>?
+    currentWeatherState: ArrayList<WeatherDetails>?,
+    next6DaysWeatherState: ArrayList<WeatherDetails?>?
 ) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
     val currentHour = getCurrentHour()
 
-    weatherState?.forEachIndexed { index, weatherDetail ->
+    currentWeatherState?.forEachIndexed { index, weatherDetail ->
         println("Weather detail at index $index: $weatherDetail")
     }
 
 
 
-    val currentWeatherDetails = weatherState?.firstOrNull()
+    val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
@@ -232,15 +223,15 @@ fun ActualHomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (showToday) {
-                    weatherState?.let { WeatherCardsToday(currentHour, it) }
+                    currentWeatherState?.let { WeatherCardsToday(currentHour, it) }
                 } else {
                     if (currentWeatherDetails != null) {
-                        NextSevenDays(next7DaysWeatherState = next7DaysWeatherState, currentWeatherDetails)
+                        WeatherCardsNextSixDays(next6DaysWeatherState = next6DaysWeatherState)
                     }
 
                 }
 
-                navBar()
+                NavBar()
 
 
             }
@@ -249,11 +240,10 @@ fun ActualHomeScreen(
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NextSevenDays(next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>?, currentWeather:WeatherDetails?) {
-    val days = getNextSevenDays()
+fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) {
+    val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,10 +251,16 @@ fun NextSevenDays(next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>?,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         days.forEach { day ->
-            if (today != null && next7DaysWeatherState != null) {
+            if (today != null && next6DaysWeatherState != null) {
                 val index = days.indexOf(day)
-                val weatherDetails = next7DaysWeatherState[index]
-                WeatherCardNextDay(day = day, weatherDetails = weatherDetails ?: emptyList(), currentWeather)
+                val weatherDetails = next6DaysWeatherState[index]
+                if (weatherDetails != null) {
+                    WeatherCard(
+                        highlighted = index==0,
+                        weatherDetail = weatherDetails,
+                        titleOverride = day
+                    )
+                }
             }
         }
     }
@@ -306,6 +302,7 @@ fun CurrentWeatherInfo(
     }
 }
 
+@Deprecated("Use WeatherCard with titleOverride instead")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherCardNextDay(
@@ -313,15 +310,12 @@ fun WeatherCardNextDay(
     weatherDetails: List<WeatherDetails>,
     currentWeather: WeatherDetails?
 ) {
-    
-    println(currentWeather)
+    //! bruk Log.d || Log.e osv, ikke println
+    //println(currentWeather)
     val currentDate = LocalDate.now()
     val formatter = TextStyle.SHORT
     val locale = Locale("no", "NO")
     val dayOfWeek = currentDate.dayOfWeek.getDisplayName(formatter, locale)
-
-    println("day today $day")
-    println("day of the week $dayOfWeek")
 
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
@@ -371,6 +365,7 @@ fun WeatherCardNextDay(
     }
 }
 
+
 @Composable
 fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val scrollState = rememberScrollState()
@@ -383,9 +378,8 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
-            WeatherCardToday(
-                hour = hourToShow,
-                currentHour = currentHour,
+            WeatherCard(
+                highlighted = hourToShow == currentHour,
                 weatherDetail = weatherDetail
             )
         }
@@ -394,14 +388,14 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
 
 
 @Composable
-fun WeatherCardToday(
-    hour: Int,
-    currentHour: Int,
-    weatherDetail: WeatherDetails
+fun WeatherCard(
+    highlighted:Boolean = false,
+    weatherDetail: WeatherDetails,
+    titleOverride: String? = null   //if this is non-zero, the title(weatherDetails.time) will be overridden. this is used in
 ) {
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
-    val backgroundColor = if (hour == currentHour) yellow else blue
+    val backgroundColor = if (highlighted) yellow else blue
    // val height = if (hour == currentHour) 120.dp else 118.dp
 
     Card(
@@ -419,7 +413,7 @@ fun WeatherCardToday(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "kl. ${if (hour < 10) "0$hour" else hour}",
+                text = titleOverride ?: "kl. ${ weatherDetail.time}",
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
@@ -445,7 +439,6 @@ fun Icon(iconName: String?) {
     if (iconName.isNullOrEmpty()) {
         return
     }
-
     // Få ressurs-IDen dynamisk ved å bruke navnet på ikonfilen
     val resourceId = getDrawableResourceId(iconName)
 
@@ -473,7 +466,7 @@ fun getDrawableResourceId(iconName: String): Int {
     )
 }
 @Composable
-fun navBar(){
+fun NavBar(){
     var isClicked by remember { mutableStateOf(false) }
     Spacer(modifier=Modifier.padding(8.dp))
     Row(modifier = Modifier.padding(8.dp)
@@ -508,4 +501,36 @@ fun navBar(){
 fun HomeScreenPreview(){
     val isNetworkAvailable = true
     HomeScreen(homevm = HomeScreenViewModel())
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun LocationPermissionCard(){
+    val locationPermissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_COARSE_LOCATION)
+    val showCard = remember{ mutableStateOf(!locationPermissionState.status.isGranted)}
+
+    fun permissionDenied() {
+        showCard.value=false
+    }
+
+    if(showCard.value){
+        AlertDialog(
+            title= { Text(text = "Requires location permission") },
+            icon = {Icons.Default.LocationOn},
+            onDismissRequest = { permissionDenied() },
+            confirmButton = {
+                Button(onClick = {
+                    locationPermissionState.launchPermissionRequest()
+                    showCard.value=false
+                }) {
+                    Text(text = "grant location permission")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { permissionDenied()}) {
+                    Text(text = "Refuse location permissions")
+                }
+            }
+        )
+    }
 }

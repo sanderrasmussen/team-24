@@ -70,8 +70,11 @@ dependencies {
 
 
     //location
-    implementation ("com.google.android.gms:play-services-location:17.0.0")
+    implementation ("com.google.android.gms:play-services-location:21.2.0")
     implementation ("com.google.accompanist:accompanist-permissions:0.24.13-rc")
+    val activity_version = "1.8.2"
+    implementation("androidx.activity:activity-ktx:$activity_version")
+    implementation ("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
     val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
