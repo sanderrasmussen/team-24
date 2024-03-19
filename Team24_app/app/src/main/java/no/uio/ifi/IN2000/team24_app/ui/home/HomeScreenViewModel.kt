@@ -27,11 +27,14 @@ class HomeScreenViewModel(
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     //private val metAlertsRepo: MetalertsRepo = MetalertsRepo(),
     private var _userLocation : Location? = null,
+    //private var _alerts = MutableStateFlow<>
 
 ): ViewModel(){
     var weatherState:StateFlow<ArrayList<WeatherDetails>?> =
         locationForecastRepo.ObserveTodayWeather();
-    // val next7DaysState: StateFlow<ArrayList<WeatherDetails?>> =
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
+        locationForecastRepo.ObserveNext6DaysForecast()
+
 
     fun getCurrentWeather(context:Context){
 
