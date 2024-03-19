@@ -31,6 +31,7 @@ class HomeScreenViewModel(
 ): ViewModel(){
     var weatherState:StateFlow<ArrayList<WeatherDetails>?> =
         locationForecastRepo.ObserveTodayWeather();
+    // val next7DaysState: StateFlow<ArrayList<WeatherDetails?>> =
 
     fun getCurrentWeather(context:Context){
 
@@ -47,6 +48,9 @@ class HomeScreenViewModel(
 
             }
      }
+
+
+
 
     fun getRelevantAlerts(context: Context){
         viewModelScope.launch(Dispatchers.IO) {
