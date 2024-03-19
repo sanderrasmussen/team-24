@@ -57,16 +57,22 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
     //navController: NavController,
-    isNetworkAvailable: Boolean
+   // isNetworkAvailable: Boolean
 ){
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
+    val weatherState : ArrayList<WeatherDetails>? by homevm.todayWeatherState.collectAsState()
+    val next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>? by homevm.next7DaysWeatherState.collectAsState()
 
-    val weatherState : ArrayList<WeatherDetails>? by homevm.weatherState.collectAsState()
+    ActualHomeScreen(weatherState = weatherState, next7DaysWeatherState = next7DaysWeatherState)
+    //ActualHomeScreen(weatherState = weatherState)
+    
+    
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
 
-    if (!isNetworkAvailable) {
+    /*if (!isNetworkAvailable) {
         LaunchedEffect(Unit) {
             scope.launch {
                 snackbarHostState.showSnackbar("No internet connection")
@@ -74,8 +80,9 @@ fun HomeScreen(
         }
     } else {
         ActualHomeScreen(weatherState = weatherState)
-    }
+    }*/
 }
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -117,12 +124,17 @@ fun getCurrentHour(): Int {
 @Composable
 fun ActualHomeScreen(
     weatherState: ArrayList<WeatherDetails>?,
+    next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>?
 ) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
     val currentHour = getCurrentHour()
 
-    print(weatherState)
+    weatherState?.forEachIndexed { index, weatherDetail ->
+        println("Weather detail at index $index: $weatherDetail")
+    }
+
+
 
     val currentWeatherDetails = weatherState?.firstOrNull()
 
@@ -222,7 +234,10 @@ fun ActualHomeScreen(
                 if (showToday) {
                     weatherState?.let { WeatherCardsToday(currentHour, it) }
                 } else {
-                    NextSevenDays()
+                    if (currentWeatherDetails != null) {
+                        NextSevenDays(next7DaysWeatherState = next7DaysWeatherState, currentWeatherDetails)
+                    }
+
                 }
 
                 navBar()
@@ -232,13 +247,12 @@ fun ActualHomeScreen(
         }
     }
 }
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NextSevenDays() {
+fun NextSevenDays(next7DaysWeatherState: ArrayList<ArrayList<WeatherDetails>?>?, currentWeather:WeatherDetails?) {
     val days = getNextSevenDays()
     val scrollState = rememberScrollState()
-    val today= day()
+    val today = day()
 
     Row(
         modifier = Modifier
@@ -247,20 +261,21 @@ fun NextSevenDays() {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         days.forEach { day ->
-            if (today != null) {
-                WeatherCardNextDay(day = day)
+            if (today != null && next7DaysWeatherState != null) {
+                val index = days.indexOf(day)
+                val weatherDetails = next7DaysWeatherState[index]
+                WeatherCardNextDay(day = day, weatherDetails = weatherDetails ?: emptyList(), currentWeather)
             }
         }
     }
 }
-
 @Composable
 fun CurrentWeatherInfo(
     currentTemperature: Double?,
     currentWeatherIcon: String?
 ) {
 
-    if (currentTemperature == null || currentWeatherIcon.isNullOrEmpty()) {
+    if (currentTemperature == null  || currentWeatherIcon.isNullOrEmpty()) {
         Text(
             text = "Nåværende temperatur: Ukjent",
             color = Color.Black,
@@ -295,34 +310,64 @@ fun CurrentWeatherInfo(
 @Composable
 fun WeatherCardNextDay(
     day: String,
+    weatherDetails: List<WeatherDetails>,
+    currentWeather: WeatherDetails?
 ) {
-
+    
+    println(currentWeather)
     val currentDate = LocalDate.now()
     val formatter = TextStyle.SHORT
     val locale = Locale("no", "NO")
     val dayOfWeek = currentDate.dayOfWeek.getDisplayName(formatter, locale)
 
+    println("day today $day")
+    println("day of the week $dayOfWeek")
+
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
     val backgroundColor = if (day == dayOfWeek) yellow else blue
 
-
+    // Finn weatherDetailForNoon for denne dagen hvis tilgjengelig
+    val weatherDetailForNoon = weatherDetails.find { it.time == "12" }
 
     Card(
         modifier = Modifier
             .padding(10.dp)
-            .width(65.dp)
-            .height(120.dp),
+            .height(150.dp)
+            .width(90.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         )
     ) {
-        Text(
-            text = day,
+        Column(
             modifier = Modifier.padding(16.dp),
-            color = Color.Black
-        )
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = day,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            if (day == dayOfWeek && currentWeather != null) {
+                Text(
+                    text = "${currentWeather.air_temperature}°C",
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else if (weatherDetailForNoon != null) {
+                Text(
+                    text = "${weatherDetailForNoon.air_temperature}°C",
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
 
@@ -434,30 +479,33 @@ fun navBar(){
     Row(modifier = Modifier.padding(8.dp)
         .fillMaxWidth()
         .background(Color.White),
-        horizontalArrangement = Arrangement.SpaceEvenly){
+        horizontalArrangement = Arrangement.SpaceEvenly) {
         Box(modifier = Modifier
             .clickable { isClicked = true }
-        ){
-        Icon("quiz")}
-        Spacer(modifier= Modifier.padding(8.dp))
-        Box(modifier = Modifier
-            .clickable { isClicked = true }
-            ){
-        Icon("home")}
-        Spacer(modifier= Modifier.padding(8.dp))
-        Box(modifier = Modifier
-            .clickable { isClicked = true }
-            ){
-        Icon("settings")}
-    }
-    //Spacer(modifier=Modifier.padding(8.dp))
+        ) {
+            Icon("quiz")}
 
-}
+            Spacer(modifier = Modifier.padding(8.dp))
+            Box(modifier = Modifier
+                .clickable { isClicked = true }
+            ) {
+                Icon("home")
+            }
+            Spacer(modifier = Modifier.padding(8.dp))
+            Box(modifier = Modifier
+                .clickable { isClicked = true }
+            ) {
+                Icon("settings")
+            }
+        }
+        //Spacer(modifier=Modifier.padding(8.dp))
+    }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview(){
     val isNetworkAvailable = true
-    HomeScreen(homevm = HomeScreenViewModel(), isNetworkAvailable = isNetworkAvailable)
+    HomeScreen(homevm = HomeScreenViewModel())
 }
