@@ -8,7 +8,7 @@ data class Head (
 
 }
 
-val paintHead = Head("Paint", 0.5, R.drawable.paint_head, 0)
+val paintHead = Head("Paint", 0.5, R.drawable.paint_head, 10000)
 
 
 fun heads(): List<Head> {

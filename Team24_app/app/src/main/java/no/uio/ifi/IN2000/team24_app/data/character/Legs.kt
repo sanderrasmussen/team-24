@@ -7,7 +7,7 @@ data class Legs (
 ):Clothing(name, heatValue, imageAsset, price){
 
 }
-val paintLegs = Legs("Paint", 0.5, R.drawable.paint_legs, 0)
+val paintLegs = Legs("Paint", 0.5, R.drawable.paint_legs, 10000)
 fun legs(): List<Legs> {
     return listOf(
         paintLegs

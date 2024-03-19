@@ -7,7 +7,7 @@ data class Torso (
 ):Clothing(name, heatValue, imageAsset, price){
 
 }
-val paintTorso = Torso("Paint", 0.5, R.drawable.paint_torso, 0)
+val paintTorso = Torso("Paint", 0.5, R.drawable.paint_torso, 10000)
 fun torsos(): List<Torso> {
     return listOf(
         paintTorso
