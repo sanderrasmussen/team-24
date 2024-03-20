@@ -13,6 +13,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,56 +32,66 @@ abstract class Clothing (
  )
 
 @Composable
-fun ClothingMenuCard(modifier: Modifier = Modifier){
-   ElevatedCard(
-       elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-       modifier = modifier
-   ) {
-    ClothingMenu()
+fun Inventory(modifier:Modifier=Modifier){
+    val showInventory by remember { mutableStateOf(false) }
 
-
-   }
+    if(showInventory){
+        ClothingMenu()
+    }
 }
+
+
 fun writeClothesToDisk(character: Character){
 
 }
 
 @Composable
 fun ClothingMenu(modifier: Modifier = Modifier){
-    Column(
-        modifier = modifier.width(100.dp)
-
+    ElevatedCard (
+        elevation = CardDefaults.cardElevation(10.dp),
+        modifier = modifier
     ) {
-        Text(text = "Heads:")
-        LazyVerticalGrid(columns = GridCells.Fixed(2),){
-            items(heads()) { head ->
-                Image(painter = painterResource(id = head.altAsset, ), contentDescription = head.name)
+        Column(
+            modifier = modifier.width(100.dp)
+
+        ) {
+            Text(text = "Heads:")
+            LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+                items(heads()) { head ->
+                    Image(
+                        painter = painterResource(id = head.altAsset,),
+                        contentDescription = head.name
+                    )
+                }
             }
-        }
             Text(text = "Tops:")
-        LazyVerticalGrid(columns = GridCells.Fixed(2),){
-        items(torsos()) { torso ->
-            Image(painter = painterResource(id = torso.altAsset, ), contentDescription = torso.name)
-        }
-    }
+            LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+                items(torsos()) { torso ->
+                    Image(
+                        painter = painterResource(id = torso.altAsset,),
+                        contentDescription = torso.name
+                    )
+                }
+            }
             Text(text = "Bottoms:")
 
-        LazyVerticalGrid(columns = GridCells.Fixed(2),) {
-            items(legs()) { leg ->
-                Image(
-                    painter = painterResource(id = leg.altAsset,),
-                    contentDescription = leg.name
-                )
+            LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+                items(legs()) { leg ->
+                    Image(
+                        painter = painterResource(id = leg.altAsset,),
+                        contentDescription = leg.name
+                    )
+                }
             }
         }
     }
 }
 @Preview(showSystemUi = true)
-
 @Composable
-fun ClothingMenuCardPreview() {
-    ClothingMenuCard()
+fun InventoryPreview() {
+    Inventory()
 }
+
 
 
 @Preview(showBackground = true)
