@@ -18,6 +18,7 @@ abstract class Clothing (
     open val heatValue:Double,
     open val imageAsset: Int,
     open val price: Int,
+    open val altAsset: Int,
     val unlocked: Boolean = false
  )
 
@@ -42,13 +43,13 @@ fun ClothingMenu(){
             Text(text = "Heads:")
         LazyVerticalGrid(columns = GridCells.Fixed(2),){
             items(heads()) { head ->
-                Image(painter = painterResource(id = head.imageAsset, ), contentDescription = head.name)
+                Image(painter = painterResource(id = head.altAsset, ), contentDescription = head.name)
             }
         }
             Text(text = "Tops:")
         LazyVerticalGrid(columns = GridCells.Fixed(2),){
         items(torsos()) { torso ->
-            Image(painter = painterResource(id = torso.imageAsset, ), contentDescription = torso.name)
+            Image(painter = painterResource(id = torso.altAsset, ), contentDescription = torso.name)
         }
     }
             Text(text = "Bottoms:")
@@ -56,7 +57,7 @@ fun ClothingMenu(){
         LazyVerticalGrid(columns = GridCells.Fixed(2),) {
             items(legs()) { leg ->
                 Image(
-                    painter = painterResource(id = leg.imageAsset,),
+                    painter = painterResource(id = leg.altAsset,),
                     contentDescription = leg.name
                 )
             }
