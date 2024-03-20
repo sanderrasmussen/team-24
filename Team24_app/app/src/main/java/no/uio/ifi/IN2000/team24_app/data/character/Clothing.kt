@@ -17,8 +17,9 @@ abstract class Clothing (
     open val name:String,
     open val heatValue:Double,
     open val imageAsset: Int,
+    open val altAsset: Int,
     open val price: Int,
-    val unlocked: Boolean = false
+    val unlocked: Boolean = false,
  )
 
 @Composable
