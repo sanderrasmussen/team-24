@@ -2,15 +2,21 @@ package no.uio.ifi.IN2000.team24_app.data.character
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 abstract class Clothing (
@@ -23,24 +29,27 @@ abstract class Clothing (
  )
 
 @Composable
-fun ClothingMenuCard(){
-    /*
-    Dialog(
-        onDismissRequest = { writeClothesToDisk()}
+fun ClothingMenuCard(modifier: Modifier = Modifier){
+   ElevatedCard(
+       elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+       modifier = modifier
+   ) {
+    ClothingMenu()
 
-    )
-     */
+
+   }
 }
 fun writeClothesToDisk(character: Character){
 
 }
 
 @Composable
-fun ClothingMenu(){
+fun ClothingMenu(modifier: Modifier = Modifier){
     Column(
+        modifier = modifier.width(100.dp)
 
     ) {
-            Text(text = "Heads:")
+        Text(text = "Heads:")
         LazyVerticalGrid(columns = GridCells.Fixed(2),){
             items(heads()) { head ->
                 Image(painter = painterResource(id = head.altAsset, ), contentDescription = head.name)
@@ -64,9 +73,16 @@ fun ClothingMenu(){
         }
     }
 }
+@Preview(showSystemUi = true)
+
+@Composable
+fun ClothingMenuCardPreview() {
+    ClothingMenuCard()
+}
+
 
 @Preview(showBackground = true)
 @Composable
-fun clothingMenuPreview() {
+fun ClothingMenuPreview() {
     ClothingMenu()
 }

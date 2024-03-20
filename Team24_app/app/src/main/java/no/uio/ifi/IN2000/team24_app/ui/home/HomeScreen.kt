@@ -113,10 +113,6 @@ fun day(): String? {
     return (dayOfWeek)
 
 }
-@RequiresApi(Build.VERSION_CODES.O)
-fun getCurrentHour(): Int {
-    return LocalTime.now().hour
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -126,17 +122,10 @@ fun ActualHomeScreen(
 ) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
-    val currentHour = getCurrentHour()
+    val currentHour = LocalTime.now().hour
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
     val character =Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
-
-
-    currentWeatherState?.forEachIndexed { index, weatherDetail ->
-        println("Weather detail at index $index: $weatherDetail")
-    }
-
-
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
@@ -243,12 +232,8 @@ fun ActualHomeScreen(
                     if (currentWeatherDetails != null) {
                         WeatherCardsNextSixDays(next6DaysWeatherState = next6DaysWeatherState)
                     }
-
                 }
-
                 NavBar()
-
-
             }
         }
     }
