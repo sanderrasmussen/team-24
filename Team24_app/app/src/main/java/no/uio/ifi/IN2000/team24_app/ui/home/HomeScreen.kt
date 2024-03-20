@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,6 +56,11 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.Player
+import no.uio.ifi.IN2000.team24_app.data.character.heads
+import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -67,9 +73,10 @@ fun HomeScreen(
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     LocationPermissionCard()
 
+
+    //WHY IS THIS ITS OWN THING, WHY NOT JUST RENDER THE ACTUAL HOMESCREEN???
     ActualHomeScreen(currentWeatherState = currentWeatherState, next6DaysWeatherState = next6DaysWeatherState)
 
-    
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -120,6 +127,10 @@ fun ActualHomeScreen(
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
     val currentHour = getCurrentHour()
+
+    //this is just to render a default character, TODO should call a load from disk()-method on create
+    val character =Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+
 
     currentWeatherState?.forEachIndexed { index, weatherDetail ->
         println("Weather detail at index $index: $weatherDetail")
@@ -174,7 +185,10 @@ fun ActualHomeScreen(
                     currentTemperature = currentWeatherDetails?.air_temperature,
                     currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
                 )}
+
         }
+        //!TODO FINDSCOPEFORPLAYER
+        Player(character = character, modifier = Modifier.fillMaxSize())
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -184,6 +198,7 @@ fun ActualHomeScreen(
                 .padding(top = 16.dp)
                 .background(color = white)
         ) {
+            //ingen kommentarer eller custom greier her så aner ikke hva faen for skop noe er
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -302,69 +317,6 @@ fun CurrentWeatherInfo(
     }
 }
 
-@Deprecated("Use WeatherCard with titleOverride instead")
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun WeatherCardNextDay(
-    day: String,
-    weatherDetails: List<WeatherDetails>,
-    currentWeather: WeatherDetails?
-) {
-    //! bruk Log.d || Log.e osv, ikke println
-    //println(currentWeather)
-    val currentDate = LocalDate.now()
-    val formatter = TextStyle.SHORT
-    val locale = Locale("no", "NO")
-    val dayOfWeek = currentDate.dayOfWeek.getDisplayName(formatter, locale)
-
-    val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
-    val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
-    val backgroundColor = if (day == dayOfWeek) yellow else blue
-
-    // Finn weatherDetailForNoon for denne dagen hvis tilgjengelig
-    val weatherDetailForNoon = weatherDetails.find { it.time == "12" }
-
-    Card(
-        modifier = Modifier
-            .padding(10.dp)
-            .height(150.dp)
-            .width(90.dp),
-        shape = RoundedCornerShape(40.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = day,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            if (day == dayOfWeek && currentWeather != null) {
-                Text(
-                    text = "${currentWeather.air_temperature}°C",
-                    color = Color.Black,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else if (weatherDetailForNoon != null) {
-                Text(
-                    text = "${weatherDetailForNoon.air_temperature}°C",
-                    color = Color.Black,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
@@ -446,7 +398,7 @@ fun Icon(iconName: String?) {
     if (resourceId != 0) {
         Image(
             painter = painterResource(id = resourceId),
-            contentDescription = null,
+            contentDescription = iconName,  //bad description, but better than null. maybe pass desc. as parameter?
             modifier = Modifier.size(50.dp) // Juster størrelsen etter behov
         )
     }
@@ -500,7 +452,7 @@ fun NavBar(){
 @Composable
 fun HomeScreenPreview(){
     val isNetworkAvailable = true
-    HomeScreen(homevm = HomeScreenViewModel())
+    HomeScreen()
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
