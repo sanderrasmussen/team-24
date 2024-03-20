@@ -8,6 +8,8 @@ data class Legs (
 ):Clothing(name, heatValue, imageAsset, price, altAsset){
 
 }
+//TODO add alt assets for all paint clothing
+
 val paintLegs = Legs("Paint", 0.5, R.drawable.paint_legs, 10000, R.drawable.paint_legs_alt)
 fun legs(): List<Legs> {
     return listOf(

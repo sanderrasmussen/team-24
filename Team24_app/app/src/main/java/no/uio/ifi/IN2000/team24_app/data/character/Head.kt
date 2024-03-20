@@ -9,8 +9,8 @@ data class Head (
 
 }
 
+//TODO add alt assets for all paint clothing
 val paintHead = Head("Paint", 0.5, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
-
 
 fun heads(): List<Head> {
     return listOf(
