@@ -57,6 +57,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
@@ -180,10 +181,10 @@ fun ActualHomeScreen(
                 )}
 
         }
-        //!TODO FINDSCOPEFORPLAYER
+
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
         Spacer(modifier = Modifier.weight(1f))
-
+        Inventory()
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -409,7 +410,8 @@ fun getDrawableResourceId(iconName: String): Int {
 fun NavBar(){
     var isClicked by remember { mutableStateOf(false) }
     Spacer(modifier=Modifier.padding(8.dp))
-    Row(modifier = Modifier.padding(8.dp)
+    Row(modifier = Modifier
+        .padding(8.dp)
         .fillMaxWidth()
         .background(Color.White),
         horizontalArrangement = Arrangement.SpaceEvenly) {

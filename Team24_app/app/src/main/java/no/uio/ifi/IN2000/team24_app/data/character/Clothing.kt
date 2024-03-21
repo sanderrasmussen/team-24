@@ -48,6 +48,9 @@ fun Inventory(modifier:Modifier=Modifier){
         if (showInventory) {
             ClothingMenu()
         }
+        Button(onClick = { showInventory = !showInventory }) {
+            Icon(imageVector = Icons.Default.Face, contentDescription = "Inventory")
+        }
     }
 }
 
