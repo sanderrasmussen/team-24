@@ -47,7 +47,7 @@ class LocationForecastRepository{
 
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
     //re-fetching api every hour is what i have in mind
-    suspend fun FetchLocationForecast(lat:Double, lon: Double) {
+    suspend fun fetchLocationForecast(lat:Double, lon: Double) {
         //get forecast object
         if (locationForecast==null){
             locationForecast = dataSource.getLocationForecastData(lat, lon)
