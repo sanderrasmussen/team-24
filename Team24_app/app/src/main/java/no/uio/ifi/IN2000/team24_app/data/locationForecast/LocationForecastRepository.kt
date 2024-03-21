@@ -123,14 +123,18 @@ class LocationForecastRepository{
                 forecast = forecast?.replace("T", ":")
                 var forecastTime = LocalDateTime.parse(forecast, formatter)
 
+                // Make a copy of the list to avoid ConcurrentModificationException
+                val timeseriesCopy = ArrayList(getTimeseries())
+
                 while (forecastTime.isBefore(currentTime.minusHours(1))) {
 
-                    // remove utdated weather data
-                    getTimeseries()?.removeAt(0)
+                    // Remove outdated weather data from the copied list
+                    timeseriesCopy.removeAt(0)
 
                     currentTime = LocalDateTime.now()
 
-                    var forecast = getTimeseries()?.get(0)?.time
+                    // Update stateflows based on new data
+                    forecast = timeseriesCopy.getOrNull(0)?.time
                     forecast = forecast?.replace("Z", "")
                     forecast = forecast?.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
@@ -142,9 +146,10 @@ class LocationForecastRepository{
                     getNext6daysForecast()
                     getNext7DaysForecast()
                 }
-                //THIS CAN DEFINIETELY BE IMPORVED TO FIND AMOUNT OF MINUTES TO NEXT HOUR AND CHECK EVERY
-                //WHOLE HOUR
-                // recheck every minute
+                // Update the original list with the modified copy
+                locationForecast?.properties?.timeseries = timeseriesCopy
+
+                // Recheck every minute
                 delay(60000)
             }
         }
