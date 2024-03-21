@@ -139,15 +139,17 @@ class LocationForecastRepository{
                     forecast = forecast?.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
 
-                    // update stateflows based on new data
-                    getTodayWeather()
-                    organizeForecastIntoMapByDay()
-                    getWeatherNow()
-                    getNext6daysForecast()
-                    getNext7DaysForecast()
+
                 }
                 // Update the original list with the modified copy
                 locationForecast?.properties?.timeseries = timeseriesCopy
+
+                // Update stateflows based on new data
+                getTodayWeather()
+                organizeForecastIntoMapByDay()
+                getWeatherNow()
+                getNext6daysForecast()
+                getNext7DaysForecast()
 
                 // Recheck every minute
                 delay(60000)
