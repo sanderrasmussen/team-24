@@ -34,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -50,6 +52,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
@@ -181,6 +184,7 @@ fun ActualHomeScreen(
                 )}
 
         }
+        PercentageProgressBar(progress = 0.8f) // change to satisfaction percentage
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
         Spacer(modifier = Modifier.weight(1f))
@@ -435,6 +439,26 @@ fun NavBar(){
         }
         //Spacer(modifier=Modifier.padding(8.dp))
     }
+
+@Composable
+fun PercentageProgressBar(progress: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.7f) // 50% of screen size
+            .height(20.dp)
+
+
+    ) {
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(15.dp)
+                .clip(CircleShape),
+            color = Color.Green,
+        )
+    }
+}
 
 
 @RequiresApi(Build.VERSION_CODES.O)
