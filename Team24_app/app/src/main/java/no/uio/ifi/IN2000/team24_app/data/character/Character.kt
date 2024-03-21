@@ -26,6 +26,9 @@ import no.uio.ifi.IN2000.team24_app.R
  */
 data class Character(val head: Head, val torso: Torso, val legs: Legs) {
 
+    fun appropriateTemp():Int{
+        return ((head.heatValue + torso.heatValue + legs.heatValue)/3).toInt()
+    }
 }
 
 /**
@@ -43,6 +46,7 @@ data class Character(val head: Head, val torso: Torso, val legs: Legs) {
             ,
         ) {
             //TODO change the height based on the fraction of the standard size of the image. could be done programmatically, but for now it is hardcoded
+            //TODO change contentDescription
             Image(painter = painterResource(id = character.head.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
             Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
             Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())

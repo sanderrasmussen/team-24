@@ -36,7 +36,8 @@ class HomeScreenViewModel(
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
         locationForecastRepo.ObserveNext6DaysForecast()
 
-
+    //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
+    //val character = Character()
     fun getCurrentWeather(context:Context){
 
              viewModelScope.launch(Dispatchers.IO) {
