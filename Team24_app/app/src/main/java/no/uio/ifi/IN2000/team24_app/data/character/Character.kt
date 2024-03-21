@@ -17,10 +17,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import no.uio.ifi.IN2000.team24_app.R
 
+/**
+ * Data class representing a Character in the game.
+ *
+ * @property head The head clothing item of the character.
+ * @property torso The torso clothing item of the character.
+ * @property legs The legs clothing item of the character.
+ */
 data class Character(val head: Head, val torso: Torso, val legs: Legs) {
 
 }
 
+/**
+ * Composable function to display the character.
+ *
+ * @param character The character to display.
+ * @param modifier The modifier to apply to the layout.
+ */
     @Composable
     fun Player(character: Character, modifier: Modifier = Modifier) {
         Column(
@@ -35,10 +48,13 @@ data class Character(val head: Head, val torso: Torso, val legs: Legs) {
             Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
         }
     }
-
+/**
+* Preview function for the Player composable.
+*/
 @Preview (showSystemUi = true)
 @Composable
 fun DefaultPreview() {
+    // Create a default character and display it.
     val defaultHead = heads().first()
     val defaultTorso = torsos().first()
     val defaultLegs = legs().first()
