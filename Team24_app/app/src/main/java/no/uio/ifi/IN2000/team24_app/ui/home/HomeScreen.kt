@@ -188,7 +188,7 @@ fun ActualHomeScreen(
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
         Spacer(modifier = Modifier.weight(1f))
-        Inventory()
+        Inventory(character=character)
         Box(
             modifier = Modifier
                 .fillMaxWidth()

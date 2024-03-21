@@ -3,15 +3,20 @@ package no.uio.ifi.IN2000.team24_app.data.character
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -38,7 +43,7 @@ abstract class Clothing (
  )
 
 @Composable
-fun Inventory(modifier:Modifier=Modifier){
+fun Inventory(character:Character, modifier:Modifier=Modifier){
     var showInventory by remember { mutableStateOf(false) }
     Column() {
         Button(onClick = { showInventory = !showInventory }) {
@@ -46,7 +51,10 @@ fun Inventory(modifier:Modifier=Modifier){
 
         }
         if (showInventory) {
-            ClothingMenu()
+            ClothingMenuCard(character = character, modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .fillMaxHeight(0.6f)
+                .padding(5.dp))
         }
         Button(onClick = { showInventory = !showInventory }) {
             Icon(imageVector = Icons.Default.Face, contentDescription = "Inventory")
@@ -60,11 +68,23 @@ fun writeClothesToDisk(character: Character){
 }
 
 @Composable
-fun ClothingMenu(modifier: Modifier = Modifier){
-    ElevatedCard (
-        elevation = CardDefaults.cardElevation(10.dp),
-        modifier = modifier
+fun ClothingMenuCard(character:Character, modifier: Modifier = Modifier) {
+    Dialog(
+        onDismissRequest = {writeClothesToDisk(character)}
     ) {
+        Card(
+            modifier = modifier,
+            onClick = { },
+            shape = RoundedCornerShape(16.dp),
+        )
+        {
+            ClothingMenu(character =character)
+        }
+    }
+}
+
+@Composable
+fun ClothingMenu(character: Character, modifier: Modifier = Modifier){
         Column(
             modifier = modifier.width(100.dp)
 
@@ -99,17 +119,17 @@ fun ClothingMenu(modifier: Modifier = Modifier){
             }
         }
     }
-}
+
+val defaultCharacter = Character(heads().first(), torsos().first(), legs().first())
 @Preview(showSystemUi = true)
 @Composable
 fun InventoryPreview() {
-    Inventory()
-}
+    Inventory(defaultCharacter)}
 
 
 
 @Preview(showBackground = true)
 @Composable
 fun ClothingMenuPreview() {
-    ClothingMenu()
+    ClothingMenu(defaultCharacter)
 }
