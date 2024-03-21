@@ -29,10 +29,10 @@ data class Character(val head: Head, val torso: Torso, val legs: Legs) {
             modifier = modifier
             ,
         ) {
-
-            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp))
-            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp))
-            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp))
+            //TODO change the height based on the fraction of the standard size of the image. could be done programmatically, but for now it is hardcoded
+            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
         }
     }
 

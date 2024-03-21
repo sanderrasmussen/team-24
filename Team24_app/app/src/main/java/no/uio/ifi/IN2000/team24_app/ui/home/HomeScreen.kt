@@ -134,6 +134,10 @@ fun ActualHomeScreen(
     var boldNextSevenDays by remember { mutableStateOf(false) }
 
     Column(
+        //added these two to center the content
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+
         modifier = Modifier
             .fillMaxSize()
             .background(blue)
@@ -177,8 +181,7 @@ fun ActualHomeScreen(
 
         }
         //!TODO FINDSCOPEFORPLAYER
-        Player(character = character, modifier = Modifier.fillMaxSize())
-
+        Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
