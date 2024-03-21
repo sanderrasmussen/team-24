@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,16 +44,30 @@ abstract class Clothing (
     val unlocked: Boolean = false
  )
 
+
+fun writeClothesToDisk(character: Character){
+    //TODO, IMPORTANT! THIS SHOULD CALL A SEPARATE ASYNC-METHOD, TO WRITE ON AN IO-THREAD
+}
+
 @Composable
 fun Inventory(character:Character, modifier:Modifier=Modifier){
     var showInventory by remember { mutableStateOf(false) }
-    Column() {
-        Button(onClick = { showInventory = !showInventory }) {
-            Icon(imageVector = Icons.Default.Face, contentDescription = "Inventory")
 
+    //this function has to be declared at this level so it can close the Dialog
+    //? or maybe it should be moved down a level?
+    fun selectedClothing(clothing: Clothing){
+
+        when(clothing){ //first, change the character.
+            is Head -> character.head = clothing
+            is Torso -> character.torso = clothing
+            is Legs -> character.legs = clothing
         }
+        showInventory = false // then, close the dialog.
+    }
+
+    Column() {
         if (showInventory) {
-            ClothingMenuCard(character = character, modifier = Modifier
+            ClothingMenuCard(character = character, closeFunction = ::selectedClothing , modifier = Modifier    //thats right, we doing function invocation in the parameter list
                 .fillMaxWidth(0.8f)
                 .fillMaxHeight(0.6f)
                 .padding(5.dp))
@@ -63,14 +79,12 @@ fun Inventory(character:Character, modifier:Modifier=Modifier){
 }
 
 
-fun writeClothesToDisk(character: Character){
-
-}
-
 @Composable
-fun ClothingMenuCard(character:Character, modifier: Modifier = Modifier) {
+fun ClothingMenuCard(character:Character, closeFunction : (clothing:Clothing)->Unit, modifier: Modifier = Modifier) {
     Dialog(
-        onDismissRequest = {writeClothesToDisk(character)}
+        onDismissRequest = {
+                closeFunction(character.head)//if the dialog is closed, the character should not change. we call it with an unchanged clothing item.
+        }
     ) {
         Card(
             modifier = modifier,
@@ -78,58 +92,69 @@ fun ClothingMenuCard(character:Character, modifier: Modifier = Modifier) {
             shape = RoundedCornerShape(16.dp),
         )
         {
-            ClothingMenu(character =character)
+            ClothingMenu(character =character, closeFunction = closeFunction, modifier = Modifier.fillMaxSize())
         }
     }
 }
 
 @Composable
-fun ClothingMenu(character: Character, modifier: Modifier = Modifier){
+fun ClothingMenu(character: Character,closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier = Modifier){
         Column(
-            modifier = modifier.width(100.dp)
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(10.dp)
 
         ) {
             Text(text = "Heads:")
             LazyVerticalGrid(columns = GridCells.Fixed(2),) {
                 items(heads()) { head ->
-                    Image(
-                        painter = painterResource(id = head.altAsset,),
-                        contentDescription = head.name
-                    )
+                    ClothingCard(clothing = head, closeFunction = closeFunction)
+
                 }
             }
             Text(text = "Tops:")
             LazyVerticalGrid(columns = GridCells.Fixed(2),) {
                 items(torsos()) { torso ->
-                    Image(
-                        painter = painterResource(id = torso.altAsset,),
-                        contentDescription = torso.name
-                    )
+                    ClothingCard(clothing = torso, closeFunction = closeFunction)
                 }
             }
             Text(text = "Bottoms:")
 
             LazyVerticalGrid(columns = GridCells.Fixed(2),) {
                 items(legs()) { leg ->
-                    Image(
-                        painter = painterResource(id = leg.altAsset,),
-                        contentDescription = leg.name
-                    )
+                    ClothingCard(clothing = leg, closeFunction = closeFunction)
                 }
             }
         }
     }
 
-val defaultCharacter = Character(heads().first(), torsos().first(), legs().first())
+@Composable
+fun ClothingCard(
+    clothing: Clothing,
+    closeFunction: (clothing: Clothing) -> Unit,
+    modifier: Modifier = Modifier){
+    Card(
+        modifier = modifier,
+        onClick = { closeFunction(clothing)},
+        shape = RoundedCornerShape(16.dp),
+    )
+    {
+
+            Image(
+                painter = painterResource(id = clothing.imageAsset),
+                contentDescription = clothing.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            )
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 fun InventoryPreview() {
-    Inventory(defaultCharacter)}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun ClothingMenuPreview() {
-    ClothingMenu(defaultCharacter)
+    Inventory(Character(heads().first(), torsos().first(), legs().first()))
 }
+
+
+

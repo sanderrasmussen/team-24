@@ -24,7 +24,7 @@ import no.uio.ifi.IN2000.team24_app.R
  * @property torso The torso clothing item of the character.
  * @property legs The legs clothing item of the character.
  */
-data class Character(val head: Head, val torso: Torso, val legs: Legs) {
+data class Character(var head: Head, var torso: Torso, var legs: Legs) {
 
     fun appropriateTemp():Int{
         return ((head.heatValue + torso.heatValue + legs.heatValue)/3).toInt()
