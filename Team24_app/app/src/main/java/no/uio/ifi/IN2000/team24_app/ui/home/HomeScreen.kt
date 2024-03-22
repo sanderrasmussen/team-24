@@ -78,58 +78,12 @@ fun HomeScreen(
     LocationPermissionCard()
 
 
-    //WHY IS THIS ITS OWN THING, WHY NOT JUST RENDER THE ACTUAL HOMESCREEN???
-    ActualHomeScreen(currentWeatherState = currentWeatherState, next6DaysWeatherState = next6DaysWeatherState)
-
-
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-}
-
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getNextSixDays(): List<String> {
-    val currentDay = LocalDate.now()
-    val formatter = TextStyle.SHORT
-    val locale = Locale("no", "NO")
-    val days = mutableListOf<String>()
-
-    for (i in 0 until 6) {
-        val dayOfWeek = currentDay.plusDays(i.toLong()).dayOfWeek.getDisplayName(formatter, locale)
-        days.add(dayOfWeek)
-    }
-    return days
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun date(): String? {
-    val currentDate = LocalDate.now()
-    val formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale("no", "NO"))
-    val formattedDate = currentDate.format(formatter)
-    return (formattedDate)
-
-}
-@RequiresApi(Build.VERSION_CODES.O)
-fun day(): String? {
-    val currentDate = LocalDate.now()
-    val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("no", "NO"))
-    return (dayOfWeek)
-
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ActualHomeScreen(
-    currentWeatherState: ArrayList<WeatherDetails>?,
-    next6DaysWeatherState: ArrayList<WeatherDetails?>?
-) {
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
     val currentHour = LocalTime.now().hour
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
-    val character =Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    val character by homevm.characterState.collectAsState()
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
@@ -157,23 +111,23 @@ fun ActualHomeScreen(
             Column(
                 modifier = Modifier.padding(18.dp)
             ) {
-            val formattedDate = date()
-            Text(
-                text = formattedDate ?: "",
-                modifier = Modifier.padding(end = 8.dp),
-                color = Color.Black,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
+                val formattedDate = date()
+                Text(
+                    text = formattedDate ?: "",
+                    modifier = Modifier.padding(end = 8.dp),
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-            val formattedDay = day()
-            Text(
-                text = formattedDay ?: "",
-                color = Color.Black,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Normal
-            )
-        }
+                val formattedDay = day()
+                Text(
+                    text = formattedDay ?: "",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            }
             Spacer(modifier = Modifier.width(16.dp))
 
 
@@ -245,7 +199,44 @@ fun ActualHomeScreen(
             }
         }
     }
+
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 }
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun getNextSixDays(): List<String> {
+    val currentDay = LocalDate.now()
+    val formatter = TextStyle.SHORT
+    val locale = Locale("no", "NO")
+    val days = mutableListOf<String>()
+
+    for (i in 0 until 6) {
+        val dayOfWeek = currentDay.plusDays(i.toLong()).dayOfWeek.getDisplayName(formatter, locale)
+        days.add(dayOfWeek)
+    }
+    return days
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun date(): String? {
+    val currentDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale("no", "NO"))
+    val formattedDate = currentDate.format(formatter)
+    return (formattedDate)
+
+}
+@RequiresApi(Build.VERSION_CODES.O)
+fun day(): String? {
+    val currentDate = LocalDate.now()
+    val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("no", "NO"))
+    return (dayOfWeek)
+
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) {

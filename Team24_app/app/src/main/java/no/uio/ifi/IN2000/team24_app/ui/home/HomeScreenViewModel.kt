@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.heads
+import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
@@ -37,8 +41,8 @@ class HomeScreenViewModel(
         locationForecastRepo.ObserveNext6DaysForecast()
 
     //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
-    //val character = Character()
-
+    val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    val characterState = MutableStateFlow(character)
     fun getCurrentWeather(context:Context){
 
              viewModelScope.launch(Dispatchers.IO) {
