@@ -143,7 +143,7 @@ fun HomeScreen(
                 )}
 
         }
-        PercentageProgressBar(progress = satisfaction) // change to satisfaction percentage
+        PercentageProgressBar(progress = 0.8f) // change to progress = satisfaction
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 

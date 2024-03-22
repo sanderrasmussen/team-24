@@ -162,7 +162,7 @@ fun ClothingCard(
     {
 
             Image(
-                painter = painterResource(id = clothing.imageAsset),
+                painter = painterResource(id = clothing.altAsset),
                 contentDescription = clothing.name,
                 modifier = Modifier
                     .fillMaxWidth()
