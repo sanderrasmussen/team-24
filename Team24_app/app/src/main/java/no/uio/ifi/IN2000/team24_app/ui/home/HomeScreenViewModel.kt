@@ -41,7 +41,8 @@ class HomeScreenViewModel(
         locationForecastRepo.ObserveNext6DaysForecast()
 
     //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
-    val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    //this is just to render a default character, TODO should call a load from disk()-method on create
+    private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
     fun getCurrentWeather(context:Context){
 

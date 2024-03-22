@@ -45,7 +45,7 @@ data class Character(var head: Head, var torso: Torso, var legs: Legs) {
             //TODO change contentDescription
             Image(painter = painterResource(id = character.head.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
             Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp).height(90.dp).fillMaxSize())
         }
     }
 /**

@@ -19,6 +19,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +31,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 abstract class Clothing(
     open val name:String,
@@ -45,9 +50,9 @@ fun writeClothesToDisk(character: Character){
 }
 
 @Composable
-fun Inventory(character:Character, modifier:Modifier=Modifier){
+fun Inventory(characterState:MutableStateFlow<Character>, modifier:Modifier=Modifier){
     var showInventory by remember { mutableStateOf(false) }
-
+    val character = characterState.collectAsState()
     //this function has to be declared at this level so it can close the Dialog
     // Advantages of this is that 1. it is tied to the state and 2. it is passed through all levels, where closing is needed. By this i mean that ...
     //... closing is necessary on the bottom of the hierarchy when an item is clicked, but also on dialog-level when ondismiss() is called.
@@ -56,22 +61,33 @@ fun Inventory(character:Character, modifier:Modifier=Modifier){
     fun selectedClothing(clothing: Clothing){
         Log.d("Inventory", "Selected clothing: ${clothing.name}")
         when(clothing){ //first, change the character.
-            is Head -> character.head = clothing
-            is Torso -> {
-                character.torso = clothing
-                Log.d("Inventory", "Selected torso: ${clothing.name}")
+            is Head -> {
+                characterState.update{
+                    it.copy(head = clothing)
+                }
             }
-            is Legs -> character.legs = clothing
+            is Torso -> {
+                characterState.update{
+                    it.copy(torso = clothing)
+                }
+            }
+            is Legs -> {
+                characterState.update{
+                    it.copy(legs = clothing)
+                }
+
+            }
         }
         showInventory = false // then, close the dialog.
     }
 
     Column() {
         if (showInventory) {
-            ClothingMenuCard(character = character, closeFunction = ::selectedClothing , modifier = Modifier    //thats right, we doing function invocation in the parameter list
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.6f)
-                .padding(5.dp))
+            ClothingMenuCard(
+                character = character, closeFunction = ::selectedClothing , modifier = Modifier    //thats right, we doing function invocation in the parameter list
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.6f)
+                    .padding(5.dp))
         }
         Button(onClick = { showInventory = !showInventory }) {
             Icon(imageVector = Icons.Default.Face, contentDescription = "Inventory")
@@ -81,11 +97,13 @@ fun Inventory(character:Character, modifier:Modifier=Modifier){
 
 
 @Composable
-fun ClothingMenuCard(character:Character, closeFunction : (clothing:Clothing)->Unit, modifier: Modifier = Modifier) {
+fun ClothingMenuCard(character: State<Character>, closeFunction: (clothing:Clothing)->Unit, modifier: Modifier = Modifier) {
     Dialog(
         onDismissRequest = {
-                closeFunction(character.head)//if the dialog is closed, the character should not change. we call it with an unchanged clothing item.
-        }
+                closeFunction(character.value.head)//if the dialog is closed, the character should not change. we call it with an unchanged clothing item.
+        },
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+
     ) {
         Card(
             modifier = modifier,
@@ -93,13 +111,14 @@ fun ClothingMenuCard(character:Character, closeFunction : (clothing:Clothing)->U
             shape = RoundedCornerShape(16.dp),
         )
         {
-            ClothingMenu(character =character, closeFunction = closeFunction, modifier = Modifier.fillMaxSize())
+            ClothingMenu(closeFunction = closeFunction, modifier = Modifier.fillMaxSize())
         }
+        //TODO DISMISSBUTTON
     }
 }
 
 @Composable
-fun ClothingMenu(character: Character,closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier = Modifier){
+fun ClothingMenu(closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier = Modifier){
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -155,7 +174,7 @@ fun ClothingCard(
 @Preview(showSystemUi = true)
 @Composable
 fun InventoryPreview() {
-    Inventory(Character(heads().first(), torsos().first(), legs().first()))
+    Inventory(MutableStateFlow(Character(heads().first(), torsos().first(), legs().first())))
 }
 
 

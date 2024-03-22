@@ -82,7 +82,6 @@ fun HomeScreen(
     val white = Color.White
     val currentHour = LocalTime.now().hour
 
-    //this is just to render a default character, TODO should call a load from disk()-method on create
     val character by homevm.characterState.collectAsState()
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
@@ -142,7 +141,7 @@ fun HomeScreen(
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
         Spacer(modifier = Modifier.weight(1f))
-        Inventory(character=character)
+        Inventory(homevm.characterState)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
