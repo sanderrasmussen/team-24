@@ -25,6 +25,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
+import kotlin.math.abs
 import kotlin.reflect.typeOf
 
 class HomeScreenViewModel(
@@ -44,13 +45,29 @@ class HomeScreenViewModel(
     //this is just to render a default character, TODO should call a load from disk()-method on create
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
+
+    val satisfactionState = MutableStateFlow(getSatisfaction())
+
+
+    fun getSatisfaction():Float{
+        val temp : Double = currentWeatherState.value?.get(0)?.air_temperature ?: 0.0
+        Log.d(TAG, "Temp: $temp")
+        val characterTemp = character.appropriateTemp()
+        Log.d(TAG, "CharacterTemp: $characterTemp")
+        val delta = abs(temp - characterTemp)
+        Log.d(TAG, "Delta: $delta")
+        Log.d(TAG, "Satisfaction: ${maxOf((1 - (delta/10)).toFloat(), 0.0f)}")
+
+        //this expression is pure guesswork, but this is what converts the temp-delta into a satisfaction fraction.
+        //basically, the tuner here is the /10, which is the max delta that can be tolerated. if selection is more than 10 degrees off, return 0.
+        return maxOf((1 - (delta/10)).toFloat(), 0.0f)
+    }
+
     fun getCurrentWeather(context:Context){
 
              viewModelScope.launch(Dispatchers.IO) {
                  //!position broke, todo look into LocationTracker
                  if(_userLocation ==null) {
-                     Log.d(TAG, "context in viewModel: $context")
-                     Log.d(TAG, "typeof context in viewModel: ${context.javaClass}")
 
                      _userLocation = LocationTracker(context).getLocation()
                  }

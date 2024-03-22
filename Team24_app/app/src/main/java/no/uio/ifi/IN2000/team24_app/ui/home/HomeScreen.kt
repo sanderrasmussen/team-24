@@ -3,6 +3,7 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -72,9 +73,13 @@ import no.uio.ifi.IN2000.team24_app.data.character.torsos
 fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
 ){
+    val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
+
+    Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
+
     LocationPermissionCard()
 
 
@@ -83,12 +88,13 @@ fun HomeScreen(
     val currentHour = LocalTime.now().hour
 
     val character by homevm.characterState.collectAsState()
+    val satisfaction by homevm.satisfactionState.collectAsState()
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
-    var boldNextSevenDays by remember { mutableStateOf(false) }
+    var boldNextSixDays by remember { mutableStateOf(false) }
 
     Column(
         //added these two to center the content
@@ -137,18 +143,20 @@ fun HomeScreen(
                 )}
 
         }
-        PercentageProgressBar(progress = 0.8f) // change to satisfaction percentage
+        PercentageProgressBar(progress = satisfaction) // change to satisfaction percentage
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
+
         Spacer(modifier = Modifier.weight(1f))
+
         Inventory(homevm.characterState)
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .background(color = white)
         ) {
-            //ingen kommentarer eller custom greier her så aner ikke hva faen for skop noe er
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,20 +175,20 @@ fun HomeScreen(
                         modifier = Modifier.clickable {
                             showToday = true
                             boldToday = true
-                            boldNextSevenDays = false
+                            boldNextSixDays = false
                         }
                     )
 
 
                     Text(
-                        text = "Neste 7 dager",
-                        color = if (boldNextSevenDays) Color.Black else Color.Gray,
+                        text = "Neste 6 dager",
+                        color = if (boldNextSixDays) Color.Black else Color.Gray,
                         fontSize = 18.sp,
-                        fontWeight = if (boldNextSevenDays) FontWeight.Bold else FontWeight.Normal,
+                        fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = false
                             boldToday = false
-                            boldNextSevenDays = true
+                            boldNextSixDays = true
                         }
                     )
                 }
@@ -355,7 +363,16 @@ fun WeatherCard(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Icon(weatherDetail.next_1_hours_symbol_code)
+
+            //this if-else is a hotfix, but this is what it does
+            //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
+            //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
+            if(weatherDetail.next_1_hours_symbol_code != null) {
+                Icon(weatherDetail.next_1_hours_symbol_code)
+            }else{
+                Icon(weatherDetail.next_6_hours_symbol_code)
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "${weatherDetail.air_temperature}°C",
@@ -431,7 +448,7 @@ fun NavBar(){
     }
 
 @Composable
-fun PercentageProgressBar(progress: Float) {
+fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
     Box(
         modifier = Modifier
             .fillMaxWidth(0.7f) // 50% of screen size
