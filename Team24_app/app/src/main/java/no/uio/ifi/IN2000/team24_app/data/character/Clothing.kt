@@ -1,27 +1,22 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,9 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
-abstract class Clothing (
+abstract class Clothing(
     open val name:String,
-    open val heatValue:Double,
+    open val heatValue: Int,
     open val imageAsset: Int,
     open val price: Int,
     open val altAsset: Int,
@@ -54,12 +49,18 @@ fun Inventory(character:Character, modifier:Modifier=Modifier){
     var showInventory by remember { mutableStateOf(false) }
 
     //this function has to be declared at this level so it can close the Dialog
-    //? or maybe it should be moved down a level?
-    fun selectedClothing(clothing: Clothing){
+    // Advantages of this is that 1. it is tied to the state and 2. it is passed through all levels, where closing is needed. By this i mean that ...
+    //... closing is necessary on the bottom of the hierarchy when an item is clicked, but also on dialog-level when ondismiss() is called.
+    // this function at the top handles all that.
 
+    fun selectedClothing(clothing: Clothing){
+        Log.d("Inventory", "Selected clothing: ${clothing.name}")
         when(clothing){ //first, change the character.
             is Head -> character.head = clothing
-            is Torso -> character.torso = clothing
+            is Torso -> {
+                character.torso = clothing
+                Log.d("Inventory", "Selected torso: ${clothing.name}")
+            }
             is Legs -> character.legs = clothing
         }
         showInventory = false // then, close the dialog.
@@ -134,9 +135,10 @@ fun ClothingCard(
     closeFunction: (clothing: Clothing) -> Unit,
     modifier: Modifier = Modifier){
     Card(
-        modifier = modifier,
+        border = BorderStroke(1.dp, Color.Black),
         onClick = { closeFunction(clothing)},
         shape = RoundedCornerShape(16.dp),
+        modifier = modifier
     )
     {
 
