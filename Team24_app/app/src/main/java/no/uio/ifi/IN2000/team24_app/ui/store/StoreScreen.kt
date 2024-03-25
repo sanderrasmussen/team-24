@@ -1,6 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.store
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,9 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -24,27 +29,47 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import no.uio.ifi.IN2000.team24_app.data.character.Clothing
+import no.uio.ifi.IN2000.team24_app.R
 
-class StoreScreen(viewModel: StoreScreenViewModel) {
+class StoreScreen {
 
-    val hodeplagg by viewModel.hodePlagg.collectAsState()
-    val overDeler by viewModel.overdeler.collectAsState()
-    val plaggBukser by viewModel.bukser.collectAsState()
-
-
-
-
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Preview
+    @Composable
+    fun StoreScreenPreview() {
+        val viewModel = StoreScreenViewModel()
+        Scaffold(
+            topBar = { TopBar() },
+            content = {
+                Box(modifier = Modifier.padding(top = 60.dp)) {
+                    GridView(viewModel)
+                }
+            }
+        )
+    }
+    @SuppressLint("NotConstructor")
     @Composable
     fun GridView(viewModel: StoreScreenViewModel) {
+        val hodeplagg by viewModel.hodePlagg.collectAsState()
+        val overDeler by viewModel.overdeler.collectAsState()
+        val plaggBukser by viewModel.bukser.collectAsState()
+        //val antCoins by viewModel.antCoins.collectAsState()
+
+
         Column {
             // Display cash available
             Row(
@@ -52,30 +77,47 @@ class StoreScreen(viewModel: StoreScreenViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+
+                // Image of money
+                Image(
+                    painter = painterResource(id = R.drawable.coin),
+                    contentDescription = "Money",
+                    modifier = Modifier.size(100.dp)
+                )
+
+
                 Text(
-                    text = "Cash available: 500 NOK", // Replace with a variable
-                    fontSize = 24.sp,
+                    text = "Cash available: 500 NOK", //${antCoins}// Byttes ut med en variabel.
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .shadow(10.dp, shape = CircleShape, clip = true)
+                        .background(brush = Brush.horizontalGradient(listOf(Color.Black, Color.LightGray)), shape = CircleShape)
+                        .clip(shape = CircleShape)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
 
             // Display hodePlagg (heads)
-            Text("HodePlagg:")
-            hentInfoPlagg(hodeplagg)
+            Text("HODEPLAGG:", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            HentInfoPlagg(viewModel,hodeplagg)
 
             // Display overdeler (torsos)
-            Text("Overdeler:")
-            hentInfoPlagg(overDeler)
+            Text("OVERDELER:",  fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            HentInfoPlagg(viewModel,overDeler)
 
             // Display bukser (legs)
-            Text("Bukser:")
-            hentInfoPlagg(plaggBukser)
+            Text("BUKSER:",  fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            HentInfoPlagg(viewModel,plaggBukser)
         }
     }
 
+
+
         @Composable
-        fun hentInfoPlagg(listePlagg:List<Clothing>) {
+        fun HentInfoPlagg(viewModel: StoreScreenViewModel, listePlagg:List<Clothing>) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
 
@@ -85,8 +127,17 @@ class StoreScreen(viewModel: StoreScreenViewModel) {
                     items(listePlagg) { plagg ->
                         Card(
                             modifier = Modifier.padding(8.dp)
+                                .clickable {
+                                    /*
+                                    if (plagg.price <= viewModel.getAmountCoins()) {
+                                        viewModel.trekkPenger(plagg)
+                                        viewModel.unlockPlagg(plagg)
+                                    }
 
-                        ) {
+                                     */
+                                }
+                        )
+                        {
                             Column(
                                 modifier = Modifier.padding(5.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -118,7 +169,7 @@ class StoreScreen(viewModel: StoreScreenViewModel) {
                 }
             )
         }
-        }
+
 
 
 
@@ -135,4 +186,7 @@ class StoreScreen(viewModel: StoreScreenViewModel) {
             )
         })
     }
+
+
+
 }

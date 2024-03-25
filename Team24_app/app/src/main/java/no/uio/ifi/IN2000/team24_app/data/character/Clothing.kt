@@ -19,7 +19,7 @@ abstract class Clothing (
     open val imageAsset: Int,
     open val altAsset: Int,
     open val price: Int,
-    val unlocked: Boolean = false,
+    var unlocked: Boolean = false,
  )
 
 @Composable
