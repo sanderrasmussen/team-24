@@ -54,7 +54,7 @@ class HomeScreenViewModel(
         //todo move temp to a state observing the repo, maybe collect the state in the screen and pass it to this    function
         val temp = locationForecastRepo.ObserveCurrentWeather().value?.air_temperature?.toFloat() ?: 0.0f
         Log.d(TAG, "Temp: $temp")
-        val characterTemp = character.appropriateTemp()
+        val characterTemp = character.temperature
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = abs(temp - characterTemp)
         Log.d(TAG, "Delta: $delta")
