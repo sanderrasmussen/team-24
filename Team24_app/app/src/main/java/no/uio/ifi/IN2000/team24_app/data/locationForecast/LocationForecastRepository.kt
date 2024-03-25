@@ -47,13 +47,13 @@ class LocationForecastRepository{
 
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
     //re-fetching api every hour is what i have in mind
-    suspend fun FetchLocationForecast(lat:Double, lon: Double) {
+    suspend fun fetchLocationForecast(lat:Double, lon: Double) {
         //get forecast object
         if (locationForecast==null){
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
         fetchApiDataEveryHour(lat, lon)
-        keepFirstIndexUpToDate()
+        //keepFirstIndexUpToDate()
         getTodayWeather()
         organizeForecastIntoMapByDay()
         getWeatherNow()
@@ -123,28 +123,35 @@ class LocationForecastRepository{
                 forecast = forecast?.replace("T", ":")
                 var forecastTime = LocalDateTime.parse(forecast, formatter)
 
+                // Make a copy of the list to avoid ConcurrentModificationException
+                val timeseriesCopy = ArrayList(getTimeseries())
+
                 while (forecastTime.isBefore(currentTime.minusHours(1))) {
 
-                    // remove utdated weather data
-                    getTimeseries()?.removeAt(0)
+                    // Remove outdated weather data from the copied list
+                    timeseriesCopy.removeAt(0)
 
                     currentTime = LocalDateTime.now()
 
-                    var forecast = getTimeseries()?.get(0)?.time
+                    // Update stateflows based on new data
+                    forecast = timeseriesCopy.getOrNull(0)?.time
                     forecast = forecast?.replace("Z", "")
                     forecast = forecast?.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
 
-                    // update stateflows based on new data
-                    getTodayWeather()
-                    organizeForecastIntoMapByDay()
-                    getWeatherNow()
-                    getNext6daysForecast()
-                    getNext7DaysForecast()
+
                 }
-                //THIS CAN DEFINIETELY BE IMPORVED TO FIND AMOUNT OF MINUTES TO NEXT HOUR AND CHECK EVERY
-                //WHOLE HOUR
-                // recheck every minute
+                // Update the original list with the modified copy
+                locationForecast?.properties?.timeseries = timeseriesCopy
+
+                // Update stateflows based on new data
+                getTodayWeather()
+                organizeForecastIntoMapByDay()
+                getWeatherNow()
+                getNext6daysForecast()
+                getNext7DaysForecast()
+
+                // Recheck every minute
                 delay(60000)
             }
         }
