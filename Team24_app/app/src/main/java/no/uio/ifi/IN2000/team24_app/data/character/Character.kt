@@ -47,7 +47,7 @@ data class Character(var head: Head, var torso: Torso, var legs: Legs, var tempe
             //TODO change the height based on the fraction of the standard size of the image. could be done programmatically, but for now it is hardcoded
             Image(painter = painterResource(id = character.head.imageAsset), contentDescription = character.head.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
             Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = character.torso.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier.padding(0.dp).height(90.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier.padding(0.dp).height(88.dp).fillMaxSize())
         }
     }
 /**
