@@ -25,13 +25,14 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.metAlertsRepository.MetAlertsRepo
 import kotlin.math.abs
 import kotlin.reflect.typeOf
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
-    //private val metAlertsRepo: MetalertsRepo = MetalertsRepo(),
+    private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
     private var _userLocation : Location? = null,
     //private var _alerts = MutableStateFlow<>
 
