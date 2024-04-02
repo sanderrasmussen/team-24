@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
@@ -66,6 +69,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -77,10 +81,12 @@ fun HomeScreen(
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
+    val alertsUiState by homevm.alerts.collectAsState()
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
+    AlertCardList(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -507,3 +513,44 @@ fun LocationPermissionCard(){
         )
     }
 }
+
+@Composable
+fun AlertCardList(alerts:List<VarselKort>){     //todo change this to a carousel?
+    if(alerts.isNotEmpty()) {
+        LazyHorizontalGrid(rows = GridCells.Fixed(alerts.size)){
+            items(alerts){ alert ->
+                AlertCard(alert)
+            }
+        }
+
+    }
+}
+
+@Composable
+fun AlertCard(card:VarselKort){
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
+    ){
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ){
+            Text(text = card.farePaagar)
+            Text(text = card.fareNiva)
+            Icon(card.kortImageUrl)
+            Text(text = card.lokasjon)
+
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun AlertCardPreview(){
+    val card = VarselKort("pågår", "test", "test", "test")
+    AlertCard(card)
+}
+

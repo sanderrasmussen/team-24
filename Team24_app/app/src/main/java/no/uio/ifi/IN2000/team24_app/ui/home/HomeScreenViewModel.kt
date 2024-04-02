@@ -25,16 +25,24 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.Point
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.metAlertsRepository.MetAlertsRepo
 import kotlin.math.abs
 import kotlin.reflect.typeOf
+
+data class AlertsUiState(
+    val alerts: List<VarselKort> = emptyList()
+)
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
     private var _userLocation : Location? = null,
-    //private var _alerts = MutableStateFlow<>
+    private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
+    val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow()
+
 
 ): ViewModel(){
     var currentWeatherState:StateFlow<ArrayList<WeatherDetails>?> =
@@ -92,7 +100,10 @@ class HomeScreenViewModel(
             if (_userLocation == null) {
                 _userLocation = LocationTracker(context).getLocation()
             }
-            //metAlertsRepo.getRelevantAlerts(_userLocation)
+            val cards = metAlertsRepo.henteVarselKort(Point(_userLocation?.latitude ?: 59.913868, _userLocation?.longitude ?: 10.752245))
+            _alerts.update { currentState ->
+                currentState.copy(alerts = cards)
+            }
         }
     }
 }
