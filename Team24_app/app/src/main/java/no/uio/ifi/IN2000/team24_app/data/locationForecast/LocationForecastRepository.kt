@@ -170,7 +170,7 @@ class LocationForecastRepository{
                 todayWeather?.add(weather)
             }
         }
-        updateTodayForecast(todayWeather)
+        updateTodayForecast(todayWeather)//
         return todayWeather
     }
 
