@@ -63,6 +63,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
@@ -474,13 +475,6 @@ fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview(){
-    val isNetworkAvailable = true
-    HomeScreen()
-}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -540,7 +534,9 @@ fun AlertCard(card:VarselKort){
         ){
             Text(text = card.farePaagar)
             Text(text = card.fareNiva)
+            //Icon(card.kortImageURL)
             Icon(card.kortImageUrl)
+            Text(text = card.kortImageUrl)
             Text(text = card.lokasjon)
 
         }
@@ -550,7 +546,7 @@ fun AlertCard(card:VarselKort){
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCardPreview(){
-    val card = VarselKort("pågår", "test", "test", "test")
+    val card = VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate")
     AlertCard(card)
 }
 

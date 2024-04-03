@@ -115,6 +115,7 @@ class MetAlertsRepo {
     }
 
     fun hentIkonID(event: String?): String {
+        //todo this may need to be remapped to use underscores like the files they actually provide
         return when (event) {
             "avalanches" -> "icon-warning-avalanches"
             "blowingSnow" -> "icon-warning-snow"
