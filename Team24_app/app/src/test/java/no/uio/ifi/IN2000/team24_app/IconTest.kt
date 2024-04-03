@@ -6,7 +6,8 @@ class IconTest{
     @Test
     fun warning_icons_are_present(){
        val s = "icon_warning_avalanches_orange"
-       val img = R.drawable.clearsky_day
+       val img = R.drawable.icon_warning_avalanches_orange
+        val other = R.drawable.clearsky_day
         println(s)
         println(img)
     }
