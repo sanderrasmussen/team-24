@@ -3,12 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Team24_app.iml" filepath="$PROJECT_DIR$/.idea/modules/Team24_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Team24_app.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Team24_app.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Team24_app.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Team24_app.app.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Team24_app.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Team24_app.app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Team24_app.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Team24_app.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Team24_app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Team24_app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Team24_app.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Team24_app.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/team-24.Team24_app.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/team-24.Team24_app.app.iml" />
     </modules>
   </component>
 </project>

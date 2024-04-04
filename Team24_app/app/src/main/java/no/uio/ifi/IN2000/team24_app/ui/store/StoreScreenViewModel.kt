@@ -1,8 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.store
 
+
+import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,13 +43,14 @@ class StoreScreenViewModel: ViewModel() {
                 _hodePlagg.value = hentHodeplagg()
                 _overdeler.value = hentOverdeler()
                 _bukser.value = hentBukser()
-            } catch (e: Exception) {
-                Log.e("StoreScreenViewModel", "Error fetching clothing data: ${e.message}", e)
+
+            } catch (e: Exception){
+                Log.e(TAG, "An error occurred: ${e.message}", e)
 
             }
-
         }
     }
+
 
     /*
     fun trekkPenger(plagg: Clothing){
@@ -71,6 +72,10 @@ class StoreScreenViewModel: ViewModel() {
     fun unlockPlagg(plagg: Clothing){
         plagg.unlocked = true;
     }
+
+    //fjerne penger. Sette unlocked =true.
+    //grå ut de man ikke har råd til.
+
 
     fun hentHodeplagg(): ArrayList<Head> {
         val listeHead = heads()
@@ -98,7 +103,9 @@ class StoreScreenViewModel: ViewModel() {
 
             }
             return lockedOverdeler
+
         }
+
 
 
         fun hentBukser(): ArrayList<Legs> {
@@ -115,5 +122,4 @@ class StoreScreenViewModel: ViewModel() {
             return lockedBukser
         }
 
-
-    }
+}
