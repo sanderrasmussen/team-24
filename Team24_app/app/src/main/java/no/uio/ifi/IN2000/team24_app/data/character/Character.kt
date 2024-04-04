@@ -34,7 +34,6 @@ data class Character(val head: Head, val torso: Torso, val legs: Legs) {
             Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = "!", modifier = Modifier.padding(0.dp))
         }
     }
-
 @Preview (showSystemUi = true)
 @Composable
 fun DefaultPreview() {

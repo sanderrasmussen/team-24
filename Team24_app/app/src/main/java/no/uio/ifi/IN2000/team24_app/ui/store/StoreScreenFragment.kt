@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +51,7 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.AsyncImage
 import io.ktor.websocket.Frame
 import no.uio.ifi.IN2000.team24_app.R
+import no.uio.ifi.IN2000.team24_app.data.character.Clothing
 
 class StoreScreenFragment: Fragment() {
         override fun onCreateView(
