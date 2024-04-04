@@ -3,6 +3,7 @@ package no.uio.ifi.IN2000.team24_app.ui.store
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
 
-class StoreScreenViewModel: ViewModel() {
+class StoreScreenViewModel(sharedViewModel: SharedBankViewModel): ViewModel() {
+    private val bankLiveData: LiveData<Bank> = sharedViewModel.bankkLiveData
 
     private val _hodePlagg: MutableStateFlow<List<Head>> = MutableStateFlow(emptyList())
     val hodePlagg: StateFlow<List<Head>> = _hodePlagg
@@ -53,23 +55,26 @@ class StoreScreenViewModel: ViewModel() {
 
 
     /*
-    fun trekkPenger(plagg: Clothing){
-        val oppdatertAntCoins = antCoins.value - plagg.price
-        updateAmountCoins(oppdatertAntCoins)
+
+    fun getBankLiveData(): LiveData<Bank> {
+        return bankLiveData
     }
-    fun updateAmountCoins(newAmount: Int){
-        _antCoins.value = newAmount
-    }
+}
+
+fun subtractMoney(clothingPrice: Int) {
+    val bank = bankLiveData.value
+    bank?.withdrawMoney(clothingPrice)
+    bank?.let { sharedViewModel.setBankLiveData(it) }
+}
+
+fun getCurrentSum(): Int {
+    val bank = bankLiveData.value
+    return bank?.sum ?: 0 // Defaulter til 0 hvis bank er null
+}
 
 
-
-
-    //må vi oppdatere staten til AmountCoins?
-    fun getAmountCoins():Int {
-          return antCoins.value;
-    }
-  */
-    fun unlockPlagg(plagg: Clothing){
+     */
+fun unlockPlagg(plagg: Clothing){
         plagg.unlocked = true;
     }
 
