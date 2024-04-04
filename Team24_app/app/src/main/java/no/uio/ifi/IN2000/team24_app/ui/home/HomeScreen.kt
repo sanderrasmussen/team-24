@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,10 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
@@ -46,10 +41,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -74,6 +67,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
@@ -82,6 +76,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
+import kotlin.reflect.KSuspendFunction1
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -98,7 +93,22 @@ fun HomeScreen(
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
-    AlertCardCarousel(alerts = alertsUiState.alerts)
+    //DEBUG
+    val cards = listOf(
+        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
+        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
+        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+    )
+    AlertCardCarousel(cards)
+
+    //END DEBUG
+
+    //AlertCardCarousel(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -526,38 +536,74 @@ fun LocationPermissionCard(){
 fun AlertCardCarousel(alerts:List<VarselKort>){
     var index by remember { mutableIntStateOf(0) }
     val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(index){
+        scrollState.scrollToItem(index)
+
+    }
+
+    fun changeCard(changeBy:Int){
+        Log.d("AlertCardCarousel", "changeCard called")
+        coroutineScope.launch {
+            Log.d("AlertCardCarousel", "changeCard launched")
+            Log.d("AlertCardCarousel", "index b4: $index")
+            index += changeBy
+            if (index < 0) index = alerts.size - 1
+            if (index >= alerts.size) index = 0
+            Log.d("AlertCardCarousel", "index after: $index")
+
+            val isIndexVisible = scrollState.layoutInfo.visibleItemsInfo.any { it.index == index }
+            Log.d("AlertCardCarousel", "isIndexVisible: $isIndexVisible")
+            Log.d("AlertCardCarousel", "scrollState: ${scrollState.firstVisibleItemIndex}")
+        }
+    }
+
     if(alerts.isNotEmpty()) {
-        LazyRow(
-            state = scrollState,
-            modifier=Modifier
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
-        ){
-           itemsIndexed(alerts){ index, card ->
-               AlertCard(card = card, modifier = Modifier.fillMaxWidth(0.8f))
-           }
+        if (alerts.size==1){
+            //todo remove printlns, or replace with log. this is for previewing
+            println("only one alert")
+            AlertCard(card = alerts[0], ::changeCard, modifier = Modifier.fillMaxWidth(0.8f))
+        }
+        else {
+            //todo remove printlns, or replace with log. this is for previewing
+            println("multiple alerts")
+            LazyRow(
+                state = scrollState,
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                itemsIndexed(alerts) { index, card ->
+                    AlertCard(
+                        card = card, ::changeCard, modifier = Modifier.fillMaxWidth(0.8f)
+                    )
+                }
+            }
         }
 
     }
 }
 
 @Composable
-fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
-
+fun AlertCard(card:VarselKort, changeCardFunc: (Int)->Unit, modifier: Modifier = Modifier){
     Dialog(
         onDismissRequest = { /*TODO*/ },
-
     ) {
         Row(
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ){
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                changeCardFunc(-1)
+                Log.d("AlertCard","clicked back")
+                }) {
                 androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "previous alert")
             }
             Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.7f)
                     .height(200.dp)
                     .padding(16.dp)
                 ) {
@@ -569,10 +615,14 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
 
                     Icon(card.kortImageUrl)
                     Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-                    Text(text = "nivå: ${card.fareNiva}")
+                    //TODO update repo to deliver a more concise UI-friendly string
+                    Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
                 }
             }
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                changeCardFunc(1)
+                Log.d("AlertCard","clicked forward")
+            }) {
                 androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "next alert")
             }
         }
@@ -597,14 +647,14 @@ fun AlertCardPreview(){
 @Composable
 fun AlertCardCarouselPreview(){
     val cards = listOf(
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
+        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
+        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
     )
     AlertCardCarousel(cards)
 }
