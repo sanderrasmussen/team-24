@@ -22,9 +22,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
@@ -40,6 +44,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,9 +65,11 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.Dialog
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -87,7 +98,7 @@ fun HomeScreen(
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
-    AlertCardList(alerts = alertsUiState.alerts)
+    AlertCardCarousel(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -162,7 +173,9 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
+                .clip(shape = RoundedCornerShape(24.dp))
                 .background(color = white)
+
         ) {
             Column(
                 modifier = Modifier
@@ -261,7 +274,7 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         days.forEach { day ->
             if (today != null && next6DaysWeatherState != null) {
@@ -324,7 +337,8 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+
     ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
@@ -509,44 +523,89 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardList(alerts:List<VarselKort>){     //todo change this to a carousel?
+fun AlertCardCarousel(alerts:List<VarselKort>){
+    var index by remember { mutableIntStateOf(0) }
+    val scrollState = rememberLazyListState()
     if(alerts.isNotEmpty()) {
-        LazyHorizontalGrid(rows = GridCells.Fixed(alerts.size)){
-            items(alerts){ alert ->
-                AlertCard(alert)
-            }
+        LazyRow(
+            state = scrollState,
+            modifier=Modifier
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
+        ){
+           itemsIndexed(alerts){ index, card ->
+               AlertCard(card = card, modifier = Modifier.fillMaxWidth(0.8f))
+           }
         }
 
     }
 }
 
 @Composable
-fun AlertCard(card:VarselKort){
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .height(100.dp),
-        shape = RoundedCornerShape(16.dp),
-    ){
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ){
-            Text(text = card.farePaagar)
-            Text(text = card.fareNiva)
-            //Icon(card.kortImageURL)
-            Icon(card.kortImageUrl)
-            Text(text = card.kortImageUrl)
-            Text(text = card.lokasjon)
+fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
 
+    Dialog(
+        onDismissRequest = { /*TODO*/ },
+
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ){
+            Button(onClick = { /*TODO*/ }) {
+                androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "previous alert")
+            }
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(200.dp)
+                    .padding(16.dp)
+                ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+
+                    Icon(card.kortImageUrl)
+                    Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
+                    Text(text = "nivå: ${card.fareNiva}")
+                }
+            }
+            Button(onClick = { /*TODO*/ }) {
+                androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "next alert")
+            }
         }
     }
 }
 
+/*
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCardPreview(){
     val card = VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate")
-    AlertCard(card)
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ){
+        AlertCard(card)
+    }
+}
+*/
+@Preview(showSystemUi = true)
+@Composable
+fun AlertCardCarouselPreview(){
+    val cards = listOf(
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+    )
+    AlertCardCarousel(cards)
 }
 
