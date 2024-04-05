@@ -58,6 +58,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -538,46 +539,47 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(index){
-        scrollState.scrollToItem(index)
+    val indexState = remember { derivedStateOf { index } }
 
+    LaunchedEffect(indexState.value) {
+
+        scrollState.animateScrollToItem(indexState.value)
     }
 
     fun changeCard(changeBy:Int){
         Log.d("AlertCardCarousel", "changeCard called")
-        coroutineScope.launch {
             Log.d("AlertCardCarousel", "changeCard launched")
             Log.d("AlertCardCarousel", "index b4: $index")
             index += changeBy
             if (index < 0) index = alerts.size - 1
             if (index >= alerts.size) index = 0
-            Log.d("AlertCardCarousel", "index after: $index")
 
+            Log.d("AlertCardCarousel", "index after: $index")
             val isIndexVisible = scrollState.layoutInfo.visibleItemsInfo.any { it.index == index }
             Log.d("AlertCardCarousel", "isIndexVisible: $isIndexVisible")
             Log.d("AlertCardCarousel", "scrollState: ${scrollState.firstVisibleItemIndex}")
-        }
+
+
+
     }
 
     if(alerts.isNotEmpty()) {
         if (alerts.size==1){
-            //todo remove printlns, or replace with log. this is for previewing
-            println("only one alert")
             AlertCard(card = alerts[0], ::changeCard, modifier = Modifier.fillMaxWidth(0.8f))
         }
         else {
-            //todo remove printlns, or replace with log. this is for previewing
-            println("multiple alerts")
             LazyRow(
                 state = scrollState,
                 modifier = Modifier
                     .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(0.dp)
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
             ) {
-                itemsIndexed(alerts) { index, card ->
-                    AlertCard(
-                        card = card, ::changeCard, modifier = Modifier.fillMaxWidth(0.8f)
-                    )
+                itemsIndexed(alerts) { i, card ->
+                    if(i==index) {
+                        AlertCard(
+                            card = card, ::changeCard, modifier = Modifier.fillMaxWidth(0.8f)
+                        )
+                    }
                 }
             }
         }
