@@ -539,28 +539,15 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val indexState = remember { derivedStateOf { index } }
-
-    LaunchedEffect(indexState.value) {
-
-        scrollState.animateScrollToItem(indexState.value)
+    LaunchedEffect(index) {
+        coroutineScope.launch {
+            scrollState.animateScrollToItem(index)
+        }
     }
 
     fun changeCard(changeBy:Int){
-        Log.d("AlertCardCarousel", "changeCard called")
-            Log.d("AlertCardCarousel", "changeCard launched")
-            Log.d("AlertCardCarousel", "index b4: $index")
-            index += changeBy
-            if (index < 0) index = alerts.size - 1
-            if (index >= alerts.size) index = 0
-
-            Log.d("AlertCardCarousel", "index after: $index")
-            val isIndexVisible = scrollState.layoutInfo.visibleItemsInfo.any { it.index == index }
-            Log.d("AlertCardCarousel", "isIndexVisible: $isIndexVisible")
-            Log.d("AlertCardCarousel", "scrollState: ${scrollState.firstVisibleItemIndex}")
-
-
-
+        index = (index+changeBy)% alerts.size
+        if (index < 0) index = alerts.size - 1
     }
 
     if(alerts.isNotEmpty()) {
