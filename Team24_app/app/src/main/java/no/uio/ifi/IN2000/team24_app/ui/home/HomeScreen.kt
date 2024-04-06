@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,6 +42,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -96,19 +99,7 @@ fun HomeScreen(
 
     LocationPermissionCard()
 
-    val cards = listOf(
-        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
-        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
-        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-    )
-    AlertCardCarousel(cards)
-
-    //AlertCardCarousel(alerts = alertsUiState.alerts)
+    AlertCardCarousel(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -567,19 +558,37 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Row(
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(
+                                onClick = { showCard.value = false },
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .width(24.dp)
+                                    .height(24.dp)
 
-
+                            ) {
+                                androidx.compose.material3.Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "lukk dialog",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                        
                         if (alerts.size == 1) {
                             //there is only one alert
                             AlertCard(
                                 card = alerts[0],
                                 changeCard = ::changeCard,
+                                showButtons = false
                             )
                         } else {
                             //there are multiple alerts
                             LazyRow(
                                 state = scrollState,
-                                //modifier = Modifier.fillMaxSize(),
                                 horizontalArrangement = Arrangement.spacedBy(0.dp),
                             ) {
                                 itemsIndexed(alerts) { i, card ->
@@ -600,7 +609,7 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
 
 
 @Composable
-fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, modifier: Modifier = Modifier){
+fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean = true, modifier: Modifier = Modifier){
     Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
@@ -614,11 +623,15 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, modifier: Modifier = Mo
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Button(onClick = { changeCard(-1) }) {
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "previous alert"
-                        )
+                    if(showButtons){
+                        Button(
+                            onClick = { changeCard(-1) },
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "forrige varsel"
+                            )
+                        }
                     }
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -630,13 +643,14 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, modifier: Modifier = Mo
                             //TODO update repo to deliver a more concise UI-friendly string
                             Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
                     }
-                    Button(onClick = { changeCard(1) }) {
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "next alert"
-                        )
+                    if(showButtons) {
+                        Button(onClick = { changeCard(1) }) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "neste varsel"
+                            )
+                        }
                     }
-
         }
     }
 }
@@ -668,6 +682,12 @@ fun AlertCardCarouselPreview(){
         VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
         VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
     )
-    AlertCardCarousel(cards)
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AlertCardCarousel(cards)
+    }
 }
 
