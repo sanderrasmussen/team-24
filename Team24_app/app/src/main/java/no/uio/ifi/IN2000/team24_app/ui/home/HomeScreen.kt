@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -566,7 +567,7 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
+                    //verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(//the row for the close button
@@ -613,7 +614,12 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
                                 }
                             }
                         }
-                        Row {
+                        Row (
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.Bottom,
+                            modifier = Modifier.fillMaxHeight()
+
+                        ){
                             alerts.forEachIndexed { j, card ->
                                 Button(
                                     colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
