@@ -64,6 +64,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -94,7 +95,7 @@ fun HomeScreen(
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
-    //DEBUG
+
     val cards = listOf(
         VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
         VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
@@ -106,8 +107,6 @@ fun HomeScreen(
         VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
     )
     AlertCardCarousel(cards)
-
-    //END DEBUG
 
     //AlertCardCarousel(alerts = alertsUiState.alerts)
 
@@ -481,6 +480,7 @@ fun NavBar(){
 
 @Composable
 fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
+    //fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
     Box(
         modifier = Modifier
             .fillMaxWidth(0.7f) // 50% of screen size
@@ -494,7 +494,7 @@ fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
                 .fillMaxWidth()
                 .height(15.dp)
                 .clip(CircleShape),
-            color = Color.Green,
+            color = color
         )
     }
 }
@@ -536,6 +536,8 @@ fun LocationPermissionCard(){
 @Composable
 fun AlertCardCarousel(alerts:List<VarselKort>){
     var index by remember { mutableIntStateOf(0) }
+    val showCard = remember{ mutableStateOf(alerts.isNotEmpty())}
+
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -550,70 +552,91 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
         if (index < 0) index = alerts.size - 1
     }
 
-    if(alerts.isNotEmpty()) {
-        if (alerts.size==1){
-            AlertCard(card = alerts[0], ::changeCard, modifier = Modifier.fillMaxWidth(0.8f))
-        }
-        else {
-            LazyRow(
-                state = scrollState,
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
+    if(showCard.value) {
+            Dialog(
+                onDismissRequest = { showCard.value = false},
+                properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
             ) {
-                itemsIndexed(alerts) { i, card ->
-                    if(i==index) {
-                        AlertCard(
-                            card = card, ::changeCard, modifier = Modifier.fillMaxWidth(0.8f)
-                        )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+
+                        if (alerts.size == 1) {
+                            //there is only one alert
+                            AlertCard(
+                                card = alerts[0],
+                                changeCard = ::changeCard,
+                            )
+                        } else {
+                            //there are multiple alerts
+                            LazyRow(
+                                state = scrollState,
+                                //modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                            ) {
+                                itemsIndexed(alerts) { i, card ->
+                                    if (i == index) {
+                                        AlertCard(
+                                            card = card,
+                                            changeCard = ::changeCard,
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
-
     }
 }
 
+
 @Composable
-fun AlertCard(card:VarselKort, changeCardFunc: (Int)->Unit, modifier: Modifier = Modifier){
-    Dialog(
-        onDismissRequest = { /*TODO*/ },
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ){
-            Button(onClick = {
-                changeCardFunc(-1)
-                Log.d("AlertCard","clicked back")
-                }) {
-                androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "previous alert")
-            }
-            Card(
+fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, modifier: Modifier = Modifier){
+    Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth()
                     .height(200.dp)
-                    .padding(16.dp)
+                    .padding(16.dp),
+
                 ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    Button(onClick = { changeCard(-1) }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "previous alert"
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                            Icon(card.kortImageUrl)
+                            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
+                            //TODO update repo to deliver a more concise UI-friendly string
+                            Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
+                    }
+                    Button(onClick = { changeCard(1) }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "next alert"
+                        )
+                    }
 
-                    Icon(card.kortImageUrl)
-                    Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-                    //TODO update repo to deliver a more concise UI-friendly string
-                    Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
-                }
-            }
-            Button(onClick = {
-                changeCardFunc(1)
-                Log.d("AlertCard","clicked forward")
-            }) {
-                androidx.compose.material3.Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "next alert")
-            }
         }
     }
 }
