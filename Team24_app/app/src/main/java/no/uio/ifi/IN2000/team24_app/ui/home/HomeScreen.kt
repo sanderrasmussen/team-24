@@ -43,8 +43,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Shapes
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -98,8 +101,18 @@ fun HomeScreen(
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
-
-    AlertCardCarousel(alerts = alertsUiState.alerts)
+    val cards = listOf(
+        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
+        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
+        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+    )
+    AlertCardCarousel(alerts =cards)
+    //AlertCardCarousel(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -333,7 +346,6 @@ fun CurrentWeatherInfo(
 @Composable
 fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val scrollState = rememberScrollState()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -476,8 +488,7 @@ fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
         modifier = Modifier
             .fillMaxWidth(0.7f) // 50% of screen size
             .height(20.dp)
-
-
+        
     ) {
         LinearProgressIndicator(
             progress = { progress },
@@ -525,9 +536,9 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardCarousel(alerts:List<VarselKort>){
+fun AlertCardCarousel(alerts:List<VarselKort>) {
     var index by remember { mutableIntStateOf(0) }
-    val showCard = remember{ mutableStateOf(alerts.isNotEmpty())}
+    val showCard = remember { mutableStateOf(alerts.isNotEmpty()) }
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -538,72 +549,89 @@ fun AlertCardCarousel(alerts:List<VarselKort>){
         }
     }
 
-    fun changeCard(changeBy:Int){
-        index = (index+changeBy)% alerts.size
+    fun changeCard(changeBy: Int) {
+        index = (index + changeBy) % alerts.size
         if (index < 0) index = alerts.size - 1
     }
 
-    if(showCard.value) {
-            Dialog(
-                onDismissRequest = { showCard.value = false},
-                properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+    if (showCard.value) {
+        Dialog(
+            onDismissRequest = { showCard.value = false },
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp)
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(//the row for the close button
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .fillMaxWidth()
                     ) {
-                        Row(
-                            modifier = Modifier.padding(0.dp)
-                        ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            IconButton(
-                                onClick = { showCard.value = false },
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .width(24.dp)
-                                    .height(24.dp)
+                        IconButton(
+                            onClick = { showCard.value = false },
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .width(24.dp)
+                                .height(24.dp)
 
-                            ) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "lukk dialog",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                        
-                        if (alerts.size == 1) {
-                            //there is only one alert
-                            AlertCard(
-                                card = alerts[0],
-                                changeCard = ::changeCard,
-                                showButtons = false
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "lukk dialog",
+                                modifier = Modifier.fillMaxSize()
                             )
-                        } else {
-                            //there are multiple alerts
-                            LazyRow(
-                                state = scrollState,
-                                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                            ) {
-                                itemsIndexed(alerts) { i, card ->
-                                    if (i == index) {
-                                        AlertCard(
-                                            card = card,
-                                            changeCard = ::changeCard,
-                                        )
-                                    }
+                        }
+                    }
+
+                    if (alerts.size == 1) {
+                        //there is only one alert
+                        AlertCard(
+                            card = alerts[0],
+                            changeCard = ::changeCard,
+                            showButtons = false
+                        )
+                    } else {
+                        //there are multiple alerts
+                        LazyRow(
+                            state = scrollState,
+                            horizontalArrangement = Arrangement.spacedBy(0.dp),
+                        ) {
+                            itemsIndexed(alerts) { i, card ->
+                                if (i == index) {
+                                    AlertCard(
+                                        card = card,
+                                        changeCard = ::changeCard,
+                                    )
                                 }
                             }
                         }
+                        Row {
+                            alerts.forEachIndexed { j, card ->
+                                Button(
+                                    colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
+                                    onClick = {index = j},
+                                    content = {},
+                                    modifier = Modifier
+                                        .padding(2.dp)
+                                        .width(12.dp)
+                                        .height(12.dp)
+                                        .clip(shape = CircleShape),
+                                )
+                            }
+                        }
                     }
+
                 }
             }
+        }
     }
 }
 
@@ -614,7 +642,7 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(140.dp)
                     .padding(16.dp),
 
                 ) {
