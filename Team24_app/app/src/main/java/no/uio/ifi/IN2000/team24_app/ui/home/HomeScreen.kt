@@ -102,18 +102,8 @@ fun HomeScreen(
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
-    val cards = listOf(
-        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
-        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
-        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-    )
-    AlertCardCarousel(alerts =cards)
-    //AlertCardCarousel(alerts = alertsUiState.alerts)
+
+    AlertCardCarousel(alerts = alertsUiState.alerts)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
