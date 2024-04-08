@@ -6,6 +6,7 @@ import android.location.Location
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -71,20 +72,24 @@ class HomeScreenViewModel(
     val characterState = MutableStateFlow(character)
 
 
-    fun updateSatisfaction(){
+    init {
+        updateSatisfaction(characterTemp = character.findAppropriateTemp())
+    }
+
+
+    fun updateSatisfaction(characterTemp: Double){
         var newFillPercent = 0.0f
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
         val temp: Double = currentWeatherState.value?.first()?.air_temperature ?: 0.0
         Log.d(TAG, "Temp: $temp")
-        val characterTemp = character.temperature
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
         Log.d(TAG, "Delta: $delta")
 
         //FILL%
-        newFillPercent = maxOf((1 - (abs(delta)/10)).toFloat(), 0.0f)
+        newFillPercent = maxOf((1 - (abs(delta)/10)).toFloat(), 0.01f)
         Log.d(TAG, "Satisfaction%: $newFillPercent")
 
         //ICON

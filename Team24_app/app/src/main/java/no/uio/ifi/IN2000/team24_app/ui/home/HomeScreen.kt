@@ -103,6 +103,16 @@ fun HomeScreen(
     val currentHour = LocalTime.now().hour
 
     val character by homevm.characterState.collectAsState()
+
+    //when chara
+    LaunchedEffect(character) {
+        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
+    }
+    //this one is mostly to accomodate the late load of temp, but also to update the satisfaction when the temp changes (every hour in theory)
+    LaunchedEffect(currentWeatherState) {
+        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
+    }
+
     val satisfaction by homevm.satisfaction.collectAsState()
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()

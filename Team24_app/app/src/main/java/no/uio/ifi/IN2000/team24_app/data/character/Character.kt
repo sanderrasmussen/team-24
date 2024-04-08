@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -45,9 +46,18 @@ data class Character(var head: Head, var torso: Torso, var legs: Legs, var tempe
             ,
         ) {
             //TODO change the height based on the fraction of the standard size of the image. could be done programmatically, but for now it is hardcoded
-            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = character.head.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = character.torso.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier.padding(0.dp).height(88.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = character.head.name, modifier = Modifier
+                .padding(0.dp)
+                .height(100.dp)
+                .fillMaxSize())
+            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = character.torso.name, modifier = Modifier
+                .padding(0.dp)
+                .height(100.dp)
+                .fillMaxSize())
+            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier
+                .padding(0.dp)
+                .height(88.dp)
+                .fillMaxSize())
         }
     }
 /**
