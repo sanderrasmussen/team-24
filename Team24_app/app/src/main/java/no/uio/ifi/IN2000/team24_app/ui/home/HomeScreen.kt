@@ -86,7 +86,7 @@ fun HomeScreen(
 ){
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
-
+    homevm.getRelevantAlerts(LocalContext.current)
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
@@ -466,8 +466,9 @@ fun NavBar(){
 
 @Composable
 fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
-    //fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
-    Box(
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+
         modifier = Modifier
             .fillMaxWidth(0.7f) // 50% of screen size
             .height(20.dp)
@@ -477,7 +478,6 @@ fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
         LinearProgressIndicator(
             progress = { satisfactionUiState.fillPercent },
             modifier = Modifier
-                .fillMaxWidth()
                 .height(15.dp)
                 .clip(CircleShape),
             color = satisfactionUiState.color

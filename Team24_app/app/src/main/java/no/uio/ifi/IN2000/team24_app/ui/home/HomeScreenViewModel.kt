@@ -71,18 +71,38 @@ class HomeScreenViewModel(
     val characterState = MutableStateFlow(character)
 
 
-    fun getSatisfaction():Float{
-        val temp = currentWeatherState.value?.first()?.air_temperature ?: 0
+    fun updateSatisfaction(){
+        var newFillPercent = 0.0f
+        var newColor = Color.Green
+        var newIcon = R.drawable.too_cold
+
+        val temp: Double = currentWeatherState.value?.first()?.air_temperature ?: 0.0
         Log.d(TAG, "Temp: $temp")
         val characterTemp = character.temperature
         Log.d(TAG, "CharacterTemp: $characterTemp")
-        val delta = abs(temp - characterTemp)
+        val delta = temp - characterTemp
         Log.d(TAG, "Delta: $delta")
-        Log.d(TAG, "Satisfaction: ${maxOf((1 - (delta/10)).toFloat(), 0.0f)}")
 
-        //this expression is pure guesswork, but this is what converts the temp-delta into a satisfaction fraction.
-        //basically, the tuner here is the /10, which is the max delta that can be tolerated. if selection is more than 10 degrees off, return 0.
-        return maxOf((1 - (delta/10)).toFloat(), 0.0f)
+        //FILL%
+        newFillPercent = maxOf((1 - (abs(delta)/10)).toFloat(), 0.0f)
+        Log.d(TAG, "Satisfaction%: $newFillPercent")
+
+        //ICON
+        newIcon = if(delta > 0){
+            Log.d(TAG, "Too hot")
+            R.drawable.too_hot
+        }else{
+            Log.d(TAG, "Too cold")
+            R.drawable.too_cold
+        }
+
+        //COLOR
+        //fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
+        newColor = Color(((1-newFillPercent) * 255).toInt(), (newFillPercent * 255).toInt(), 0)
+        _satisfaction.update {
+            SatisfactionUiState(fillPercent = newFillPercent, color = newColor, unsatisfiedIcon = newIcon)
+        }
+
     }
 
     fun getCurrentWeather(context:Context){

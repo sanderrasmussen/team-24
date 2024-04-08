@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
  * @property torso The torso clothing item of the character.
  * @property legs The legs clothing item of the character.
  */
-data class Character(var head: Head, var torso: Torso, var legs: Legs, var temperature: Int = 0) {
+data class Character(var head: Head, var torso: Torso, var legs: Legs, var temperature: Double = 0.0) {
     init {
        findAppropriateTemp()
     }
 
-    fun findAppropriateTemp():Int{
-        return ((head.heatValue + torso.heatValue + legs.heatValue)/3).toInt()
+    fun findAppropriateTemp():Double{
+        return (head.heatValue + torso.heatValue + legs.heatValue)/3.0
     }
 }
 
