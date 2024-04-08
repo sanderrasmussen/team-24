@@ -541,10 +541,6 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
         }
     }
 
-    fun changeCard(changeBy: Int) {
-        index = (index + changeBy) % alerts.size
-        if (index < 0) index = alerts.size - 1
-    }
 
     if (showCard.value) {
         Dialog(
@@ -554,7 +550,7 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp)
+                    .height(200.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -582,33 +578,56 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
                             )
                         }
                     }
-
-                    if (alerts.size == 1) {
-                        //there is only one alert
-                        AlertCard(
-                            card = alerts[0],
-                            changeCard = ::changeCard,
-                            showButtons = false
-                        )
-                    } else {
-                        //there are multiple alerts
-                        LazyRow(
-                            state = scrollState,
-                            horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    Row(    //the row for the alert cards and the navigation buttons
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Button(
+                            onClick = {
+                                index = (index + -1) % alerts.size
+                                if (index < 0) index = alerts.size - 1
+                                      },
                         ) {
-                            itemsIndexed(alerts) { i, card ->
-                                if (i == index) {
-                                    AlertCard(
-                                        card = card,
-                                        changeCard = ::changeCard,
-                                    )
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "forrige varsel",
+
+                            )
+                        }
+                        if (alerts.size == 1) {
+                            //there is only one alert
+                            AlertCard(
+                                card = alerts[0],
+                            )
+                        } else {
+                            //there are multiple alerts
+                            LazyRow(
+                                state = scrollState,
+                                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                            ) {
+                                itemsIndexed(alerts) { i, card ->
+                                    if (i == index) {
+                                        AlertCard(
+                                            card = card,
+                                        )
+                                    }
                                 }
                             }
                         }
+                        Button(onClick = {
+                            index = (index + 1) % alerts.size
+                            if (index < 0) index = alerts.size - 1
+                        }) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "neste varsel"
+                            )
+                        }
+                    }
                         Row (
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.fillMaxHeight()
+
 
                         ){
                             alerts.forEachIndexed { j, card ->
@@ -630,11 +649,11 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
             }
         }
     }
-}
+
 
 
 @Composable
-fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean = true, modifier: Modifier = Modifier){
+fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
     Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
@@ -643,21 +662,7 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
                     .padding(16.dp),
 
                 ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if(showButtons){
-                        Button(
-                            onClick = { changeCard(-1) },
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "forrige varsel"
-                            )
-                        }
-                    }
+
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -668,17 +673,9 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
                             //TODO update repo to deliver a more concise UI-friendly string
                             Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
                     }
-                    if(showButtons) {
-                        Button(onClick = { changeCard(1) }) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "neste varsel"
-                            )
-                        }
-                    }
         }
     }
-}
+
 
 /*
 @Preview(showSystemUi = true)
