@@ -38,6 +38,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -74,9 +75,12 @@ fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
 ){
     val TAG = "HomeScreen"
-    homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
+    homevm.makeRequests(LocalContext.current) //this line needs to be here!
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
+    val userLocationState = homevm.userLocation.collectAsState()
+
+
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 

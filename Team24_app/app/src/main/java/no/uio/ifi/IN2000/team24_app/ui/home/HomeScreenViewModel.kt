@@ -32,14 +32,18 @@ class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     //private val metAlertsRepo: MetalertsRepo = MetalertsRepo(),
-    private var _userLocation : Location? = null,
+    private var _userLocation: MutableStateFlow<Location?> = MutableStateFlow<Location?>(null),
+    val userLocation: StateFlow<Location?> = _userLocation,
+
     //private var _alerts = MutableStateFlow<>
+
 
 ): ViewModel(){
     var currentWeatherState:StateFlow<ArrayList<WeatherDetails>?> =
         locationForecastRepo.ObserveTodayWeather();
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
         locationForecastRepo.ObserveNext6DaysForecast()
+
 
 
     //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
@@ -65,18 +69,24 @@ class HomeScreenViewModel(
         return maxOf((1 - (delta/10)).toFloat(), 0.0f)
     }
 
-    fun getCurrentWeather(context:Context){
+    fun makeRequests(context: Context){
+            if (_userLocation.value == null) {
+                LocationTracker(context).setLocation(_userLocation)
+            }
 
+            getCurrentWeather()
+            getRelevantAlerts()
+        }
+
+    }
+
+    fun getCurrentWeather(){
              viewModelScope.launch(Dispatchers.IO) {
                  //!position broke, todo look into LocationTracker
-                 if(_userLocation ==null) {
-
-                     _userLocation = LocationTracker(context).getLocation()
-                 }
-                 Log.d(TAG, "Position: ${_userLocation.toString()}")
+                 Log.d(TAG, "Position: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}")
                  locationForecastRepo.fetchLocationForecast(
-                     _userLocation?.latitude ?: 59.913868,
-                     _userLocation?.longitude ?: 10.752245
+                     _userLocation.value?.latitude ?: 59.913868,
+                     _userLocation.value?.longitude ?: 10.752245
                  )
 
             }
@@ -85,12 +95,9 @@ class HomeScreenViewModel(
 
 
 
-    fun getRelevantAlerts(context: Context){
+    fun getRelevantAlerts(){
         viewModelScope.launch(Dispatchers.IO) {
-            //!position broke, todo look into LocationTracker
-            if (_userLocation == null) {
-                _userLocation = LocationTracker(context).getLocation()
-            }
+
             //metAlertsRepo.getRelevantAlerts(_userLocation)
         }
     }
