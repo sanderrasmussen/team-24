@@ -102,8 +102,18 @@ class HomeScreenViewModel(
         }
 
         //COLOR
-        //fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
-        newColor = Color(((1-newFillPercent) * 255).toInt(), (newFillPercent * 255).toInt(), 0)
+        /*
+        fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
+        //personally, i like this one. it is a bit more dynamic than the other one, and the line is so cool :)!
+        But alas, testing with users says boring old pokemon-style is better.
+         */
+        //newColor = Color(((1-newFillPercent) * 255).toInt(), (newFillPercent * 255).toInt(), 0)
+        newColor = when {
+            newFillPercent < 0.33 -> Color.Red
+            newFillPercent < 0.66 -> Color(0xffffb733)  //the weird orange is because Color.Yellow is too light with the current background
+            else -> Color.Green
+        }
+
         _satisfaction.update {
             SatisfactionUiState(fillPercent = newFillPercent, color = newColor, unsatisfiedIcon = newIcon)
         }
