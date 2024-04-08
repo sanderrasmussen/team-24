@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,8 +46,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Shapes
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,7 +62,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -78,14 +74,9 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
-import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
-import no.uio.ifi.IN2000.team24_app.data.character.heads
-import no.uio.ifi.IN2000.team24_app.data.character.legs
-import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
-import kotlin.reflect.KSuspendFunction1
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -95,6 +86,7 @@ fun HomeScreen(
 ){
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
+
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
@@ -111,7 +103,7 @@ fun HomeScreen(
     val currentHour = LocalTime.now().hour
 
     val character by homevm.characterState.collectAsState()
-    val satisfaction by homevm.satisfactionState.collectAsState()
+    val satisfaction by homevm.satisfaction.collectAsState()
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
@@ -166,7 +158,7 @@ fun HomeScreen(
                 )}
 
         }
-        PercentageProgressBar(progress = satisfaction) // change to progress = satisfaction
+        SatisfactionBar(satisfaction) // change to progress = satisfaction
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
@@ -473,7 +465,7 @@ fun NavBar(){
     }
 
 @Composable
-fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
+fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
     //fill should be hex calculated as `(1-progress) * red`, and `progress * green` (0 blue)
     Box(
         modifier = Modifier
@@ -481,14 +473,16 @@ fun PercentageProgressBar(progress: Float, color :Color = Color.Green){
             .height(20.dp)
         
     ) {
+        Image(painter = painterResource(id = satisfactionUiState.unsatisfiedIcon), contentDescription = "unsatisfied")
         LinearProgressIndicator(
-            progress = { progress },
+            progress = { satisfactionUiState.fillPercent },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(15.dp)
                 .clip(CircleShape),
-            color = color
+            color = satisfactionUiState.color
         )
+        Image(painter = painterResource(id = R.drawable.happy), contentDescription = "satisfied")   //todo custom icon, can still be hardcoded
     }
 }
 

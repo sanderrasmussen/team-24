@@ -1,8 +1,13 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
 import android.content.Context
+import android.graphics.drawable.Icon
 import android.location.Location
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -16,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
@@ -34,6 +40,12 @@ import kotlin.reflect.typeOf
 data class AlertsUiState(
     val alerts: List<VarselKort> = emptyList()
 )
+data class SatisfactionUiState(
+    val fillPercent: Float = 0.0f,
+    val color : Color = Color.Green,
+    val unsatisfiedIcon: Int = R.drawable.too_cold //TODO this should be a custom icon
+    )
+
 
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
@@ -41,7 +53,9 @@ class HomeScreenViewModel(
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
     private var _userLocation : Location? = null,
     private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
-    val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow()
+    val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow(),
+    private var _satisfaction : MutableStateFlow<SatisfactionUiState> = MutableStateFlow(SatisfactionUiState()),
+    val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow()
 
 
 ): ViewModel(){
@@ -56,12 +70,9 @@ class HomeScreenViewModel(
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
 
-    val satisfactionState = MutableStateFlow(getSatisfaction())
-
 
     fun getSatisfaction():Float{
-        //todo move temp to a state observing the repo, maybe collect the state in the screen and pass it to this    function
-        val temp = locationForecastRepo.ObserveCurrentWeather().value?.air_temperature?.toFloat() ?: 0.0f
+        val temp = currentWeatherState.value?.first()?.air_temperature ?: 0
         Log.d(TAG, "Temp: $temp")
         val characterTemp = character.temperature
         Log.d(TAG, "CharacterTemp: $characterTemp")
