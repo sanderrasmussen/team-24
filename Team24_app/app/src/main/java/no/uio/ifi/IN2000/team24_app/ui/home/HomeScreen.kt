@@ -477,14 +477,15 @@ fun NavBar(){
 @Composable
 fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth(0.7f) // 50% of screen size
+            .fillMaxWidth()
             .height(20.dp)
-        
     ) {
-        Image(painter = painterResource(id = satisfactionUiState.unsatisfiedIcon), contentDescription = "unsatisfied")
+        Image(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            painter = painterResource(id = satisfactionUiState.unsatisfiedIcon), contentDescription = "unsatisfied")
         LinearProgressIndicator(
             progress = { satisfactionUiState.fillPercent },
             modifier = Modifier
@@ -492,7 +493,9 @@ fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
                 .clip(CircleShape),
             color = satisfactionUiState.color
         )
-        Image(painter = painterResource(id = R.drawable.happy), contentDescription = "satisfied")   //todo custom icon, can still be hardcoded
+        Image(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            painter = painterResource(id = R.drawable.happy), contentDescription = "satisfied")   //todo custom icon, can still be hardcoded
     }
 }
 
