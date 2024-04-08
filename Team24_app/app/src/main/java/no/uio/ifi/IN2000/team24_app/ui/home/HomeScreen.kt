@@ -104,11 +104,11 @@ fun HomeScreen(
 
     val character by homevm.characterState.collectAsState()
 
-    //when chara
+    //when character is updated, the satisfaction should also update.
     LaunchedEffect(character) {
         homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
     }
-    //this one is mostly to accomodate the late load of temp, but also to update the satisfaction when the temp changes (every hour in theory)
+    //this one is mostly to accommodate the late load of temp, but also to update the satisfaction when the temp changes (every hour in theory)
     LaunchedEffect(currentWeatherState) {
         homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
     }
