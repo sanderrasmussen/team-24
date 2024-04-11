@@ -4,6 +4,7 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -102,14 +103,12 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState = homevm.alerts.collectAsState()
-    val showAlerts = remember {mutableStateOf(alertsUiState.value.alerts.isNotEmpty())}
-
-LaunchedEffect(alertsUiState) {
-    showAlerts.value = alertsUiState.value.alerts.isNotEmpty()
-}
+    val showAlerts = remember {mutableStateOf(
+        //alertsUiState.value.alerts.isNotEmpty()
+        false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
+    )}
 
     LocationPermissionCard()
-
 
     if(showAlerts.value){
         AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
@@ -178,25 +177,24 @@ LaunchedEffect(alertsUiState) {
         PercentageProgressBar(progress = satisfaction) // change to progress = satisfaction
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
-
         Spacer(modifier = Modifier.weight(1f))
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Column {
+                val context = LocalContext.current
                 Button(
                     onClick = {
-                //TODO open carousel if there are alerts, otherwise toast?
                     if(alertsUiState.value.alerts.isNotEmpty()){
                         showAlerts.value = true
                     }else{
-                        //TODO toast
+                        Toast.makeText(context, "Ingen varsler tilgjengelig", Toast.LENGTH_SHORT).show()
                     }
                 },
-                    modifier = Modifier.height(50.dp).width(60.dp).padding(0.dp)
                     ){
-                    Icon(iconName ="icon_warning_generic_orange")
+                    Icon(iconName ="icon_warning_generic_orange", modifier = Modifier.size(24.dp))
                 }
                 Inventory(homevm.characterState)
             }
@@ -438,7 +436,7 @@ fun WeatherCard(
     }
 }
 @Composable
-fun Icon(iconName: String?) {
+fun Icon(iconName: String?, modifier: Modifier = Modifier) {
     // Hvis iconName er null eller tom streng, vis standardikon
     if (iconName.isNullOrEmpty()) {
         return
@@ -451,7 +449,7 @@ fun Icon(iconName: String?) {
         Image(
             painter = painterResource(id = resourceId),
             contentDescription = iconName,  //bad description, but better than null. maybe pass desc. as parameter?
-            modifier = Modifier.size(50.dp) // Juster størrelsen etter behov
+            modifier = modifier.size(50.dp) // Juster størrelsen etter behov
         )
     }
 }
@@ -686,9 +684,10 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
     Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
                     .height(140.dp)
-                    .padding(16.dp),
+                    .padding(10.dp)
+                    .fillMaxWidth()
+        ,
 
                 ) {
 
@@ -720,4 +719,3 @@ fun AlertCardPreview(){
     }
 }
 */
-
