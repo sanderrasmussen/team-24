@@ -100,6 +100,7 @@ class HomeScreenViewModel(
                 _userLocation = LocationTracker(context).getLocation()
             }
             val cards = metAlertsRepo.henteVarselKort(Point(_userLocation?.latitude ?: 59.913868, _userLocation?.longitude ?: 10.752245))
+            Log.d("ALERTDEBUGvm", "Alerts: $cards")
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)
             }

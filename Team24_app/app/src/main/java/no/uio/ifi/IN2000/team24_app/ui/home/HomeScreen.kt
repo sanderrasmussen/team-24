@@ -77,6 +77,7 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Character
@@ -105,10 +106,10 @@ fun HomeScreen(
 
     LocationPermissionCard()
 
-    Log.d(TAG, "alerts: ${alertsUiState.value.alerts}")
 
-    AlertCardCarousel(alertsUiState)
-
+    if(alertsUiState.value.alerts.isNotEmpty()){
+        AlertCardCarousel(alertsUiState.value)
+    }
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
@@ -175,9 +176,25 @@ fun HomeScreen(
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
         Spacer(modifier = Modifier.weight(1f))
-
-        Inventory(homevm.characterState)
-
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column {
+                Button(onClick = {
+                //TODO open carousel if there are alerts, otherwise toast?
+                    if(alertsUiState.value.alerts.isNotEmpty()){
+                        //TODO
+                        //AlertCardCarousel(alertsUiState.value)
+                    }else{
+                        //TODO toast
+                    }
+                }){
+                    Icon(iconName ="icon_warning_generic_orange")
+                }
+                Inventory(homevm.characterState)
+            }
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -531,10 +548,13 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardCarousel(alertsState: State<AlertsUiState>) {
-    val alerts = alertsState.value.alerts
+fun AlertCardCarousel(alertsUi : AlertsUiState) {
+    //val alertsState by alertsFlow.collectAsState()
+    val alerts = alertsUi.alerts
+    Log.d("ALERTDEBUGcomponent", "AlertCardCarousel called w alerts: ${alerts.size}")
+
     var index by remember { mutableIntStateOf(0) }
-    val showCard = remember { mutableStateOf(alerts.isNotEmpty()) }
+    var showCard by remember { mutableStateOf(true) }
 
 
     val scrollState = rememberLazyListState()
@@ -547,9 +567,9 @@ fun AlertCardCarousel(alertsState: State<AlertsUiState>) {
     }
 
 
-    if (showCard.value) {
+    if (showCard) {
         Dialog(
-            onDismissRequest = { showCard.value = false },
+            onDismissRequest = { showCard = false },
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         ) {
             Card(
@@ -569,7 +589,7 @@ fun AlertCardCarousel(alertsState: State<AlertsUiState>) {
                             .fillMaxWidth()
                     ) {
                         IconButton(
-                            onClick = { showCard.value = false },
+                            onClick = { showCard = false },
                             modifier = Modifier
                                 .padding(4.dp)
                                 .width(24.dp)

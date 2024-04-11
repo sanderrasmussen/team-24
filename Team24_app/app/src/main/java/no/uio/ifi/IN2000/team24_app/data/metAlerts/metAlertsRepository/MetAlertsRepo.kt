@@ -274,10 +274,10 @@ class MetAlertsRepo {
 
         //debug
         val cards = arrayListOf(
-            VarselKort("Pågår", "icon-warning-avalanches_red", "Oslo", "2;yellow;moderate"),
-            VarselKort("Ventes", "icon-warning-avalanches_orange", "Viken", "2;yellow;moderate"),
-            VarselKort("Ferdig", "icon-warning-avalanches_yellow", "Vestland", "2;yellow;moderate"),
-            VarselKort("Pågår", "icon-warning-avalanches_red", "Oslo", "2;yellow;moderate"),
+            VarselKort("Pågår", "icon_warning_avalanches_red", "Oslo", "2;yellow;moderate"),
+            VarselKort("Ventes", "icon_warning_avalanches_orange", "Viken", "2;yellow;moderate"),
+            VarselKort("Ferdig", "icon_warning_avalanches_yellow", "Vestland", "2;yellow;moderate"),
+            VarselKort("Pågår", "icon_warning_extreme", "Oslo", "2;yellow;moderate"),
         )
         return cards
         //end debug
