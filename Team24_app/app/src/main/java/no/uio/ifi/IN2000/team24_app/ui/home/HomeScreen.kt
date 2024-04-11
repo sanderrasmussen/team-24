@@ -50,6 +50,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -101,14 +102,17 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState = homevm.alerts.collectAsState()
+    val showAlerts = remember {mutableStateOf(alertsUiState.value.alerts.isNotEmpty())}
 
-    Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
+LaunchedEffect(alertsUiState) {
+    showAlerts.value = alertsUiState.value.alerts.isNotEmpty()
+}
 
     LocationPermissionCard()
 
 
-    if(alertsUiState.value.alerts.isNotEmpty()){
-        AlertCardCarousel(alertsUiState.value)
+    if(showAlerts.value){
+        AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
     }
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -181,15 +185,17 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column {
-                Button(onClick = {
+                Button(
+                    onClick = {
                 //TODO open carousel if there are alerts, otherwise toast?
                     if(alertsUiState.value.alerts.isNotEmpty()){
-                        //TODO
-                        //AlertCardCarousel(alertsUiState.value)
+                        showAlerts.value = true
                     }else{
                         //TODO toast
                     }
-                }){
+                },
+                    modifier = Modifier.height(50.dp).width(60.dp).padding(0.dp)
+                    ){
                     Icon(iconName ="icon_warning_generic_orange")
                 }
                 Inventory(homevm.characterState)
@@ -548,14 +554,12 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardCarousel(alertsUi : AlertsUiState) {
+fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean>, modifier: Modifier = Modifier) {
     //val alertsState by alertsFlow.collectAsState()
     val alerts = alertsUi.alerts
     Log.d("ALERTDEBUGcomponent", "AlertCardCarousel called w alerts: ${alerts.size}")
 
     var index by remember { mutableIntStateOf(0) }
-    var showCard by remember { mutableStateOf(true) }
-
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -567,9 +571,9 @@ fun AlertCardCarousel(alertsUi : AlertsUiState) {
     }
 
 
-    if (showCard) {
+    if (showAlerts.value) {
         Dialog(
-            onDismissRequest = { showCard = false },
+            onDismissRequest = { showAlerts.value = false },
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         ) {
             Card(
@@ -589,7 +593,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState) {
                             .fillMaxWidth()
                     ) {
                         IconButton(
-                            onClick = { showCard = false },
+                            onClick = { showAlerts.value = false },
                             modifier = Modifier
                                 .padding(4.dp)
                                 .width(24.dp)
