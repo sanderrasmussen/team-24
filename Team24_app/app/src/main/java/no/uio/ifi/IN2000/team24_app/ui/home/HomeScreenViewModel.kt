@@ -91,8 +91,7 @@ class HomeScreenViewModel(
             }
      }
 
-
-
+    
 
     fun getRelevantAlerts(context: Context){
         viewModelScope.launch(Dispatchers.IO) {

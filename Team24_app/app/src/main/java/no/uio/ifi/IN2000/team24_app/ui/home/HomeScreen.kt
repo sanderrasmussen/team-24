@@ -50,6 +50,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -98,13 +99,15 @@ fun HomeScreen(
     homevm.getRelevantAlerts(LocalContext.current)
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
-    val alertsUiState by homevm.alerts.collectAsState()
+    val alertsUiState = homevm.alerts.collectAsState()
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
 
-    AlertCardCarousel(alerts = alertsUiState.alerts)
+    Log.d(TAG, "alerts: ${alertsUiState.value.alerts}")
+
+    AlertCardCarousel(alertsUiState)
 
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -528,9 +531,11 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardCarousel(alerts:List<VarselKort>) {
+fun AlertCardCarousel(alertsState: State<AlertsUiState>) {
+    val alerts = alertsState.value.alerts
     var index by remember { mutableIntStateOf(0) }
     val showCard = remember { mutableStateOf(alerts.isNotEmpty()) }
+
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -691,25 +696,4 @@ fun AlertCardPreview(){
     }
 }
 */
-@Preview(showSystemUi = true)
-@Composable
-fun AlertCardCarouselPreview(){
-    val cards = listOf(
-        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
-        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
-        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-    )
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        AlertCardCarousel(cards)
-    }
-}
 

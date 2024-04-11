@@ -271,9 +271,17 @@ class MetAlertsRepo {
             }
 
         }
+
+        //debug
+        val cards = arrayListOf(
+            VarselKort("Pågår", "icon-warning-avalanches_red", "Oslo", "2;yellow;moderate"),
+            VarselKort("Ventes", "icon-warning-avalanches_orange", "Viken", "2;yellow;moderate"),
+            VarselKort("Ferdig", "icon-warning-avalanches_yellow", "Vestland", "2;yellow;moderate"),
+            VarselKort("Pågår", "icon-warning-avalanches_red", "Oslo", "2;yellow;moderate"),
+        )
+        return cards
+        //end debug
         return fareVarsler
-
-
     }
     fun lagKort(feature:Features, farevarsler: ArrayList<VarselKort> ){
         val interval = hentInterval(feature)
