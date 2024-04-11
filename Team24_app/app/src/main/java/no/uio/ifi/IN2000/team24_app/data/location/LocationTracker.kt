@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -33,8 +34,7 @@ class LocationTracker(
 
     //var userLocation
     //if this returns null, remember to create a default
-    fun setLocation(state: MutableStateFlow<Location?>){
-
+    fun getLocation(state: MutableStateFlow<Location?>) : Task<Location> {
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
         val hasAccessCoarseLocationPermission = ContextCompat.checkSelfPermission(
             context,
