@@ -281,7 +281,8 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         days.forEach { day ->
             if (today != null && next6DaysWeatherState != null) {
@@ -344,6 +345,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
             .fillMaxWidth()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically
 
     ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
@@ -361,7 +363,8 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
 fun WeatherCard(
     highlighted:Boolean = false,
     weatherDetail: WeatherDetails,
-    titleOverride: String? = null   //if this is non-zero, the title(weatherDetails.time) will be overridden. this is used in
+    titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
+    modifier : Modifier = Modifier
 ) {
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
@@ -370,8 +373,7 @@ fun WeatherCard(
 
     Card(
         modifier = Modifier
-            .padding(10.dp)
-            .height(150.dp),
+            .padding(5.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
@@ -388,8 +390,8 @@ fun WeatherCard(
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth()
+                    .padding(10.dp),
             )
-            Spacer(modifier = Modifier.height(10.dp))
 
             //this if-else is a hotfix, but this is what it does
             //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
@@ -399,14 +401,12 @@ fun WeatherCard(
             }else{
                 Icon(weatherDetail.next_6_hours_symbol_code)
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "${weatherDetail.air_temperature}°C",
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(10.dp)
             )
 
         }
