@@ -190,7 +190,7 @@ fun HomeScreen(
                     if(alertsUiState.value.alerts.isNotEmpty()){
                         showAlerts.value = true
                     }else{
-                        Toast.makeText(context, "Ingen varsler tilgjengelig", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Ingen farevarsler for din posisjon", Toast.LENGTH_SHORT).show()
                     }
                 },
                     ){
