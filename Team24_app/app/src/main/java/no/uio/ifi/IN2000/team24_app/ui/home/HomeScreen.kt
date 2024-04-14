@@ -361,10 +361,10 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
 
 @Composable
 fun WeatherCard(
-    highlighted:Boolean = false,
     weatherDetail: WeatherDetails,
+    modifier : Modifier = Modifier,
+    highlighted:Boolean = false,
     titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
-    modifier : Modifier = Modifier
 ) {
     val blue = Color(android.graphics.Color.parseColor("#ADD8E6"))
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
@@ -373,14 +373,14 @@ fun WeatherCard(
 
     Card(
         modifier = Modifier
-            .padding(5.dp),
+            .padding(5.dp).width(90.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
-        )
+        ),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -389,8 +389,7 @@ fun WeatherCard(
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(10.dp),
+                modifier = Modifier.padding(vertical = 10.dp)
             )
 
             //this if-else is a hotfix, but this is what it does
@@ -406,7 +405,7 @@ fun WeatherCard(
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier.padding(vertical = 10.dp)
             )
 
         }
