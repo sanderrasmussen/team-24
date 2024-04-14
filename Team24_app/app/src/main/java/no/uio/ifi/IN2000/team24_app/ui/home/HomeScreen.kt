@@ -102,7 +102,7 @@ fun HomeScreen(
 
 
     if(showWeatherDetailCard.value != null){
-        WeatherDetailCard(showWeatherDetailCard, today = true)
+        WeatherDetailCard(showWeatherDetailCard)
     }
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -124,6 +124,7 @@ fun HomeScreen(
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
+    //TODO change these, i'm thinking store the bolded cards, and have the cards themselves check if they are the chosen ones (not like harry potter)
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
@@ -702,11 +703,21 @@ private fun windDirection(degrees: Double?): String {
     return directions[index]
 }
 
+/*
+alright these params are a mess, but basically:
+- weatherDetailState is the state that holds the weatherDetails object that is to be displayed in the card. if this is null, the card will not be displayed.
+- modifier is the modifier for the card itself
+- dayStr is the string for the day to display(e.g. "man." , "tir."...) IF the card is for one of the next 6 days. if this is null, the card is for a time today.
+ */
 @Composable
-fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, today: Boolean, modifier: Modifier = Modifier){
+fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifier: Modifier = Modifier, dayStr:String? = null,){
     //TODO the units are hardcoded as string-values, but could well change from the API.
     //TODO the endpoint does take this into account, but it is discarded in the repo. needs to be passed to viewModel?
-    Dialog(onDismissRequest = { weatherDetailState.value = null }) {
+    Dialog(
+        onDismissRequest = { weatherDetailState.value = null },
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+
+    ) {
         if(weatherDetailState.value != null) {
             val weatherDetail : WeatherDetails = weatherDetailState.value!!
             Card(
@@ -724,25 +735,25 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, today:
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    if(today) {
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth()
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(
+                            onClick = { weatherDetailState.value = null },
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .width(24.dp)
+                                .height(24.dp)
                         ) {
-                            IconButton(
-                                onClick = { weatherDetailState.value = null },
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .width(24.dp)
-                                    .height(24.dp)
-                            ) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "lukk dialog",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "lukk dialog",
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
+                    }
+                    if(dayStr==null) {  //this is for today
                         Text(text = "detaljer for klokken ${weatherDetail.time}", fontSize = 24.sp)
                         Text(text ="temperatur: ${weatherDetail.air_temperature}°C", fontSize = 18.sp)
                         Text(text="nedbørsmengde: ${weatherDetail.next_1_hours_precipitation_amount}mm", fontSize = 18.sp)
@@ -752,7 +763,9 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, today:
                         Icon(iconName = weatherDetail.next_1_hours_symbol_code)
 
 
-                    }else {
+                    }else { //this is one of the next6days-cards
+                        Text(text = "detaljer for $dayStr", fontSize = 24.sp)
+                        //! here's the bitch abt this - to get hour by hour we need a new method from the repo, but i have no fucking idea whats up with the repo... still waiting for some refactor
 
                     }
                 }
@@ -813,7 +826,11 @@ fun WeatherDetailCardPreview(){
         wind_from_direction = 48.0,
         wind_speed = 3.5,
         next_1_hours_symbol_code = "clearsky_day",
-        next_1_hours_precipitation_amount = 0.0
+        next_1_hours_precipitation_amount = 0.0,
+        next_6_hours_symbol_code = "clearsky_night",
+        next_6_hours_precipitation_amount = 0.2,
+        next_12_hours_symbol_code = "clearsky_day",
+        next_12_hours_precipitation_amount = 0.5
     )
 
     val weatherDetailState: MutableState<WeatherDetails?> = remember{mutableStateOf(weatherDetail)}
@@ -822,6 +839,7 @@ fun WeatherDetailCardPreview(){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ){
-        WeatherDetailCard(weatherDetailState, today = true)
+        //WeatherDetailCard(weatherDetailState)
+        WeatherDetailCard(weatherDetailState, dayStr = "man.")
     }
 }
