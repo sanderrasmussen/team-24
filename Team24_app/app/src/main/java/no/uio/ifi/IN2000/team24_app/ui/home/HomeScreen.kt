@@ -47,6 +47,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -91,12 +92,18 @@ fun HomeScreen(
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
 
+    val showWeatherDetailCard = remember { mutableStateOf(null as WeatherDetails?)}
+
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
 
     AlertCardCarousel(alerts = alertsUiState.alerts)
 
+
+    if(showWeatherDetailCard.value != null){
+        WeatherDetailCard(showWeatherDetailCard, today = true)
+    }
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
@@ -373,14 +380,17 @@ fun WeatherCard(
 
     Card(
         modifier = Modifier
-            .padding(5.dp).width(90.dp),
+            .padding(5.dp)
+            .width(90.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -685,6 +695,73 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
     }
 }
 
+private fun windDirection(degrees: Double?): String {
+    if(degrees == null) return "ukjent"
+    val directions = arrayOf("N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV")
+    val index = ((degrees + 22.5) / 45).toInt() % 8
+    return directions[index]
+}
+
+@Composable
+fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, today: Boolean, modifier: Modifier = Modifier){
+    //TODO the units are hardcoded as string-values, but could well change from the API.
+    //TODO the endpoint does take this into account, but it is discarded in the repo. needs to be passed to viewModel?
+    Dialog(onDismissRequest = { weatherDetailState.value = null }) {
+        if(weatherDetailState.value != null) {
+            val weatherDetail : WeatherDetails = weatherDetailState.value!!
+            Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(240.dp)
+                    ,
+                shape = RoundedCornerShape(16.dp)
+
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    if(today) {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            IconButton(
+                                onClick = { weatherDetailState.value = null },
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .width(24.dp)
+                                    .height(24.dp)
+                            ) {
+                                androidx.compose.material3.Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "lukk dialog",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                        Text(text = "detaljer for klokken ${weatherDetail.time}", fontSize = 24.sp)
+                        Text(text ="temperatur: ${weatherDetail.air_temperature}°C", fontSize = 18.sp)
+                        Text(text="nedbørsmengde: ${weatherDetail.next_1_hours_precipitation_amount}mm", fontSize = 18.sp)
+                        Text(text="skyer: ${weatherDetail.cloud_area_fraction}% dekning", fontSize = 18.sp)
+                        Text(text = "vindstyrke: ${weatherDetail.wind_speed}m/s", fontSize = 18.sp)
+                        Text(text = "vindretning: ${windDirection(weatherDetail.wind_from_direction)}", fontSize = 18.sp)
+                        Icon(iconName = weatherDetail.next_1_hours_symbol_code)
+
+
+                    }else {
+
+                    }
+                }
+            }
+        }
+    }
+
+}
+
 /*
 @Preview(showSystemUi = true)
 @Composable
@@ -699,6 +776,8 @@ fun AlertCardPreview(){
     }
 }
 */
+
+/*
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCardCarouselPreview(){
@@ -720,4 +799,29 @@ fun AlertCardCarouselPreview(){
         AlertCardCarousel(cards)
     }
 }
+*/
 
+@Preview(showSystemUi = true)
+@Composable
+fun WeatherDetailCardPreview(){
+    val weatherDetail = WeatherDetails(
+        time = "12:00",
+        air_pressure_at_sea_level = 1006.5,
+        air_temperature = 1.6,
+        cloud_area_fraction = 1.5,
+        relative_humidity = 69.6,
+        wind_from_direction = 48.0,
+        wind_speed = 3.5,
+        next_1_hours_symbol_code = "clearsky_day",
+        next_1_hours_precipitation_amount = 0.0
+    )
+
+    val weatherDetailState: MutableState<WeatherDetails?> = remember{mutableStateOf(weatherDetail)}
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ){
+        WeatherDetailCard(weatherDetailState, today = true)
+    }
+}
