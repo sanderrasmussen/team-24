@@ -581,7 +581,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         ) {
             Card(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
@@ -593,16 +593,15 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                     Row(//the row for the close button
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier
-                            .padding(0.dp)
                             .fillMaxWidth()
+                            .padding(4.dp)
+                            .height(24.dp)
                     ) {
                         IconButton(
                             onClick = { showAlerts.value = false },
                             modifier = Modifier
-                                .padding(4.dp)
                                 .width(24.dp)
                                 .height(24.dp)
-
                         ) {
                             androidx.compose.material3.Icon(
                                 imageVector = Icons.Filled.Close,
@@ -612,7 +611,8 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                         }
                     }
                     Row(    //the row for the alert cards and the navigation buttons
-                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ){
                         Button(
@@ -624,7 +624,6 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                             androidx.compose.material3.Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "forrige varsel",
-
                             )
                         }
                         if (alerts.size == 1) {
@@ -636,12 +635,16 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                             //there are multiple alerts
                             LazyRow(
                                 state = scrollState,
-                                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .height(130.dp)
                             ) {
                                 itemsIndexed(alerts) { i, card ->
                                     if (i == index) {
                                         AlertCard(
                                             card = card,
+                                            modifier = Modifier
+                                                .width(130.dp)
                                         )
                                     }
                                 }
@@ -657,11 +660,10 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                             )
                         }
                     }
-                        Row (
+                        Row ( //the "scroll-bar", except each dot is clickable :)
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.Bottom,
-
-
+                            modifier = Modifier.height(16.dp)
                         ){
                             alerts.forEachIndexed { j, card ->
                                 Button(
@@ -687,27 +689,17 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
 
 @Composable
 fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
-    Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .height(140.dp)
-                    .padding(10.dp)
-                    .fillMaxWidth()
-        ,
-
-                ) {
-
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                            Icon(card.kortImageUrl)
-                            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-                            Text(text = "nivå: ${card.fareNiva}")
-                    }
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+        ) {
+            Icon(card.kortImageUrl)
+            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
+            Text(text = "nivå: ${card.fareNiva}")
         }
-    }
+
+}
 
 
 /*
@@ -724,3 +716,20 @@ fun AlertCardPreview(){
     }
 }
 */
+
+@Preview(showSystemUi = true)
+@Composable
+fun AlertCarouselPreview(){
+    val cards = listOf(
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+    )
+    val alertsUi = AlertsUiState(cards)
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ){
+        AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
+    }
+}
