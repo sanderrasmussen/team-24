@@ -698,8 +698,7 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
                     ) {
                             Icon(card.kortImageUrl)
                             Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-                            //TODO update repo to deliver a more concise UI-friendly string
-                            Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
+                            Text(text = "nivå: ${card.fareNiva}")
                     }
         }
     }
