@@ -387,6 +387,7 @@ fun WeatherCard(
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
+        onClick = { /*TODO*/ },
     ) {
         Column(
             modifier = Modifier
@@ -839,7 +840,7 @@ fun WeatherDetailCardPreview(){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ){
-        //WeatherDetailCard(weatherDetailState)
-        WeatherDetailCard(weatherDetailState, dayStr = "man.")
+        WeatherDetailCard(weatherDetailState)
+        //WeatherDetailCard(weatherDetailState, dayStr = "man.")
     }
 }
