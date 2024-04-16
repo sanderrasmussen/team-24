@@ -23,45 +23,9 @@ import kotlin.math.min
 
 class MetAlertsRepo {
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
-
-
-    suspend fun hentFeatures(): List<Features> {
-        val content: MetAlerts? = dataSource.getMetAlertData()
-        return content?.features ?: emptyList()
-    }
-
-
-    fun hentProperties(feature: Features): Properties? {
-        return feature.properties
-
-    }
-
-    fun hentResources(feature: Features): List<Resources> {
-        return hentProperties(feature)?.resources ?: emptyList()
-    }
-
-
     fun hentInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
-
-
-    @SuppressLint("SimpleDateFormat")
-    fun skrivUtInterval(interval: List<String>): String {
-        val pattern = "yyyy-MM-dd'T'HH:mm:ssXXX"
-        val sdf = SimpleDateFormat(pattern)
-        val startDateTime = sdf.parse(interval[0])
-        val endDateTime = sdf.parse(interval[1])
-
-        val dateFormat =
-            DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT, Locale.getDefault())
-
-        val startFormatted = startDateTime?.let { dateFormat.format(it) }
-        val endFormatted = endDateTime?.let { dateFormat.format(it) }
-
-        return "Tidsperiode\n$startFormatted - faren pågår\n$endFormatted - faren over"
-    }
-
 
     @SuppressLint("SimpleDateFormat")
     fun omFarePaagaar(interval: List<String>): String {
@@ -137,57 +101,6 @@ class MetAlertsRepo {
         }
     }
 
-
-
-    fun hentCoordinatesPolygon(feature: Features?): ArrayList<ArrayList<ArrayList<Double>>> {
-        val geometry: Geometry? = feature?.geometry
-        return when (geometry) {
-            is Polygon -> geometry.coordinates
-            else -> ArrayList()
-        }
-
-    }
-
-
-    fun hentCoordinatesMultiPolygon(feature: Features?): ArrayList<ArrayList<ArrayList<ArrayList<Double>>>> {
-        val geometry: Geometry? = feature?.geometry
-        return when (geometry) {
-            is MultiPolygon -> geometry.coordinates
-            else -> ArrayList()
-        }
-
-    }
-
-    fun lagPolygon(coordinates: ArrayList<ArrayList<ArrayList<Double>>>): ArrayList<Point> {
-        val listeMedPoints = ArrayList<Point>()
-        for (ytterListe in coordinates) {
-            for (indreListe in ytterListe) {
-                val point = Point(indreListe[0], indreListe[1])
-                listeMedPoints.add(point)
-            }
-
-        }
-        return listeMedPoints
-
-
-    }
-
-    fun lagMultiPolygon(coordinates: ArrayList<ArrayList<ArrayList<ArrayList<Double>>>>): ArrayList<ArrayList<Point>> {
-        val multiPolygonPoints = ArrayList<ArrayList<Point>>()
-        for (coordinatesPolygon in coordinates) {
-            val polygonPoints = ArrayList<Point>()
-            for (ytterListe in coordinatesPolygon) {
-                for (indreListe in ytterListe) {
-                    val point = Point(indreListe[0], indreListe[1])
-                    polygonPoints.add(point)
-                }
-            }
-            multiPolygonPoints.add(polygonPoints)
-        }
-        return multiPolygonPoints
-    }
-
-
     fun sjekkOmBrukerIPolygon(point: Point, polygon: ArrayList<Point>): Boolean {
         val antVertices: Int = polygon.size
 
@@ -204,7 +117,7 @@ class MetAlertsRepo {
                     //sjekke om om punktet er under den nedre kanten av polygonet
             if (y > min(point1.y, point2.y)) {
 
-//                    //sjekke om om punktet er over den øvre kanten av polygonet
+                //sjekke om om punktet er over den øvre kanten av polygonet
                 if (y <= max(point1.y, point2.y)) {
 
                     //sjekke om punktet kan være til venstre for polygonet
@@ -227,8 +140,6 @@ class MetAlertsRepo {
     }
 
 
-
-
     fun sjekkOmBrukerIMultiPolygon(
         point: Point,
         multiPolygon: ArrayList<ArrayList<Point>>
@@ -243,38 +154,22 @@ class MetAlertsRepo {
     }
 
 
-    suspend fun henteVarselKort(point:Point): ArrayList<VarselKort>{
+    suspend fun henteVarselKort(latitude:Double, longitude:Double): ArrayList<VarselKort> {
         val fareVarsler = arrayListOf<VarselKort>()
-        val features: List<Features> = hentFeatures()
+        val features: List<Features> =
+            dataSource.getMetAlertData(latitude, longitude)?.features ?: listOf()
         features.forEach { feature ->
             val geometry: Geometry? = feature.geometry
-            if(geometry!=null){
-                when(geometry){
-                    is Polygon -> {
-                        val coordinates= hentCoordinatesPolygon(feature)
-                        val polygon = lagPolygon(coordinates)
-                        val gyldig= sjekkOmBrukerIPolygon(point, polygon)
+            if (geometry != null) {
 
-                        if(gyldig){
-                            lagKort(feature, fareVarsler)
-                        }
-                    }
-                    is MultiPolygon ->{
-                        val coordinates= hentCoordinatesMultiPolygon(feature)
-                        val multiPolygon = lagMultiPolygon(coordinates)
-                        val gyldig= sjekkOmBrukerIMultiPolygon(point, multiPolygon)
-                        if(gyldig){
-                            lagKort(feature, fareVarsler)
-                        }
-                    }
-                }
+                lagKort(feature, fareVarsler)
+
+
             }
-
         }
         return fareVarsler
-
-
     }
+
     fun lagKort(feature:Features, farevarsler: ArrayList<VarselKort> ){
         val interval = hentInterval(feature)
         val farge = hentFarge(feature.properties?.awarenessLevel)
@@ -293,27 +188,3 @@ class MetAlertsRepo {
         }
     }
 }
-
-
-
-
-fun main ()= runBlocking {
-    val repo:MetAlertsRepo = MetAlertsRepo()
-    val point = Point(16.8645, 69.3163)
-
-    val features: List<Features> = repo.hentFeatures()
-    val feature: Features? = features.getOrNull(1)
-    val coordinates:ArrayList<ArrayList<ArrayList<ArrayList<Double>>>> = repo.hentCoordinatesMultiPolygon(feature)
-    val polygonen:ArrayList<ArrayList<Point>> = repo.lagMultiPolygon(coordinates)
-
-    println(polygonen)
-
-
-    if (repo.sjekkOmBrukerIMultiPolygon(point, polygonen)) {
-        println("Point is inside the polygon")
-    } else {
-        println("Point is outside the polygon")
-    }
-
-}
-
