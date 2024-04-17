@@ -61,6 +61,8 @@ fun SettingsScreen(){
 
                     Language()
 
+                    CelorFah()
+
 
                 }
 
@@ -132,6 +134,46 @@ fun Language(){
             }
         )
     }
+}
+
+
+@Composable
+fun CelorFah(){
+    var celsius by remember { mutableStateOf(true) }
+    var fahrenheit by remember { mutableStateOf(false) }
+    Row(
+        modifier =  Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom
+
+    ) {
+        Text(text= "Temperature",
+            color= Color.Black,
+            fontSize= 25.sp)
+
+        Text(
+            text = "C°",
+            color = if (celsius) Color.Black else Color.Gray,
+            fontSize = if(celsius) 20.sp else 18.sp,
+            fontWeight = if (celsius) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                celsius = true
+                fahrenheit = false
+            }
+        )
+
+        Text(
+            text = "F°",
+            color = if (fahrenheit) Color.Black else Color.Gray,
+            fontSize = if(fahrenheit) 20.sp else 18.sp,
+            fontWeight = if (fahrenheit) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                celsius = false
+                fahrenheit = true
+            }
+        )
+    }
+
 }
 
 @Preview(showBackground = true)
