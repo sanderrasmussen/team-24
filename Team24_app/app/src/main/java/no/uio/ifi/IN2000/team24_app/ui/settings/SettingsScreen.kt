@@ -63,6 +63,8 @@ fun SettingsScreen(){
 
                     CelorFah()
 
+                    TextSize()
+
 
                 }
 
@@ -170,6 +172,59 @@ fun CelorFah(){
             modifier = Modifier.clickable {
                 celsius = false
                 fahrenheit = true
+            }
+        )
+    }
+
+}
+
+@Composable
+fun TextSize(){
+    var small by remember { mutableStateOf(true) }
+    var medium by remember { mutableStateOf(false) }
+    var large by remember { mutableStateOf(false) }
+    Row(
+        modifier =  Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom
+
+    ) {
+        Text(text= "Text Size",
+            color= Color.Black,
+            fontSize= 25.sp)
+
+        Text(
+            text = "Abc",
+            color = if (small) Color.Black else Color.Gray,
+            fontSize = 16.sp ,
+            fontWeight = if (small) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                small = true
+                medium = false
+                large = false
+            }
+        )
+
+        Text(
+            text = "Abc",
+            color = if (medium) Color.Black else Color.Gray,
+            fontSize = 18.sp,
+            fontWeight = if (medium) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                small = false
+                medium = true
+                large = false
+            }
+        )
+        Text(
+            text = "Abc",
+            color = if (large) Color.Black else Color.Gray,
+            fontSize = 20.sp,
+            fontWeight = if (large) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                small = false
+                medium = false
+                large = true
             }
         )
     }
