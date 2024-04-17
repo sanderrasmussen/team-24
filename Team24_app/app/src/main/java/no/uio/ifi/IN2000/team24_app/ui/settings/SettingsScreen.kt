@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.text.font.FontWeight
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +58,8 @@ fun SettingsScreen(){
                 item {
 
                     DarkMode()
+
+                    Language()
 
 
                 }
@@ -90,6 +94,46 @@ fun DarkMode(){
     }
 
 }
+
+@Composable
+fun Language(){
+    var norwegian by remember { mutableStateOf(true) }
+    var english by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom
+
+
+    ) {
+        Text(text= "Language",
+            color= Color.Black,
+            fontSize= 25.sp)
+
+        Text(
+            text = "No",
+            color = if (norwegian) Color.Black else Color.Gray,
+            fontSize = if (norwegian) 20.sp else 18.sp,
+            fontWeight = if (norwegian) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                norwegian = true
+                english = false
+            }
+        )
+
+        Text(
+            text = "En",
+            color = if (english) Color.Black else Color.Gray,
+            fontSize = if (english) 20.sp else 18.sp,
+            fontWeight = if (english) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.clickable {
+                norwegian = false
+                english = true
+            }
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun SettingScreenPreview (){
