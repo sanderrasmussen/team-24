@@ -21,25 +21,17 @@ class BankRepository()  {
     private val db = MyDatabase.getInstance()
     private val bankDao = db.bankDao()
 
-
-
     suspend fun withdraw( sum : Int) {
-        //var balance = Bank(0,1)
-        //val database = buildDatabase(context)
         bankDao.withdraw(sum)
     }
 
     suspend fun deposit( sum : Int)  {
-
         bankDao.deposit(sum)
-
     }
 
     suspend fun getBankBalance(): Int? {
         return withContext(Dispatchers.IO) {
-
             return@withContext bankDao.get().get(0).balance
         }
     }
-
 }

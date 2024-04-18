@@ -184,7 +184,7 @@ fun HomeScreen(
 
 
                     Text(
-                        text = homevm.getBalance().toString(),
+                        text = "Neste 6 dager",
                         color = if (boldNextSixDays) Color.Black else Color.Gray,
                         fontSize = 18.sp,
                         fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
