@@ -90,6 +90,7 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
+    val balance by homevm.balance.collectAsState()
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
@@ -178,7 +179,7 @@ fun HomeScreen(
                 .height(20.dp)
         ) {
         Text(
-            text= "Penger: " + homevm.getBalance().toString(),
+            text= "Penger: ${balance}",
             color = Color.Black
         )
         }

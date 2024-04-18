@@ -55,11 +55,15 @@ class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
+    private val bankRepo : BankRepository = BankRepository(),
+
     private var _userLocation : Location? = null,
     private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
     val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow(),
     private var _satisfaction : MutableStateFlow<SatisfactionUiState> = MutableStateFlow(SatisfactionUiState()),
-    val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow()
+    val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow(),
+    private var _balance: MutableStateFlow<Int?> = MutableStateFlow(0),
+    val balance: StateFlow<Int?> = _balance.asStateFlow(),
 
 
 ): ViewModel(){
@@ -67,9 +71,7 @@ class HomeScreenViewModel(
         locationForecastRepo.ObserveTodayWeather();
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
         locationForecastRepo.ObserveNext6DaysForecast()
-    val bankRepo = BankRepository()
-    var _balance: Int? = null
-    //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
+
     //this is just to render a default character, TODO should call a load from disk()-method on create
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
@@ -77,27 +79,18 @@ class HomeScreenViewModel(
 
     init {
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
+        getBalanceFromDb()
     }
 
 
-    fun getBalanceFromDb(): Int? {
-
+    fun getBalanceFromDb() {
 
         viewModelScope.launch {
-            _balance = bankRepo.getBankBalance()
-        }
-        return _balance
-    }
-    fun getBalance(): Int? {
+            _balance.update {
 
-        // Start en ny coroutine for å hente balansen fra databasen
-        viewModelScope.launch {
-            val job = launch {
-                getBalanceFromDb()
+                bankRepo.getBankBalance()
             }
-            job.join() // Vent på at coroutine er ferdig før du returnerer
         }
-        return _balance
     }
 
 
