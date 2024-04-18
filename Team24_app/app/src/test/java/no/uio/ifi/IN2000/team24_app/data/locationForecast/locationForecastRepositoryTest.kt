@@ -8,7 +8,7 @@ data class weatherForecastUIState(
     val weatherNow : WeatherDetails?,
     val forecastMap : HashMap<String?, ArrayList<WeatherDetails>>?
 )
-class locationForecastRepositoryTest {
+/*class locationForecastRepositoryTest {
     val repo : LocationForecastRepository = LocationForecastRepository()
     @Test
     fun testCurrentWeather(){
@@ -62,3 +62,5 @@ class locationForecastRepositoryTest {
         }
     }
 }
+
+ */

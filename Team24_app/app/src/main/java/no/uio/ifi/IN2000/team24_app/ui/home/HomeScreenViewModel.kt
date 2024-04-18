@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
+
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
+
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
@@ -77,6 +79,7 @@ class HomeScreenViewModel(
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
     }
 
+
     fun getBalanceFromDb(): Int? {
 
 
@@ -96,6 +99,7 @@ class HomeScreenViewModel(
         }
         return _balance
     }
+
 
     fun updateSatisfaction(characterTemp: Double){
         var newFillPercent = 0.0f

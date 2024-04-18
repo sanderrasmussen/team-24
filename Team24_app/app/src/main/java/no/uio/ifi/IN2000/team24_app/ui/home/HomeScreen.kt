@@ -169,6 +169,7 @@ fun HomeScreen(
 
         }
         SatisfactionBar(satisfaction) // change to progress = satisfaction
+
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -181,6 +182,7 @@ fun HomeScreen(
             color = Color.Black
         )
         }
+
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
         Spacer(modifier = Modifier.weight(1f))
