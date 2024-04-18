@@ -68,7 +68,7 @@ class HomeScreenViewModel(
     fun getBalance(): Int? {
 
         // Start en ny coroutine for å hente balansen fra databasen
-        runBlocking {
+        viewModelScope.launch {
             val job = launch {
                  getBalanceFromDb()
             }

@@ -30,17 +30,14 @@ class BankRepository()  {
     }
 
     suspend fun deposit( sum : Int)  {
-        //var balance = Bank(0,1)
-        //val database = buildDatabase(context)
+
         bankDao.deposit(sum)
 
     }
 
     suspend fun getBankBalance(): Int? {
         return withContext(Dispatchers.IO) {
-            val bank = Bank(100)
-            bankDao.insertAll(bank)
-            bankDao.deposit(100)
+
             return@withContext bankDao.get().get(0).balance
         }
     }
