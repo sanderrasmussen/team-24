@@ -15,7 +15,7 @@ interface BankDao{
     fun delete(bank : Bank)
 
     @Query("SELECT * FROM Bank WHERE id = 0")
-    fun get(): Flow<Bank>
+    fun get(): List<Bank>
 
     @Query("UPDATE Bank SET balance = balance - :sum WHERE id = 0")
     fun withdraw(sum : Int)

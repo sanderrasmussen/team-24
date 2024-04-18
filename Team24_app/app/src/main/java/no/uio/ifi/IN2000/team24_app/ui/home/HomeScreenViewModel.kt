@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
@@ -49,6 +50,15 @@ class HomeScreenViewModel(
 
     val satisfactionState = MutableStateFlow(getSatisfaction())
 
+    lateinit var context : Context
+    val bankRepo = BankRepository()
+    fun giveContextToViewModel(appContext:Context){
+        context = appContext
+    }
+
+    fun getBalance(): Int {
+        return bankRepo.getBankBalance()
+    }
 
     fun getSatisfaction():Float{
         //todo move temp to a state observing the repo, maybe collect the state in the screen and pass it to this    function

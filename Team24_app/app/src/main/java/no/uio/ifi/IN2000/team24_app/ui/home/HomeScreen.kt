@@ -73,6 +73,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.torsos
 fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
 ){
+    homevm.giveContextToViewModel(LocalContext.current)
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
@@ -95,6 +96,8 @@ fun HomeScreen(
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
+
+
 
     Column(
         //added these two to center the content
@@ -181,7 +184,7 @@ fun HomeScreen(
 
 
                     Text(
-                        text = "Neste 6 dager",
+                        text = homevm.getBalance().toString(),
                         color = if (boldNextSixDays) Color.Black else Color.Gray,
                         fontSize = 18.sp,
                         fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,

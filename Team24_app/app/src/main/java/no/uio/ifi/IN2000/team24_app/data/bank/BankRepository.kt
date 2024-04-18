@@ -6,40 +6,41 @@ import androidx.annotation.WorkerThread
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.data.database.AppDatabase
 import no.uio.ifi.IN2000.team24_app.data.database.Bank
 import no.uio.ifi.IN2000.team24_app.data.database.BankDao
+import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 
-class BankRepository(private val bankDao : BankDao)  {
-    val bankAccount : Flow<Bank> = bankDao.get()
-    fun buildDatabase(context: Context): AppDatabase {
-        val database = Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java, "Database"
-        ).build()
-
-        return database
-    }
+class BankRepository()  {
+    private val db = MyDatabase.getInstance()
+    private val bankDao = db.bankDao()
 
 
 
-
-    @WorkerThread
-    suspend fun withdraw(context: Context, sum : Int) {
+    suspend fun withdraw( sum : Int) {
         //var balance = Bank(0,1)
         //val database = buildDatabase(context)
         bankDao.withdraw(sum)
 
     }
-    @WorkerThread
-    suspend fun deposit(context: Context, sum : Int)  {
+
+    suspend fun deposit( sum : Int)  {
         //var balance = Bank(0,1)
         //val database = buildDatabase(context)
         bankDao.deposit(sum)
 
     }
-    @WorkerThread
-    suspend fun getBankBalance(context: Context) : Flow<Bank> {
-        return bankAccount
+
+    fun getBankBalance() : Int { // this: CoroutineScope
+
+        val balance = bankDao.get().get(0).balance
+
+        return balance
     }
+
+
+
 }
