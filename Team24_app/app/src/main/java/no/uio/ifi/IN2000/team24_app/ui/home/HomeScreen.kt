@@ -90,6 +90,7 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
+    val balance by homevm.balance.collectAsState()
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
@@ -169,6 +170,19 @@ fun HomeScreen(
 
         }
         SatisfactionBar(satisfaction) // change to progress = satisfaction
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+        ) {
+        Text(
+            text= "Penger: ${balance}",
+            color = Color.Black
+        )
+        }
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
