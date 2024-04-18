@@ -69,6 +69,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
@@ -203,21 +204,22 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(top = 6.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
                 .background(color = white)
 
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ) {//this is the row with the today/next 6 days - selection
                     Text(
                         text = "I dag",
                         color = if (boldToday) Color.Black else Color.Gray,
@@ -303,7 +305,7 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
     val today = day()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
@@ -365,7 +367,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
 
@@ -402,8 +404,10 @@ fun WeatherCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -411,10 +415,9 @@ fun WeatherCard(
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth()
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(10.dp))
-
             //this if-else is a hotfix, but this is what it does
             //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
             //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
@@ -423,16 +426,14 @@ fun WeatherCard(
             }else{
                 Icon(weatherDetail.next_6_hours_symbol_code)
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "${weatherDetail.air_temperature}°C",
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-
         }
     }
 }
@@ -717,6 +718,7 @@ fun AlertCardPreview(){
 }
 */
 
+/*
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCarouselPreview(){
@@ -731,5 +733,99 @@ fun AlertCarouselPreview(){
         modifier = Modifier.fillMaxSize()
     ){
         AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
+    }
+}
+*/
+
+@Preview()
+@Composable
+fun WeatherCardPreview(){
+    val weatherDetail = WeatherDetails(
+        time = "12:00",
+        air_temperature = 12.0,
+        next_1_hours_symbol_code = "clearsky_day",
+        next_6_hours_symbol_code = "clearsky_day"
+    )
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+
+    ){
+        WeatherCard(false, weatherDetail)
+    }
+}
+
+@Preview()
+@Composable
+fun WeatherCardsTodayPreview(){
+    val weatherDetails = listOf(
+        WeatherDetails(
+            time = "12:00",
+            air_temperature = 12.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "13:00",
+            air_temperature = 13.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "14:00",
+            air_temperature = 14.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "15:00",
+            air_temperature = 15.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "16:00",
+            air_temperature = 16.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "17:00",
+            air_temperature = 17.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "18:00",
+            air_temperature = 18.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "19:00",
+            air_temperature = 19.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "20:00",
+            air_temperature = 20.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "21:00",
+            air_temperature = 21.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ))
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+
+    ) {
+        WeatherCardsToday(currentHour = 12, weatherDetails = weatherDetails)
     }
 }

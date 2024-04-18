@@ -153,7 +153,6 @@ class MetAlertsRepo {
 
     }
 
-
     suspend fun henteVarselKort(latitude:Double, longitude:Double): ArrayList<VarselKort> {
         val fareVarsler = arrayListOf<VarselKort>()
         val features: List<Features> =
@@ -163,8 +162,6 @@ class MetAlertsRepo {
             if (geometry != null) {
 
                 lagKort(feature, fareVarsler)
-
-
             }
         }
 
@@ -188,14 +185,9 @@ class MetAlertsRepo {
         val interval = hentInterval(feature)
         val farge = hentFarge(feature.properties?.awarenessLevel)
         val farePaagar = omFarePaagaar(interval)
-
         val kortImageUrl = "${hentIkonID(feature.properties?.event)}_$farge"
-
-
         val lokasjon = feature.properties?.area
-
         val fareNiva = hentFareNivaFraAwarenessLevel(feature.properties?.awarenessLevel)
-
         if(lokasjon!= null && fareNiva != null){
             val varselKort= VarselKort(farePaagar, kortImageUrl, lokasjon, fareNiva)
             farevarsler.add(varselKort)
