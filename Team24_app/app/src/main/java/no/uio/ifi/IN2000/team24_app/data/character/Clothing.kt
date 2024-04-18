@@ -78,6 +78,9 @@ fun Inventory(characterState:MutableStateFlow<Character>, modifier:Modifier=Modi
 
             }
         }
+        characterState.update {
+            it.copy(temperature = it.findAppropriateTemp())
+        }
         showInventory = false // then, close the dialog.
     }
 
