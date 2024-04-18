@@ -133,7 +133,6 @@ fun HomeScreen(
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
-    //TODO change these, i'm thinking store the bolded cards, and have the cards themselves check if they are the chosen ones (not like harry potter)
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
@@ -258,7 +257,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (showToday) {
-                    currentWeatherState?.let { WeatherCardsToday(currentHour, it) }
+                    currentWeatherState?.let { WeatherCardsToday(currentHour, it, showWeatherDetailCard) }
                 } else {
                     if (currentWeatherDetails != null) {
                         WeatherCardsNextSixDays(next6DaysWeatherState = next6DaysWeatherState)
@@ -327,7 +326,8 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
                     WeatherCard(
                         highlighted = index==0,
                         weatherDetail = weatherDetails,
-                        titleOverride = day
+                        titleOverride = day,
+                        onClick = { /*TODO*/ },
                     )
                 }
             }
@@ -373,7 +373,7 @@ fun CurrentWeatherInfo(
 
 
 @Composable
-fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
+fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, currentSelectedDetail: MutableState<WeatherDetails?>) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
@@ -387,7 +387,8 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
             val hourToShow = (currentHour + index) % 24
             WeatherCard(
                 highlighted = hourToShow == currentHour,
-                weatherDetail = weatherDetail
+                weatherDetail = weatherDetail,
+                onClick = { currentSelectedDetail.value = weatherDetail },
             )
         }
     }
@@ -397,6 +398,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
 @Composable
 fun WeatherCard(
     weatherDetail: WeatherDetails,
+    onClick : () -> Unit,
     modifier : Modifier = Modifier,
     highlighted:Boolean = false,
     titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
@@ -731,7 +733,7 @@ alright these params are a mess, but basically:
 @Composable
 fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifier: Modifier = Modifier, dayStr:String? = null,){
     //TODO the units are hardcoded as string-values, but could well change from the API.
-    //TODO the endpoint does take this into account, but it is discarded in the repo. needs to be passed to viewModel?
+    //TODO the endpoint does take this into account, but it is discarded in the repo??. needs to be passed to viewModel?
     Dialog(
         onDismissRequest = { weatherDetailState.value = null },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
@@ -941,6 +943,7 @@ fun WeatherCardsTodayPreview(){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ){
-        WeatherCardsToday(12, weatherDetails)
+        val showState = remember { mutableStateOf(null as WeatherDetails?)}
+        WeatherCardsToday(12, weatherDetails, showState)
     }
 }
