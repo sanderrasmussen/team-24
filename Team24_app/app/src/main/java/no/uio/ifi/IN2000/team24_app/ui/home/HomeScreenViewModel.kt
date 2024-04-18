@@ -137,8 +137,7 @@ class HomeScreenViewModel(
             }
      }
 
-
-
+    
 
     fun getRelevantAlerts(context: Context){
         viewModelScope.launch(Dispatchers.IO) {
@@ -146,7 +145,8 @@ class HomeScreenViewModel(
             if (_userLocation == null) {
                 _userLocation = LocationTracker(context).getLocation()
             }
-            val cards = metAlertsRepo.henteVarselKort(Point(_userLocation?.latitude ?: 59.913868, _userLocation?.longitude ?: 10.752245))
+            val cards = metAlertsRepo.henteVarselKort(latitude=_userLocation?.latitude ?: 59.913868, longitude=_userLocation?.longitude ?: 10.752245)
+
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)
             }

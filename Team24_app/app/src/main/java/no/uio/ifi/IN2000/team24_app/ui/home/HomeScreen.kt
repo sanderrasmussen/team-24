@@ -4,6 +4,7 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -67,12 +69,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
@@ -90,16 +94,21 @@ fun HomeScreen(
     homevm.getRelevantAlerts(LocalContext.current)
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
-    val alertsUiState by homevm.alerts.collectAsState()
 
     val showWeatherDetailCard = remember { mutableStateOf(null as WeatherDetails?)}
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
+    val alertsUiState = homevm.alerts.collectAsState()
+    val showAlerts = remember {mutableStateOf(
+        //alertsUiState.value.alerts.isNotEmpty()
+        false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
+    )}
 
     LocationPermissionCard()
 
-    AlertCardCarousel(alerts = alertsUiState.alerts)
-
+    if(showAlerts.value){
+        AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
+    }
 
     if(showWeatherDetailCard.value != null){
         WeatherDetailCard(showWeatherDetailCard)
@@ -179,29 +188,47 @@ fun HomeScreen(
         SatisfactionBar(satisfaction) // change to progress = satisfaction
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
-
         Spacer(modifier = Modifier.weight(1f))
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
 
-        Inventory(homevm.characterState)
-
+            Column {
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                    if(alertsUiState.value.alerts.isNotEmpty()){
+                        showAlerts.value = true
+                    }else{
+                        Toast.makeText(context, "Ingen farevarsler for din posisjon", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                    ){
+                    Icon(iconName ="icon_warning_generic_orange", modifier = Modifier.size(24.dp))
+                }
+                Inventory(homevm.characterState)
+            }
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(top = 6.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
                 .background(color = white)
 
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ) {//this is the row with the today/next 6 days - selection
                     Text(
                         text = "I dag",
                         color = if (boldToday) Color.Black else Color.Gray,
@@ -287,7 +314,7 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
     val today = day()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -350,7 +377,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -392,8 +419,8 @@ fun WeatherCard(
         Column(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -401,9 +428,9 @@ fun WeatherCard(
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 10.dp)
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
-
             //this if-else is a hotfix, but this is what it does
             //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
             //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
@@ -417,14 +444,14 @@ fun WeatherCard(
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 10.dp)
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
-
         }
     }
 }
 @Composable
-fun Icon(iconName: String?) {
+fun Icon(iconName: String?, modifier: Modifier = Modifier) {
     // Hvis iconName er null eller tom streng, vis standardikon
     if (iconName.isNullOrEmpty()) {
         return
@@ -437,7 +464,7 @@ fun Icon(iconName: String?) {
         Image(
             painter = painterResource(id = resourceId),
             contentDescription = iconName,  //bad description, but better than null. maybe pass desc. as parameter?
-            modifier = Modifier.size(50.dp) // Juster størrelsen etter behov
+            modifier = modifier.size(50.dp) // Juster størrelsen etter behov
         )
     }
 }
@@ -545,9 +572,12 @@ fun LocationPermissionCard(){
 }
 
 @Composable
-fun AlertCardCarousel(alerts:List<VarselKort>) {
+fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean>, modifier: Modifier = Modifier) {
+    //val alertsState by alertsFlow.collectAsState()
+    val alerts = alertsUi.alerts
+    Log.d("ALERTDEBUGcomponent", "AlertCardCarousel called w alerts: ${alerts.size}")
+
     var index by remember { mutableIntStateOf(0) }
-    val showCard = remember { mutableStateOf(alerts.isNotEmpty()) }
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -558,20 +588,16 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
         }
     }
 
-    fun changeCard(changeBy: Int) {
-        index = (index + changeBy) % alerts.size
-        if (index < 0) index = alerts.size - 1
-    }
 
-    if (showCard.value) {
+    if (showAlerts.value) {
         Dialog(
-            onDismissRequest = { showCard.value = false },
+            onDismissRequest = { showAlerts.value = false },
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         ) {
             Card(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
-                    .height(240.dp)
+                    .height(200.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -581,16 +607,15 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
                     Row(//the row for the close button
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier
-                            .padding(0.dp)
                             .fillMaxWidth()
+                            .padding(4.dp)
+                            .height(24.dp)
                     ) {
                         IconButton(
-                            onClick = { showCard.value = false },
+                            onClick = { showAlerts.value = false },
                             modifier = Modifier
-                                .padding(4.dp)
                                 .width(24.dp)
                                 .height(24.dp)
-
                         ) {
                             androidx.compose.material3.Icon(
                                 imageVector = Icons.Filled.Close,
@@ -599,34 +624,60 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
                             )
                         }
                     }
-
-                    if (alerts.size == 1) {
-                        //there is only one alert
-                        AlertCard(
-                            card = alerts[0],
-                            changeCard = ::changeCard,
-                            showButtons = false
-                        )
-                    } else {
-                        //there are multiple alerts
-                        LazyRow(
-                            state = scrollState,
-                            horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    Row(    //the row for the alert cards and the navigation buttons
+                        modifier = Modifier.padding(4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Button(
+                            onClick = {
+                                index = (index + -1) % alerts.size
+                                if (index < 0) index = alerts.size - 1
+                                      },
                         ) {
-                            itemsIndexed(alerts) { i, card ->
-                                if (i == index) {
-                                    AlertCard(
-                                        card = card,
-                                        changeCard = ::changeCard,
-                                    )
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "forrige varsel",
+                            )
+                        }
+                        if (alerts.size == 1) {
+                            //there is only one alert
+                            AlertCard(
+                                card = alerts[0],
+                            )
+                        } else {
+                            //there are multiple alerts
+                            LazyRow(
+                                state = scrollState,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .height(130.dp)
+                            ) {
+                                itemsIndexed(alerts) { i, card ->
+                                    if (i == index) {
+                                        AlertCard(
+                                            card = card,
+                                            modifier = Modifier
+                                                .width(130.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
-                        Row (
+                        Button(onClick = {
+                            index = (index + 1) % alerts.size
+                            if (index < 0) index = alerts.size - 1
+                        }) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "neste varsel"
+                            )
+                        }
+                    }
+                        Row ( //the "scroll-bar", except each dot is clickable :)
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.fillMaxHeight()
-
+                            modifier = Modifier.height(16.dp)
                         ){
                             alerts.forEachIndexed { j, card ->
                                 Button(
@@ -647,54 +698,21 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
             }
         }
     }
-}
+
 
 
 @Composable
-fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean = true, modifier: Modifier = Modifier){
-    Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .padding(16.dp),
-
-                ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if(showButtons){
-                        Button(
-                            onClick = { changeCard(-1) },
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "forrige varsel"
-                            )
-                        }
-                    }
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                            Icon(card.kortImageUrl)
-                            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-                            //TODO update repo to deliver a more concise UI-friendly string
-                            Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
-                    }
-                    if(showButtons) {
-                        Button(onClick = { changeCard(1) }) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "neste varsel"
-                            )
-                        }
-                    }
+fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+        ) {
+            Icon(card.kortImageUrl)
+            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
+            Text(text = "nivå: ${card.fareNiva}")
         }
-    }
+
 }
 
 private fun windDirection(degrees: Double?): String {
@@ -794,30 +812,46 @@ fun AlertCardPreview(){
 /*
 @Preview(showSystemUi = true)
 @Composable
-fun AlertCardCarouselPreview(){
+fun AlertCarouselPreview(){
     val cards = listOf(
-        VarselKort("1", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("2", "icon_warning_avalanches_red", "Trondheim", "2; yellow; Moderate"),
-        VarselKort("3", "icon_warning_avalanches_orange", "Bergen", "2; yellow; Moderate"),
-        VarselKort("4", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("5", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("6", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("7", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
-        VarselKort("8", "icon_warning_avalanches_yellow", "Oslo", "2; yellow; Moderate"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+    )
+    val alertsUi = AlertsUiState(cards)
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ){
+        AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
+    }
+}
+*/
+
+/*
+@Preview()
+@Composable
+fun WeatherCardPreview(){
+    val weatherDetail = WeatherDetails(
+        time = "12:00",
+        air_temperature = 12.0,
+        next_1_hours_symbol_code = "clearsky_day",
+        next_6_hours_symbol_code = "clearsky_day"
     )
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
-    ) {
-        AlertCardCarousel(cards)
+
+    ){
+        WeatherCard(false, weatherDetail)
     }
 }
 */
 
 @Preview(showSystemUi = true)
 @Composable
-fun WeatherDetailCardPreview(){
+fun WeatherDetailCardPreview() {
     val weatherDetail = WeatherDetails(
         time = "12:00",
         air_pressure_at_sea_level = 1006.5,
@@ -834,13 +868,79 @@ fun WeatherDetailCardPreview(){
         next_12_hours_precipitation_amount = 0.5
     )
 
-    val weatherDetailState: MutableState<WeatherDetails?> = remember{mutableStateOf(weatherDetail)}
+    val weatherDetailState: MutableState<WeatherDetails?> =
+        remember { mutableStateOf(weatherDetail) }
+}
+
+@Preview()
+@Composable
+fun WeatherCardsTodayPreview(){
+    val weatherDetails = listOf(
+        WeatherDetails(
+            time = "12:00",
+            air_temperature = 12.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "13:00",
+            air_temperature = 13.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "14:00",
+            air_temperature = 14.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "15:00",
+            air_temperature = 15.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "16:00",
+            air_temperature = 16.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "17:00",
+            air_temperature = 17.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "18:00",
+            air_temperature = 18.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "19:00",
+            air_temperature = 19.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "20:00",
+            air_temperature = 20.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ),
+        WeatherDetails(
+            time = "21:00",
+            air_temperature = 21.0,
+            next_1_hours_symbol_code = "clearsky_day",
+            next_6_hours_symbol_code = "clearsky_day"
+        ))
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ){
-        WeatherDetailCard(weatherDetailState)
-        //WeatherDetailCard(weatherDetailState, dayStr = "man.")
+        WeatherCardsToday(12, weatherDetails)
     }
 }
