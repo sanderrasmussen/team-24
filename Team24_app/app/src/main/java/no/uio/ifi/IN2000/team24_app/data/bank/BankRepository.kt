@@ -5,10 +5,13 @@ import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.database.AppDatabase
 import no.uio.ifi.IN2000.team24_app.data.database.Bank
 import no.uio.ifi.IN2000.team24_app.data.database.BankDao
@@ -24,7 +27,6 @@ class BankRepository()  {
         //var balance = Bank(0,1)
         //val database = buildDatabase(context)
         bankDao.withdraw(sum)
-
     }
 
     suspend fun deposit( sum : Int)  {
@@ -34,13 +36,13 @@ class BankRepository()  {
 
     }
 
-    fun getBankBalance() : Int { // this: CoroutineScope
-
-        val balance = bankDao.get().get(0).balance
-
-        return balance
+    suspend fun getBankBalance(): Int? {
+        return withContext(Dispatchers.IO) {
+            val bank = Bank(100)
+            bankDao.insertAll(bank)
+            bankDao.deposit(100)
+            return@withContext bankDao.get().get(0).balance
+        }
     }
-
-
 
 }

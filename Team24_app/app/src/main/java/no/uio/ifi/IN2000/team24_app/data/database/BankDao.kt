@@ -14,12 +14,12 @@ interface BankDao{
     @Delete
     fun delete(bank : Bank)
 
-    @Query("SELECT * FROM Bank WHERE id = 0")
+    @Query("SELECT * FROM Bank")
     fun get(): List<Bank>
 
-    @Query("UPDATE Bank SET balance = balance - :sum WHERE id = 0")
+    @Query("UPDATE Bank SET balance = balance - :sum ")
     fun withdraw(sum : Int)
 
-    @Query("UPDATE Bank SET balance = balance - :sum WHERE id = 0")
+    @Query("UPDATE Bank SET balance = balance + :sum ")
     fun deposit(sum : Int)
 }

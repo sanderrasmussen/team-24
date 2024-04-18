@@ -5,6 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Bank (
-    @PrimaryKey val id : Int,
     val balance : Int
-)
+){
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}

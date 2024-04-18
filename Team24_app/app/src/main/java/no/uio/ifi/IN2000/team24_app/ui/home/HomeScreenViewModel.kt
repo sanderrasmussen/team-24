@@ -5,6 +5,8 @@ import android.location.Location
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
@@ -52,14 +55,27 @@ class HomeScreenViewModel(
 
     lateinit var context : Context
     val bankRepo = BankRepository()
-    fun giveContextToViewModel(appContext:Context){
-        context = appContext
-    }
+    var _balance :Int? = null
 
-    fun getBalance(): Int {
-        return bankRepo.getBankBalance()
-    }
+    fun getBalanceFromDb(): Int? {
 
+
+        viewModelScope.launch {
+            _balance = bankRepo.getBankBalance()
+        }
+        return _balance
+    }
+    fun getBalance(): Int? {
+
+        // Start en ny coroutine for å hente balansen fra databasen
+        runBlocking {
+            val job = launch {
+                 getBalanceFromDb()
+            }
+            job.join() // Vent på at coroutine er ferdig før du returnerer
+        }
+        return _balance
+    }
     fun getSatisfaction():Float{
         //todo move temp to a state observing the repo, maybe collect the state in the screen and pass it to this    function
         val temp = locationForecastRepo.ObserveCurrentWeather().value?.air_temperature?.toFloat() ?: 0.0f

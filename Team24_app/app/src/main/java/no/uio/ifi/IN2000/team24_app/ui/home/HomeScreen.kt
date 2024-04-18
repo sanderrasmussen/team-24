@@ -73,7 +73,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.torsos
 fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
 ){
-    homevm.giveContextToViewModel(LocalContext.current)
+
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
