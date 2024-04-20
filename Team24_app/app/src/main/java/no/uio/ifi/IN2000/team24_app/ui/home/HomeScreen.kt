@@ -2,6 +2,7 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -64,10 +65,12 @@ import java.util.Locale
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -81,7 +84,7 @@ import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen(
+fun HomeScreen(navController: NavController,
     homevm: HomeScreenViewModel = viewModel(),
 ){
     val TAG = "HomeScreen"
@@ -90,6 +93,13 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
+
+    val sharedPreferences = LocalContext.current.getSharedPreferences("Settings", Context.MODE_PRIVATE)
+
+    var isNorwegian by remember { mutableStateOf(sharedPreferences.getBoolean("isNorwegian", false)) }
+    var isDarkMode by remember { mutableStateOf(sharedPreferences.getBoolean("isDarkMode", false)) }
+    var selectedTextSize by remember { mutableStateOf(sharedPreferences.getInt("textSize", 18).sp) }
+
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
@@ -121,6 +131,25 @@ fun HomeScreen(
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
 
+    val imageName = when {
+        currentHour in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
+        currentHour in 12 until 18 -> R.drawable.weather_day //12 pm to 6 pm
+        currentHour in 18 until 22 -> R.drawable.weather_noon // 6pm to 10pm
+        else -> R.drawable.weather_night // 10pm to 6 am
+    }
+    //For better visibility the colour of the text for currentweather also changes
+    val textColour = when {
+        currentHour in 6 until 22 -> Color.Black
+        else -> Color.White
+    }
+
+    Box (modifier = Modifier.fillMaxSize()){
+        Image (
+            painter= (painterResource(id= imageName)),
+            contentDescription= null,
+            contentScale= ContentScale.FillBounds,
+            modifier= Modifier.matchParentSize())
+
     Column(
         //added these two to center the content
         verticalArrangement = Arrangement.Center,
@@ -128,7 +157,6 @@ fun HomeScreen(
 
         modifier = Modifier
             .fillMaxSize()
-            .background(blue)
             .padding(16.dp)
     ) {
         Row(
@@ -145,16 +173,16 @@ fun HomeScreen(
                 Text(
                     text = formattedDate ?: "",
                     modifier = Modifier.padding(end = 8.dp),
-                    color = Color.Black,
-                    fontSize = 24.sp,
+                    color = textColour,
+                    fontSize = selectedTextSize,
                     fontWeight = FontWeight.Bold
                 )
 
                 val formattedDay = day()
                 Text(
                     text = formattedDay ?: "",
-                    color = Color.Black,
-                    fontSize = 20.sp,
+                    color = textColour,
+                    fontSize = selectedTextSize,
                     fontWeight = FontWeight.Normal
                 )
             }
@@ -162,12 +190,14 @@ fun HomeScreen(
 
 
             Column() {
-                CurrentWeatherInfo(
+                CurrentWeatherInfo(   textColour, 
                     currentTemperature = currentWeatherDetails?.air_temperature,
                     currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
                 )}
 
         }
+        //NavBar(navController)
+
         SatisfactionBar(satisfaction) // change to progress = satisfaction
 
         Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
@@ -197,7 +227,7 @@ fun HomeScreen(
                     Text(
                         text = "I dag",
                         color = if (boldToday) Color.Black else Color.Gray,
-                        fontSize = 18.sp,
+                        fontSize = selectedTextSize,
                         fontWeight = if (boldToday) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = true
@@ -210,7 +240,7 @@ fun HomeScreen(
                     Text(
                         text = "Neste 6 dager",
                         color = if (boldNextSixDays) Color.Black else Color.Gray,
-                        fontSize = 18.sp,
+                        fontSize = selectedTextSize,
                         fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = false
@@ -229,15 +259,16 @@ fun HomeScreen(
                         WeatherCardsNextSixDays(next6DaysWeatherState = next6DaysWeatherState)
                     }
                 }
-                NavBar()
+
             }
         }
-    }
+    } }
 
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 }
+
 
 
 
@@ -300,6 +331,7 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
 }
 @Composable
 fun CurrentWeatherInfo(
+    textColour: Color,
     currentTemperature: Double?,
     currentWeatherIcon: String?
 ) {
@@ -307,7 +339,7 @@ fun CurrentWeatherInfo(
     if (currentTemperature == null  || currentWeatherIcon.isNullOrEmpty()) {
         Text(
             text = "Nåværende temperatur: Ukjent",
-            color = Color.Black,
+            color = textColour,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
@@ -326,7 +358,7 @@ fun CurrentWeatherInfo(
 
             Text(
                 text = "$currentTemperature°C",
-                color = Color.Black,
+                color = textColour,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(8.dp)
@@ -445,7 +477,7 @@ fun getDrawableResourceId(iconName: String): Int {
     )
 }
 @Composable
-fun NavBar(){
+fun NavBar(navController: NavController){
     var isClicked by remember { mutableStateOf(false) }
     Spacer(modifier=Modifier.padding(8.dp))
     Row(modifier = Modifier
@@ -466,7 +498,7 @@ fun NavBar(){
             }
             Spacer(modifier = Modifier.padding(8.dp))
             Box(modifier = Modifier
-                .clickable { isClicked = true }
+                .clickable {  navController.navigate("SettingsScreen")  }
             ) {
                 Icon("settings")
             }

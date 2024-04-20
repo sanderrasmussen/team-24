@@ -1,10 +1,15 @@
 package no.uio.ifi.IN2000.team24_app.ui.settings
 
+import android.content.Context
+import no.uio.ifi.IN2000.team24_app.ui.theme.DarkColorScheme
+import no.uio.ifi.IN2000.team24_app.ui.theme.LightColorScheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,9 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import no.uio.ifi.IN2000.team24_app.ui.home.Icon
 
 
 object Translations {
@@ -56,11 +66,28 @@ object TranslationsNo {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(navController: NavController) {
     var selectedTextSize by remember { mutableStateOf(18.sp) }
     var isNorwegian by remember{ mutableStateOf(false)}
     val texts = if (isNorwegian) TranslationsNo.texts else Translations.texts
     var isDarkMode by remember { mutableStateOf(false) }
+
+
+    val context = LocalContext.current
+
+
+    val sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE)
+    selectedTextSize = remember {
+        val textSize = sharedPreferences.getInt("textSize", 18)
+        textSize.sp
+    }
+    isNorwegian = remember {
+        sharedPreferences.getBoolean("isNorwegian", false)
+    }
+    isDarkMode = remember {
+        sharedPreferences.getBoolean("isDarkMode", false)
+    }
+
 
     val colorScheme = if (isDarkMode) DarkColorScheme else LightColorScheme
 
@@ -92,13 +119,30 @@ fun SettingsScreen() {
                     DarkMode(colorScheme, texts, selectedTextSize, isDarkMode) {
                         isDarkMode = it
                     }
+
                     Language(colorScheme,texts, selectedTextSize) { isNorwegian = it }
+
+
                     CelorFah(colorScheme,texts, selectedTextSize)
+
+
                     TextSize(colorScheme,texts, selectedTextSize) { newSize ->
                         selectedTextSize = newSize
                     }
 
+                    NavBar(navController)
+
             }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            with(sharedPreferences.edit()) {
+                putInt("textSize", selectedTextSize.value.toInt())
+                putBoolean("isNorwegian", isNorwegian)
+                putBoolean("isDarkMode", isDarkMode)
+                apply()
+            }
+        }
     }
 }
 
@@ -290,11 +334,42 @@ fun TextSize(color: ColorScheme,texts : Map <String, String>,selectedTextSize: T
         )
     }
 }
+@Composable
+fun NavBar(navController: NavController){
+    var isClicked by remember { mutableStateOf(false) }
+    Spacer(modifier=Modifier.padding(8.dp))
+    Row(modifier = Modifier
+        .padding(8.dp)
+        .fillMaxWidth()
+        .background(Color.White),
+        horizontalArrangement = Arrangement.SpaceEvenly) {
+        Box(modifier = Modifier
+            .clickable { isClicked = true }
+        ) {
+            Icon("quiz")
+        }
+
+        Spacer(modifier = Modifier.padding(8.dp))
+        Box(modifier = Modifier
+            .clickable { navController.popBackStack() }
+        ) {
+            Icon("home")
+        }
+        Spacer(modifier = Modifier.padding(8.dp))
+        Box(modifier = Modifier
+            .clickable { isClicked = true }
+        ) {
+            Icon("settings")
+        }
+    }
+    //Spacer(modifier=Modifier.padding(8.dp))
+}
 
 @Preview(showBackground = true)
 @Composable
 fun SettingScreenPreview() {
-    SettingsScreen()
+    val navController = rememberNavController()
+    SettingsScreen(navController)
 }
 
 
