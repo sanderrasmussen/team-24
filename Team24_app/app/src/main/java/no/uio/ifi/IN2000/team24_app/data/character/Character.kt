@@ -18,7 +18,7 @@ data class Character(val head: Head, val torso: Torso, val legs: Legs) {
 }
 
     @Composable
-    fun Player(character: Character) {
+    fun Player(character: Character, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .padding(0.dp)

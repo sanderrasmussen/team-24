@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.Clothing
 import no.uio.ifi.IN2000.team24_app.data.character.Head
 import no.uio.ifi.IN2000.team24_app.data.character.Legs
@@ -18,8 +19,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
 
-class StoreScreenViewModel(sharedViewModel: SharedBankViewModel): ViewModel() {
-    private val bankLiveData: LiveData<Bank> = sharedViewModel.bankkLiveData
+class StoreScreenViewModel: ViewModel() {
 
     private val _hodePlagg: MutableStateFlow<List<Head>> = MutableStateFlow(emptyList())
     val hodePlagg: StateFlow<List<Head>> = _hodePlagg
@@ -30,9 +30,16 @@ class StoreScreenViewModel(sharedViewModel: SharedBankViewModel): ViewModel() {
     private val _bukser: MutableStateFlow<List<Legs>> = MutableStateFlow(emptyList())
     val bukser: StateFlow<List<Legs>> = _bukser
 
+    private val characterStore = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    val characterStateStore = MutableStateFlow(characterStore)
+
+    val bankRepository = BankRepository()
+
    /* private val _antCoins = mutableStateOf(amountCoins)
     val antCoins: State<Int> = _antCoins
 */
+
+
 
     init {
         getPlagg()
@@ -56,32 +63,33 @@ class StoreScreenViewModel(sharedViewModel: SharedBankViewModel): ViewModel() {
 
     /*
 
-    fun getBankLiveData(): LiveData<Bank> {
-        return bankLiveData
-    }
+
 }
 
 fun subtractMoney(clothingPrice: Int) {
-    val bank = bankLiveData.value
-    bank?.withdrawMoney(clothingPrice)
-    bank?.let { sharedViewModel.setBankLiveData(it) }
+   bankRepository.withdraw(clothingPrice)
 }
 
-fun getCurrentSum(): Int {
-    val bank = bankLiveData.value
-    return bank?.sum ?: 0 // Defaulter til 0 hvis bank er null
+
+
+fun getCurrentSum(): Int? {
+viewModelScope.launch {
+   bankRepository.getBankBalance()
+   }
 }
 
 
      */
-fun unlockPlagg(plagg: Clothing){
-        plagg.unlocked = true;
-    }
+
+
 
     //fjerne penger. Sette unlocked =true.
     //grå ut de man ikke har råd til.
 
 
+    fun unlockPlagg(plagg: Clothing){
+        plagg.unlocked = true;
+    }
     fun hentHodeplagg(): ArrayList<Head> {
         val listeHead = heads()
         val lockedHeads = ArrayList<Head>()

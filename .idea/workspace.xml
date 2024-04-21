@@ -10,13 +10,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25842465-1033-4524-b2b6-f97f2124cb25" name="Changes" comment="Organisert timeseries i hashmap med dato som nøkkel">
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/alt_head_short_hair.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/alt_legs_pants.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/alt_legs_shorts.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/alt_torso_long_sleeve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/alt_torso_short_sleeve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/head_short_hair.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/legs_pants.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/legs_shorts.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/lock_outline_filled.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/torso_long_sleeves.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Team24_app/app/src/main/res/drawable/torso_short_sleeves.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Character.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Character.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Clothing.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Clothing.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Head.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Head.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Legs.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Legs.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Torso.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/data/character/Torso.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/home/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/home/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/home/HomeScreenViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/home/HomeScreenViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreenFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreenFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreenViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/Team24_app/app/src/main/java/no/uio/ifi/IN2000/team24_app/ui/store/StoreScreenViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +274,7 @@
       </method>
     </configuration>
     <configuration name="StoreScreenPreview" type="ComposePreviewRunConfiguration" temporary="true">
-      <module name="team-24.Team24_app.app" />
+      <module name="Team24_app.app" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />

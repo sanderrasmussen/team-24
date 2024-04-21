@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,9 +30,9 @@ fun HomeScreen(
     LocationPermissionCard()
     viewModel.getCurrentWeather(LocalContext.current)   //this line needs to be here
 
-    val weatherState : ArrayList<WeatherDetails>? by viewModel.weatherState.collectAsState()
+    //val weatherState : ArrayList<WeatherDetails>? by viewModel.weatherState.collectAsState()
     Column {
-        Text(text = weatherState?.get(0)?.time ?:"loading")
+        //Text(text = weatherState?.get(0)?.time ?:"loading")
     }
 }
 
@@ -65,5 +66,8 @@ fun LocationPermissionCard(){
             }
         )
     }
+    
+    
+
 
 }
