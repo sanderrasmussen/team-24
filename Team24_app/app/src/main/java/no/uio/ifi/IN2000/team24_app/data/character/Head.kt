@@ -11,7 +11,6 @@ data class Head(
 
 val paintHead = Head("Paint", 0, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
 val short_hair = Head("Short Hair", 25, R.drawable.head_short_hair, 30, R.drawable.alt_head_short_hair)
-
 fun heads(): List<Head> {
     return listOf(
         //paintHead,    as much as it pains me to remove this beauty

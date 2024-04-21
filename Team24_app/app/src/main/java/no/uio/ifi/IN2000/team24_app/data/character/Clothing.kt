@@ -39,9 +39,9 @@ abstract class Clothing(
     open val name:String,
     open val heatValue: Int,
     open val imageAsset: Int,
-    open val price:Int,
+    open val price: Int,
     open val altAsset: Int,
-    var unlocked: Boolean = false
+    val unlocked: Boolean = false
  )
 
 
@@ -77,6 +77,9 @@ fun Inventory(characterState:MutableStateFlow<Character>, modifier:Modifier=Modi
                 }
 
             }
+        }
+        characterState.update {
+            it.copy(temperature = it.findAppropriateTemp())
         }
         showInventory = false // then, close the dialog.
     }
