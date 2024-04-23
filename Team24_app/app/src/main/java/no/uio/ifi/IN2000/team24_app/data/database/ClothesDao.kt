@@ -14,5 +14,29 @@ interface ClothesDao{
     fun delete(clothing : Clothes)
 
     @Query("SELECT * FROM Clothes")
-    fun getAll(): List<Clothes>
+    fun getAllOwnedHeads(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getAllOwnedTorsos(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getAllOwnedLegs(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getAllNotOwnedHeads(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getAllNotOwnedTorsos(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getAllNotOwnedLegs(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getEquipedHead(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getEquipedTorso(): List<Clothes>
+
+    @Query("SELECT * FROM Clothes")
+    fun getEquipedLegs(): List<Clothes>
 }
