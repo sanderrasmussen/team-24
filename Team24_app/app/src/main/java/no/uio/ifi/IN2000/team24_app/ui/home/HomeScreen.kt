@@ -737,6 +737,8 @@ fun AlertCarouselPreview(){
 }
 */
 
+
+/*
 @Preview()
 @Composable
 fun WeatherCardPreview(){
@@ -829,3 +831,5 @@ fun WeatherCardsTodayPreview(){
         WeatherCardsToday(currentHour = 12, weatherDetails = weatherDetails)
     }
 }
+
+*/
