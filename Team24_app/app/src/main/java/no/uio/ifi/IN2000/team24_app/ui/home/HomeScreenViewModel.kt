@@ -99,7 +99,7 @@ class HomeScreenViewModel(
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value?.first()?.air_temperature ?: 0.0
+        val temp: Double = currentWeatherState.value?.firstOrNull()?.air_temperature ?: 0.0
         Log.d(TAG, "Temp: $temp")
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
