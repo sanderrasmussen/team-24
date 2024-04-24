@@ -96,11 +96,6 @@ fun HomeScreen(navController: NavController,
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
 
-    val sharedPreferences = LocalContext.current.getSharedPreferences("Settings", Context.MODE_PRIVATE)
-
-    var isNorwegian by remember { mutableStateOf(sharedPreferences.getBoolean("isNorwegian", false)) }
-    var isDarkMode by remember { mutableStateOf(sharedPreferences.getBoolean("isDarkMode", false)) }
-    var selectedTextSize by remember { mutableStateOf(sharedPreferences.getInt("textSize", 18).sp) }
 
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
@@ -109,9 +104,8 @@ fun HomeScreen(navController: NavController,
 
     AlertCardCarousel(alerts = alertsUiState.alerts)
 
-
-    val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
+    val gray = Color(android.graphics.Color.parseColor("#cfd0d2"))
     val currentHour = LocalTime.now().hour
 
     val character by homevm.characterState.collectAsState()
@@ -129,15 +123,27 @@ fun HomeScreen(navController: NavController,
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
+    val currentTemp = currentWeatherDetails?.next_1_hours_symbol_code
+    val isRaining = currentTemp?.contains("rain", ignoreCase = true)
+    val isSnowing = currentTemp?.contains("snow", ignoreCase = true)
+    val isSleet = currentTemp?.contains("sleet", ignoreCase = true)
+
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
+
+    val topImage= when {
+        isRaining == true -> R.drawable.raindrops
+        isSnowing == true -> R.drawable.snowbackdrop
+        isSleet == true -> R.drawable.sleetbackdrop
+        else -> null
+    }
 
     val imageName = when {
         currentHour in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
         currentHour in 12 until 18 -> R.drawable.weather_day //12 pm to 6 pm
         currentHour in 18 until 22 -> R.drawable.weather_noon // 6pm to 10pm
-        else -> R.drawable.weather_night // 10pm to 6 am
+        else -> R.drawable.weather_night// 10pm to 6 am
     }
     //For better visibility the colour of the text for currentweather also changes
     val textColour = when {
@@ -148,16 +154,19 @@ fun HomeScreen(navController: NavController,
     Box (modifier = Modifier.fillMaxSize()){
         Image (
             painter= (painterResource(id= imageName)),
-            contentDescription= null,
+            contentDescription= "Background Image based on time of the day",
             contentScale= ContentScale.FillBounds,
             modifier= Modifier.matchParentSize())
 
+        if (topImage != null) {
             Image(
-                painter = (painterResource(id = R.drawable.raindrops)),
-                contentDescription = null,
+                painter = painterResource(id = topImage),
+                contentDescription = "Top image based on rain or snow",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.matchParentSize()
             )
+        }
+
 
     Column(
         //added these two to center the content
@@ -183,7 +192,7 @@ fun HomeScreen(navController: NavController,
                     text = formattedDate ?: "",
                     modifier = Modifier.padding(end = 8.dp),
                     color = textColour,
-                    fontSize = selectedTextSize,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -191,7 +200,7 @@ fun HomeScreen(navController: NavController,
                 Text(
                     text = formattedDay ?: "",
                     color = textColour,
-                    fontSize = selectedTextSize,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
@@ -199,7 +208,7 @@ fun HomeScreen(navController: NavController,
 
 
             Column() {
-                CurrentWeatherInfo(   textColour, 
+                CurrentWeatherInfo( textColour, 
                     currentTemperature = currentWeatherDetails?.air_temperature,
                     currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
                 )}
@@ -220,7 +229,7 @@ fun HomeScreen(navController: NavController,
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
-                .background(color = white)
+                //.background(color = white)
 
         ) {
             Column(
@@ -235,8 +244,8 @@ fun HomeScreen(navController: NavController,
                 ) {
                     Text(
                         text = "I dag",
-                        color = if (boldToday) Color.Black else Color.Gray,
-                        fontSize = selectedTextSize,
+                        color = if (boldToday) white else gray,
+                        fontSize = 20.sp,
                         fontWeight = if (boldToday) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = true
@@ -248,8 +257,8 @@ fun HomeScreen(navController: NavController,
 
                     Text(
                         text = "Neste 6 dager",
-                        color = if (boldNextSixDays) Color.Black else Color.Gray,
-                        fontSize = selectedTextSize,
+                        color = if (boldNextSixDays) white else gray,
+                        fontSize = 20.sp,
                         fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = false
