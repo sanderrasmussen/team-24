@@ -2,6 +2,7 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
@@ -64,10 +67,12 @@ import java.util.Locale
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -81,7 +86,7 @@ import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen(
+fun HomeScreen(navController: NavController,
     homevm: HomeScreenViewModel = viewModel(),
 ){
     val TAG = "HomeScreen"
@@ -92,15 +97,16 @@ fun HomeScreen(
     val alertsUiState by homevm.alerts.collectAsState()
     val balance by homevm.balance.collectAsState()
 
+
+
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
     LocationPermissionCard()
 
     AlertCardCarousel(alerts = alertsUiState.alerts)
 
-
-    val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
     val white = Color.White
+    val gray = Color(android.graphics.Color.parseColor("#cfd0d2"))
     val currentHour = LocalTime.now().hour
 
     val character by homevm.characterState.collectAsState()
@@ -118,9 +124,50 @@ fun HomeScreen(
 
     val currentWeatherDetails = currentWeatherState?.firstOrNull()
 
+    val currentTemp = currentWeatherDetails?.next_1_hours_symbol_code
+    val isRaining = currentTemp?.contains("rain", ignoreCase = true)
+    val isSnowing = currentTemp?.contains("snow", ignoreCase = true)
+    val isSleet = currentTemp?.contains("sleet", ignoreCase = true)
+
     var showToday by remember { mutableStateOf(true) }
     var boldToday by remember { mutableStateOf(true) }
     var boldNextSixDays by remember { mutableStateOf(false) }
+
+    val topImage= when {
+        isRaining == true -> R.drawable.raindrops
+        isSnowing == true -> R.drawable.snowbackdrop
+        isSleet == true -> R.drawable.sleetbackdrop
+        else -> null
+    }
+
+    val imageName = when {
+        currentHour in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
+        currentHour in 12 until 18 -> R.drawable.weather_day //12 pm to 6 pm
+        currentHour in 18 until 22 -> R.drawable.weather_noon // 6pm to 10pm
+        else -> R.drawable.weather_night// 10pm to 6 am
+    }
+    //For better visibility the colour of the text for currentweather also changes
+    val textColour = when {
+        currentHour in 6 until 22 -> Color.Black
+        else -> Color.White
+    }
+
+    Box (modifier = Modifier.fillMaxSize()){
+        Image (
+            painter= (painterResource(id= imageName)),
+            contentDescription= "Background Image based on time of the day",
+            contentScale= ContentScale.FillBounds,
+            modifier= Modifier.matchParentSize())
+
+        if (topImage != null) {
+            Image(
+                painter = painterResource(id = topImage),
+                contentDescription = "Top image based on rain or snow",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
+        }
+
 
     Column(
         //added these two to center the content
@@ -129,7 +176,6 @@ fun HomeScreen(
 
         modifier = Modifier
             .fillMaxSize()
-            .background(blue)
             .padding(16.dp)
     ) {
         Row(
@@ -146,16 +192,16 @@ fun HomeScreen(
                 Text(
                     text = formattedDate ?: "",
                     modifier = Modifier.padding(end = 8.dp),
-                    color = Color.Black,
-                    fontSize = 24.sp,
+                    color = textColour,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 val formattedDay = day()
                 Text(
                     text = formattedDay ?: "",
-                    color = Color.Black,
-                    fontSize = 20.sp,
+                    color = textColour,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
@@ -163,12 +209,14 @@ fun HomeScreen(
 
 
             Column() {
-                CurrentWeatherInfo(
+                CurrentWeatherInfo( textColour, 
                     currentTemperature = currentWeatherDetails?.air_temperature,
                     currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
                 )}
 
         }
+        //NavBar(navController)
+
         SatisfactionBar(satisfaction) // change to progress = satisfaction
 
         Row(
@@ -195,7 +243,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
-                .background(color = white)
+                //.background(color = white)
 
         ) {
             Column(
@@ -210,8 +258,8 @@ fun HomeScreen(
                 ) {
                     Text(
                         text = "I dag",
-                        color = if (boldToday) Color.Black else Color.Gray,
-                        fontSize = 18.sp,
+                        color = if (boldToday) white else gray,
+                        fontSize = 20.sp,
                         fontWeight = if (boldToday) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = true
@@ -223,8 +271,8 @@ fun HomeScreen(
 
                     Text(
                         text = "Neste 6 dager",
-                        color = if (boldNextSixDays) Color.Black else Color.Gray,
-                        fontSize = 18.sp,
+                        color = if (boldNextSixDays) white else gray,
+                        fontSize = 20.sp,
                         fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.clickable {
                             showToday = false
@@ -243,15 +291,16 @@ fun HomeScreen(
                         WeatherCardsNextSixDays(next6DaysWeatherState = next6DaysWeatherState)
                     }
                 }
-                NavBar()
+
             }
         }
-    }
+    } }
 
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 }
+
 
 
 
@@ -314,6 +363,7 @@ fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) 
 }
 @Composable
 fun CurrentWeatherInfo(
+    textColour: Color,
     currentTemperature: Double?,
     currentWeatherIcon: String?
 ) {
@@ -321,7 +371,7 @@ fun CurrentWeatherInfo(
     if (currentTemperature == null  || currentWeatherIcon.isNullOrEmpty()) {
         Text(
             text = "Nåværende temperatur: Ukjent",
-            color = Color.Black,
+            color = textColour,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
@@ -340,7 +390,7 @@ fun CurrentWeatherInfo(
 
             Text(
                 text = "$currentTemperature°C",
-                color = Color.Black,
+                color = textColour,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(8.dp)
@@ -459,7 +509,7 @@ fun getDrawableResourceId(iconName: String): Int {
     )
 }
 @Composable
-fun NavBar(){
+fun NavBar(navController: NavController){
     var isClicked by remember { mutableStateOf(false) }
     Spacer(modifier=Modifier.padding(8.dp))
     Row(modifier = Modifier
@@ -480,7 +530,7 @@ fun NavBar(){
             }
             Spacer(modifier = Modifier.padding(8.dp))
             Box(modifier = Modifier
-                .clickable { isClicked = true }
+                .clickable {  navController.navigate("SettingsScreen")  }
             ) {
                 Icon("settings")
             }
