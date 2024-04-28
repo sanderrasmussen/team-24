@@ -165,10 +165,6 @@ fun HomeScreen(
 
     }
 
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }) {innerPadding->
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -197,7 +193,7 @@ fun HomeScreen(
 
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(16.dp)
             ) {
 
                 Row(
@@ -322,7 +318,7 @@ fun HomeScreen(
         }
 
     }
-}
+
 
 
 
