@@ -25,7 +25,6 @@ import kotlinx.coroutines.runBlocking
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
-import no.uio.ifi.IN2000.team24_app.ui.settings.SettingsScreen
 import no.uio.ifi.IN2000.team24_app.ui.theme.Team24_appTheme
 
 
@@ -57,10 +56,7 @@ class MainActivity : ComponentActivity() {
 
         NavHost(navController = navController, startDestination = "HomeScreen") {
             composable("HomeScreen") {
-                HomeScreen(navController)
-            }
-            composable("SettingsScreen") {
-                SettingsScreen(navController)
+                HomeScreen(navController, isNetworkAvailable)
             }
         }
 
