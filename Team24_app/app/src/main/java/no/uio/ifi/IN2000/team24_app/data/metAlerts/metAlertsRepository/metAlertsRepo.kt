@@ -21,7 +21,7 @@ import kotlin.math.min
 
 
 
-class metAlertsRepo {
+class MetAlertsRepo {
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
 
 
@@ -115,6 +115,7 @@ class metAlertsRepo {
     }
 
     fun hentIkonID(event: String?): String {
+        //todo this may need to be remapped to use underscores like the files they actually provide
         return when (event) {
             "avalanches" -> "icon-warning-avalanches"
             "blowingSnow" -> "icon-warning-snow"
@@ -297,7 +298,7 @@ class metAlertsRepo {
 
 
 fun main ()= runBlocking {
-    val repo:metAlertsRepo = metAlertsRepo()
+    val repo:MetAlertsRepo = MetAlertsRepo()
     val point = Point(16.8645, 69.3163)
 
     val features: List<Features> = repo.hentFeatures()
