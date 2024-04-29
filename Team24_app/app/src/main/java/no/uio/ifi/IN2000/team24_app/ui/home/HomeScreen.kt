@@ -733,10 +733,10 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
 
 
 @Composable
-fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean = true, modifier: Modifier = Modifier){
+fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, modifier: Modifier = Modifier, showButtons : Boolean = true, ){
     Card(
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .height(140.dp)
                     .padding(16.dp),
