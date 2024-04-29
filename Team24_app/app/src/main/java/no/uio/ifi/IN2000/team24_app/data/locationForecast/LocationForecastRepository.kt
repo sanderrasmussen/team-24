@@ -53,12 +53,8 @@ class LocationForecastRepository{
             locationForecast = dataSource.getLocationForecastData(lat, lon)
         }
         fetchApiDataEveryHour(lat, lon)
-        //keepFirstIndexUpToDate()
-        getTodayWeather()
-        organizeForecastIntoMapByDay()
-        getWeatherNow()
-        getNext6daysForecast()
-        getNext7DaysForecast()
+        keepFirstIndexUpToDate()
+
 
     }
     private fun getProperties(): Properties? {
