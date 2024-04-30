@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -61,8 +60,8 @@ class LocationForecastRepository{
     private fun getProperties(): Properties? {
         return locationForecast?.properties
     }
-    private fun getTimeseries(): ArrayList<Timeseries> {
-        return getProperties()?.timeseries ?: ArrayList()
+    private fun getTimeseries(): ArrayList<Timeseries>? {
+        return getProperties()?.timeseries
     }
 
     private fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
@@ -90,7 +89,7 @@ class LocationForecastRepository{
         )
     }
 
-    private fun getWeatherNow(): WeatherDetails {
+    private fun getWeatherNow(): WeatherDetails? {
         var weatherNow =  createWeatherDetailObject(0)
         updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
@@ -107,7 +106,6 @@ class LocationForecastRepository{
         }
     }
     @SuppressLint("NewApi") //THIS CODE DEFFENITELY NEEDS REFACTORING HOWEVER IT SHOULD WORK FOR NOW
-    //dear author of the above comment^: it doesn't fucking work for now. "it should work" shouldn't be pushed to main ffs.
     private fun keepFirstIndexUpToDate() {
         CoroutineScope(Dispatchers.Default).launch {
 
@@ -116,30 +114,25 @@ class LocationForecastRepository{
                 var currentTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
 
-                var forecast = getTimeseries().getOrNull(0)?.time ?: "1970-01-01:00:00:00"
-                forecast = forecast.replace("Z", "")
-                forecast = forecast.replace("T", ":")
-                /*okay, basically the source of the bug: all this shit is nullable,
-                it shouldn't fucking be. at some point something needs to be something,
-                not nothing. this point is ideally NOT at render-time.
-                */
-                Log.d("BUG006: FORECAST:", forecast?: "null")
+                var forecast = getTimeseries()?.get(0)?.time
+                forecast = forecast?.replace("Z", "")
+                forecast = forecast?.replace("T", ":")
                 var forecastTime = LocalDateTime.parse(forecast, formatter)
-                Log.d("BUG006: FORECASTTIME", forecastTime.toString())
+
                 // Make a copy of the list to avoid ConcurrentModificationException
                 val timeseriesCopy = ArrayList(getTimeseries())
 
                 while (forecastTime.isBefore(currentTime.minusHours(1))) {
 
                     // Remove outdated weather data from the copied list
-                    if(timeseriesCopy.size >0){ timeseriesCopy.removeAt(0)}
+                    timeseriesCopy.removeAt(0)
 
                     currentTime = LocalDateTime.now()
 
                     // Update stateflows based on new data
-                    forecast = timeseriesCopy.getOrNull(0)?.time ?:"1970-01-01:00:00:00"
-                    forecast = forecast.replace("Z", "")
-                    forecast = forecast.replace("T", ":")
+                    forecast = timeseriesCopy.getOrNull(0)?.time
+                    forecast = forecast?.replace("Z", "")
+                    forecast = forecast?.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
 
 
@@ -160,8 +153,8 @@ class LocationForecastRepository{
         }
     }
     private fun getTodayWeather(): ArrayList<WeatherDetails>? {
-        var data = getTimeseries().subList(0,24)
-        var todayDate = data.getOrNull(0)?.time?.split("T")?.get(0)
+        var data = getTimeseries()?.subList(0,24)
+        var todayDate = data?.get(0)?.time?.split("T")?.get(0)
         var todayWeather : ArrayList<WeatherDetails>? = ArrayList<WeatherDetails>()
 
         data?.forEachIndexed { index, e ->
