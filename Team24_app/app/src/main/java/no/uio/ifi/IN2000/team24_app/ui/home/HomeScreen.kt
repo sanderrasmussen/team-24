@@ -794,11 +794,12 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
+            modifier = modifier
         ) {
             Icon(card.kortImageUrl)
             Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
             Text(text = "nivå: ${card.fareNiva}")
+
         }
 
 }
