@@ -797,9 +797,7 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
             modifier = modifier
         ) {
             Icon(card.kortImageUrl)
-            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-            Text(text = "nivå: ${card.fareNiva}")
-
+            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
         }
 
 }
@@ -820,7 +818,7 @@ fun AlertCardPreview(){
 }
 */
 
-/*
+
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCarouselPreview(){
@@ -837,7 +835,7 @@ fun AlertCarouselPreview(){
         AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
     }
 }
-*/
+
 
 
 /*

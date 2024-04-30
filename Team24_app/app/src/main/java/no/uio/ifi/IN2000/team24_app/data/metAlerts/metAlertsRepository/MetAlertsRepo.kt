@@ -81,77 +81,26 @@ class MetAlertsRepo {
     fun hentIkonID(event: String?): String {
         //todo this may need to be remapped to use underscores like the files they actually provide
         return when (event) {
-            "avalanches" -> "icon-warning-avalanches"
-            "blowingSnow" -> "icon-warning-snow"
-            "drivingConditions" -> "icon-warning-drivingconditions"
-            "flood" -> "icon-warning-flood"
-            "forestFire" -> "icon-warning-forestfire"
-            "gale" -> "icon-warning-wind"
-            "ice" -> "icon-warning-ice"
-            "icing" -> "icon-warning-generic"
-            "landslide" -> "icon-warning-landslide"
-            "polarLow" -> "icon-warning-polarlow"
-            "rain" -> "icon-warning-rain"
-            "rainFlood" -> "icon-warning-rainflood"
-            "snow" -> "icon-warning-snow"
-            "stormSurge" -> "icon-warning-stormsurge"
-            "lightning" -> "icon-warning-lightning"
-            "wind" -> "icon-warning-wind"
-            else -> "icon-warning-generic"
+            "avalanches" -> "icon_warning_avalanches"
+            "blowingSnow" -> "icon_warning_snow"
+            "drivingConditions" -> "icon_warning_drivingconditions"
+            "flood" -> "icon_warning_flood"
+            "forestFire" -> "icon_warning_forestfire"
+            "gale" -> "icon_warning_wind"
+            "ice" -> "icon_warning_ice"
+            "icing" -> "icon_warning_generic"
+            "landslide" -> "icon_warning_landslide"
+            "polarLow" -> "icon_warning_polarlow"
+            "rain" -> "icon_warning_rain"
+            "rainFlood" -> "icon_warning_rainflood"
+            "snow" -> "icon_warning_snow"
+            "stormSurge" -> "icon_warning_stormsurge"
+            "lightning" -> "icon_warning_lightning"
+            "wind" -> "icon_warning_wind"
+            else -> "icon_warning_generic"
         }
     }
 
-    fun sjekkOmBrukerIPolygon(point: Point, polygon: ArrayList<Point>): Boolean {
-        val antVertices: Int = polygon.size
-
-        val x = point.x
-        val y = point.y
-
-        var inArea: Boolean = false
-
-        var point1 = polygon[0]
-
-        for (i in 1..antVertices) {
-            val point2 = polygon[i % antVertices]
-
-                    //sjekke om om punktet er under den nedre kanten av polygonet
-            if (y > min(point1.y, point2.y)) {
-
-                //sjekke om om punktet er over den øvre kanten av polygonet
-                if (y <= max(point1.y, point2.y)) {
-
-                    //sjekke om punktet kan være til venstre for polygonet
-                    if (x <= max(point1.x, point2.x)) {
-
-                        val intersectionX: Double =
-                            (y - point1.y) * (point2.x - point1.x) / (point2.y - point1.y) + point1.x
-
-                        if (point1.x == point2.x || x <= intersectionX) {
-                            inArea = !inArea;
-                        }
-
-                    }
-
-                }
-            }
-            point1 = point2
-        }
-        return inArea
-    }
-
-
-    fun sjekkOmBrukerIMultiPolygon(
-        point: Point,
-        multiPolygon: ArrayList<ArrayList<Point>>
-    ): Boolean {
-        for (polygon in multiPolygon) {
-            if (sjekkOmBrukerIPolygon(point, polygon)) {
-                return true
-            }
-        }
-        return false
-
-    }
 
     suspend fun henteVarselKort(latitude:Double, longitude:Double): ArrayList<VarselKort> {
         val fareVarsler = arrayListOf<VarselKort>()
