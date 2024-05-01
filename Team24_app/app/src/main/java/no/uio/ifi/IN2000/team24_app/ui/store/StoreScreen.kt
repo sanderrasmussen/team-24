@@ -358,7 +358,7 @@ class StoreScreen {
                 },
                 dismissButton = {
                     TextButton(onClick = {
-                        // Call onDismissRequest when dismiss button is clicked
+                        //Kaller paa onDismissRequest naar cancel knappen er trykket paa
                         onDismissRequest()
                     }) {
                         Text(text = "Cancel")
