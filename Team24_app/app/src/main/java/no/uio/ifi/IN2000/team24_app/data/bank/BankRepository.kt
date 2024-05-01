@@ -3,8 +3,6 @@ package no.uio.ifi.IN2000.team24_app.data.bank
 import android.app.Application
 import android.content.Context
 import androidx.annotation.WorkerThread
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
