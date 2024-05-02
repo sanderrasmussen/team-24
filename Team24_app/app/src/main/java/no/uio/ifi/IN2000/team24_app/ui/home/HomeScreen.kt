@@ -730,11 +730,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                             )
                         }
                     }
-                    Row(    //the row for the alert cards and the navigation buttons
-                        modifier = Modifier.padding(4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ){
+
 
                         if (alerts.size == 1) {
                             //there is only one alert
@@ -742,42 +738,48 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                                 card = alerts[0],
                             )
                         } else {
-                            Button(
-                                onClick = {
-                                    index = (index + -1) % alerts.size
-                                    if (index < 0) index = alerts.size - 1
-                                },
+                            Row(    //the row for the alert cards and the navigation buttons
+                                modifier = Modifier.padding(4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "forrige varsel",
-                                )
-                            }
-                            //there are multiple alerts
-                            LazyRow(
-                                state = scrollState,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .height(130.dp)
-                            ) {
-                                itemsIndexed(alerts) { i, card ->
-                                    if (i == index) {
-                                        AlertCard(
-                                            card = card,
-                                            modifier = Modifier
-                                                .width(130.dp)
-                                        )
+                                Button(
+                                    onClick = {
+                                        index = (index + -1) % alerts.size
+                                        if (index < 0) index = alerts.size - 1
+                                    },
+                                ) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "forrige varsel",
+                                    )
+                                }
+                                //there are multiple alerts
+                                LazyRow(
+                                    state = scrollState,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .height(130.dp)
+                                ) {
+                                    itemsIndexed(alerts) { i, card ->
+                                        if (i == index) {
+                                            AlertCard(
+                                                card = card,
+                                                modifier = Modifier
+                                                    .width(130.dp)
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                            Button(onClick = {
-                                index = (index + 1) % alerts.size
-                                if (index < 0) index = alerts.size - 1
-                            }) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "neste varsel"
-                                )
+                                Button(onClick = {
+                                    index = (index + 1) % alerts.size
+                                    if (index < 0) index = alerts.size - 1
+                                }) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = "neste varsel"
+                                    )
+                                }
                             }
                             Row ( //the "scroll-bar", except each dot is clickable :). only really makes sense to show a scroll bar if there are multiple elements.
                                 horizontalArrangement = Arrangement.Center,
@@ -797,6 +799,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                                     )
                                 }
                             }
+
                         }
 
                     }
@@ -806,7 +809,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                 }
             }
         }
-    }
+
 
 
 
@@ -815,7 +818,7 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
+            modifier = modifier.padding(horizontal = 5.dp)
         ) {
             Icon(card.kortImageUrl)
             Text(text = "fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
