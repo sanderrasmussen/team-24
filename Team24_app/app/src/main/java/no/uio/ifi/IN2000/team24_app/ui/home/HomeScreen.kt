@@ -81,6 +81,7 @@ import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
+import androidx.compose.foundation.layout.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -235,7 +236,6 @@ fun HomeScreen(
                     }
 
                 }
-                //NavBar(navController)
 
                 SatisfactionBar(satisfaction) // change to progress = satisfaction
 
@@ -244,11 +244,17 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(20.dp)
+                        .height(40.dp)
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.coin),
+                        contentDescription = "currency",
+                        modifier = Modifier.size(40.dp)
+                    )
                     Text(
-                        text = "Penger: ${balance}",
-                        color = Color.Black
+                        text = "${balance}",
+                        color = textColour,
+                        fontSize = 30.sp
                     )
                 }
 
@@ -301,24 +307,43 @@ fun HomeScreen(
                                 }
                             )
                         }
-
                         Spacer(modifier = Modifier.height(16.dp))
-
                         if (showToday) {
                             currentWeatherState?.let { WeatherCardsToday(currentHour, it) }
                         } else {
                             if (currentWeatherDetails != null) {
-                                WeatherCardsNextSixDays(currentHour, next6DaysWeatherState = next6DaysWeatherState)
+                                WeatherCardsNextSixDays(
+                                    currentHour,
+                                    next6DaysWeatherState = next6DaysWeatherState
+                                )
                             }
-                        }
 
+                        }
                     }
+
                 }
+                Column(
+                    modifier = Modifier
+                        //.align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    NavBar(navController)
+                }
+
+            }
+
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                NavBar(navController)
             }
         }
-
-    }
-
+}
 
 
 
@@ -336,6 +361,7 @@ fun getNextSixDays(): List<String> {
     }
     return days
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun date(): String? {
@@ -438,6 +464,8 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
                 weatherDetail = weatherDetail
             )
         }
+
+
     }
 }
 
@@ -540,12 +568,13 @@ fun getDrawableResourceId(iconName: String): Int {
 @Composable
 fun NavBar(navController: NavController){
     var isClicked by remember { mutableStateOf(false) }
-    Spacer(modifier=Modifier.padding(8.dp))
+    Spacer(modifier = Modifier.height(16.dp))
     Row(modifier = Modifier
         .padding(8.dp)
         .fillMaxWidth()
         .background(Color.White),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         Box(modifier = Modifier
             .clickable { isClicked = true }
         ) {
@@ -559,9 +588,9 @@ fun NavBar(navController: NavController){
             }
             Spacer(modifier = Modifier.padding(8.dp))
             Box(modifier = Modifier
-                .clickable {  navController.navigate("SettingsScreen")  }
+                .clickable {  navController.navigate("StoreScreen")  }
             ) {
-                Icon("settings")
+                Icon("clothing_store")
             }
         }
         //Spacer(modifier=Modifier.padding(8.dp))
