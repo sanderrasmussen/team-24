@@ -48,12 +48,8 @@ class MetAlertsDataSource {
         try {
             //! THIS URL IS ONLY HERE TO TEST THE MULTIPOLYGON-PROBLEM
             //val TESTURL = "https://api.met.no/weatherapi/metalerts/2.0/test.json"
-<<<<<<< HEAD
-            val URL = "https://api.met.no/weatherapi/metalerts/2.0/all.json?lat=$latitude&lon=$Longitude"
-=======
->>>>>>> main
             val response: HttpResponse =
-                client.get("weatherapi/metalerts/2.0/current.json")
+                client.get("weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude")
             println(response.status)
             if (response.status.isSuccess()) {
                 val content: MetAlerts = response.body();
