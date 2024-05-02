@@ -823,7 +823,6 @@ fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
             Icon(card.kortImageUrl)
             Text(text = "fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
         }
-
 }
 
 
