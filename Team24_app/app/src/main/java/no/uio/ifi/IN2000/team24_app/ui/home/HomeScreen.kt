@@ -13,6 +13,7 @@ import java.time.LocalDate
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +69,9 @@ import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -265,31 +269,43 @@ fun HomeScreen(
                     )
                 }
 
-                Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
-                Spacer(modifier = Modifier.weight(1f))
+               Box(
+                   modifier = Modifier.fillMaxWidth(),
+                   contentAlignment = Alignment.Center,
+                   )
+               {
+                    Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
+                    Column (
+                       modifier = Modifier.align(CenterEnd),
+                        horizontalAlignment = End,
 
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    Column {
+                    ) {//the column with the inventory and the alert button
                         val context = LocalContext.current
                         Button(
                             onClick = {
-                                if(alertsUiState.value.alerts.isNotEmpty()){
+                                if (alertsUiState.value.alerts.isNotEmpty()) {
                                     showAlerts.value = true
-                                }else{
-                                    Toast.makeText(context, "Ingen farevarsler for din posisjon", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Ingen farevarsler for din posisjon",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             },
-                        ){
-                            Icon(iconName ="icon_warning_generic_orange", modifier = Modifier.size(24.dp))
+                        ) {
+                            Icon(
+                                iconName = "icon_warning_generic_orange",
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                         Inventory(homevm.characterState)
                     }
+
                 }
+                Spacer(modifier = Modifier.weight(1f))
+
 
                 Box(
                     modifier = Modifier
@@ -555,6 +571,8 @@ fun Icon(iconName: String?, modifier:Modifier = Modifier){
     }
 }
 
+
+//TODO reminding myself to look at why this is discouraged
 @SuppressLint("DiscouragedApi")
 @Composable
 fun getDrawableResourceId(iconName: String): Int {
@@ -717,23 +735,24 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ){
-                        Button(
-                            onClick = {
-                                index = (index + -1) % alerts.size
-                                if (index < 0) index = alerts.size - 1
-                                      },
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "forrige varsel",
-                            )
-                        }
+
                         if (alerts.size == 1) {
                             //there is only one alert
                             AlertCard(
                                 card = alerts[0],
                             )
                         } else {
+                            Button(
+                                onClick = {
+                                    index = (index + -1) % alerts.size
+                                    if (index < 0) index = alerts.size - 1
+                                },
+                            ) {
+                                androidx.compose.material3.Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "forrige varsel",
+                                )
+                            }
                             //there are multiple alerts
                             LazyRow(
                                 state = scrollState,
@@ -751,35 +770,37 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                                     }
                                 }
                             }
-                        }
-                        Button(onClick = {
-                            index = (index + 1) % alerts.size
-                            if (index < 0) index = alerts.size - 1
-                        }) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "neste varsel"
-                            )
-                        }
-                    }
-                        Row ( //the "scroll-bar", except each dot is clickable :)
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.height(16.dp)
-                        ){
-                            alerts.forEachIndexed { j, card ->
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
-                                    onClick = {index = j},
-                                    content = {},
-                                    modifier = Modifier
-                                        .padding(2.dp)
-                                        .width(12.dp)
-                                        .height(12.dp)
-                                        .clip(shape = CircleShape),
+                            Button(onClick = {
+                                index = (index + 1) % alerts.size
+                                if (index < 0) index = alerts.size - 1
+                            }) {
+                                androidx.compose.material3.Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = "neste varsel"
                                 )
                             }
+                            Row ( //the "scroll-bar", except each dot is clickable :). only really makes sense to show a scroll bar if there are multiple elements.
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.height(16.dp)
+                            ){
+                                alerts.forEachIndexed { j, card ->
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
+                                        onClick = {index = j},
+                                        content = {},
+                                        modifier = Modifier
+                                            .padding(2.dp)
+                                            .width(12.dp)
+                                            .height(12.dp)
+                                            .clip(shape = CircleShape),
+                                    )
+                                }
+                            }
                         }
+
+                    }
+
                     }
 
                 }

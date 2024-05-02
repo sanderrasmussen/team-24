@@ -79,7 +79,6 @@ class MetAlertsRepo {
     }
 
     fun hentIkonID(event: String?): String {
-        //todo this may need to be remapped to use underscores like the files they actually provide
         return when (event) {
             "avalanches" -> "icon_warning_avalanches"
             "blowingSnow" -> "icon_warning_snow"
@@ -139,7 +138,9 @@ class MetAlertsRepo {
         val fareNiva = hentFareNivaFraAwarenessLevel(feature.properties?.awarenessLevel)
         if(lokasjon!= null && fareNiva != null){
             val varselKort= VarselKort(farePaagar, kortImageUrl, lokasjon, fareNiva)
-            farevarsler.add(varselKort)
+            if(farePaagar != "Ferdig") {    //simple way to remove the warnings that have passed. no param at endpoint for this.
+                farevarsler.add(varselKort)
+            }
         }
     }
 }
