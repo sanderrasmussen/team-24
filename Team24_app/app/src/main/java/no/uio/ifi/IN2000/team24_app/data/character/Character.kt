@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,10 +21,13 @@ import androidx.compose.ui.unit.dp
  * @property torso The torso clothing item of the character.
  * @property legs The legs clothing item of the character.
  */
-data class Character(var head: Head, var torso: Torso, var legs: Legs) {
+data class Character(var head: Head, var torso: Torso, var legs: Legs, var temperature: Double = 0.0) {
+    init {
+       findAppropriateTemp()
+    }
 
-    fun appropriateTemp():Int{
-        return ((head.heatValue + torso.heatValue + legs.heatValue)/3).toInt()
+    fun findAppropriateTemp():Double{
+        return (head.heatValue + torso.heatValue + legs.heatValue)/3.0
     }
 }
 
@@ -42,9 +46,18 @@ data class Character(var head: Head, var torso: Torso, var legs: Legs) {
             ,
         ) {
             //TODO change the height based on the fraction of the standard size of the image. could be done programmatically, but for now it is hardcoded
-            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = character.head.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = character.torso.name, modifier = Modifier.padding(0.dp).height(100.dp).fillMaxSize())
-            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier.padding(0.dp).height(90.dp).fillMaxSize())
+            Image(painter = painterResource(id = character.head.imageAsset), contentDescription = character.head.name, modifier = Modifier
+                .padding(0.dp)
+                .height(100.dp)
+                .fillMaxSize())
+            Image(painter = painterResource(id = character.torso.imageAsset), contentDescription = character.torso.name, modifier = Modifier
+                .padding(0.dp)
+                .height(100.dp)
+                .fillMaxSize())
+            Image(painter = painterResource(id = character.legs.imageAsset), contentDescription = character.legs.name, modifier = Modifier
+                .padding(0.dp)
+                .height(88.dp)
+                .fillMaxSize())
         }
     }
 /**

@@ -56,8 +56,7 @@ class MainActivity : ComponentActivity() {
 
         NavHost(navController = navController, startDestination = "HomeScreen") {
             composable("HomeScreen") {
-                HomeScreen(
-                )
+                HomeScreen(navController, isNetworkAvailable)
             }
         }
 
