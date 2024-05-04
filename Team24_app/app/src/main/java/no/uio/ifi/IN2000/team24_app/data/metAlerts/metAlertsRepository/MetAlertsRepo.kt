@@ -23,45 +23,9 @@ import kotlin.math.min
 
 class MetAlertsRepo {
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
-
-
-    suspend fun hentFeatures(): List<Features> {
-        val content: MetAlerts? = dataSource.getMetAlertData()
-        return content?.features ?: emptyList()
-    }
-
-
-    fun hentProperties(feature: Features): Properties? {
-        return feature.properties
-
-    }
-
-    fun hentResources(feature: Features): List<Resources> {
-        return hentProperties(feature)?.resources ?: emptyList()
-    }
-
-
     fun hentInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
-
-
-    @SuppressLint("SimpleDateFormat")
-    fun skrivUtInterval(interval: List<String>): String {
-        val pattern = "yyyy-MM-dd'T'HH:mm:ssXXX"
-        val sdf = SimpleDateFormat(pattern)
-        val startDateTime = sdf.parse(interval[0])
-        val endDateTime = sdf.parse(interval[1])
-
-        val dateFormat =
-            DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.DEFAULT, Locale.getDefault())
-
-        val startFormatted = startDateTime?.let { dateFormat.format(it) }
-        val endFormatted = endDateTime?.let { dateFormat.format(it) }
-
-        return "Tidsperiode\n$startFormatted - faren pågår\n$endFormatted - faren over"
-    }
-
 
     @SuppressLint("SimpleDateFormat")
     fun omFarePaagaar(interval: List<String>): String {
@@ -115,205 +79,68 @@ class MetAlertsRepo {
     }
 
     fun hentIkonID(event: String?): String {
-        //todo this may need to be remapped to use underscores like the files they actually provide
         return when (event) {
-            "avalanches" -> "icon-warning-avalanches"
-            "blowingSnow" -> "icon-warning-snow"
-            "drivingConditions" -> "icon-warning-drivingconditions"
-            "flood" -> "icon-warning-flood"
-            "forestFire" -> "icon-warning-forestfire"
-            "gale" -> "icon-warning-wind"
-            "ice" -> "icon-warning-ice"
-            "icing" -> "icon-warning-generic"
-            "landslide" -> "icon-warning-landslide"
-            "polarLow" -> "icon-warning-polarlow"
-            "rain" -> "icon-warning-rain"
-            "rainFlood" -> "icon-warning-rainflood"
-            "snow" -> "icon-warning-snow"
-            "stormSurge" -> "icon-warning-stormsurge"
-            "lightning" -> "icon-warning-lightning"
-            "wind" -> "icon-warning-wind"
-            else -> "icon-warning-generic"
+            "avalanches" -> "icon_warning_avalanches"
+            "blowingSnow" -> "icon_warning_snow"
+            "drivingConditions" -> "icon_warning_drivingconditions"
+            "flood" -> "icon_warning_flood"
+            "forestFire" -> "icon_warning_forestfire"
+            "gale" -> "icon_warning_wind"
+            "ice" -> "icon_warning_ice"
+            "icing" -> "icon_warning_generic"
+            "landslide" -> "icon_warning_landslide"
+            "polarLow" -> "icon_warning_polarlow"
+            "rain" -> "icon_warning_rain"
+            "rainFlood" -> "icon_warning_rainflood"
+            "snow" -> "icon_warning_snow"
+            "stormSurge" -> "icon_warning_stormsurge"
+            "lightning" -> "icon_warning_lightning"
+            "wind" -> "icon_warning_wind"
+            else -> "icon_warning_generic"
         }
     }
 
 
-
-    fun hentCoordinatesPolygon(feature: Features?): ArrayList<ArrayList<ArrayList<Double>>> {
-        val geometry: Geometry? = feature?.geometry
-        return when (geometry) {
-            is Polygon -> geometry.coordinates
-            else -> ArrayList()
-        }
-
-    }
-
-
-    fun hentCoordinatesMultiPolygon(feature: Features?): ArrayList<ArrayList<ArrayList<ArrayList<Double>>>> {
-        val geometry: Geometry? = feature?.geometry
-        return when (geometry) {
-            is MultiPolygon -> geometry.coordinates
-            else -> ArrayList()
-        }
-
-    }
-
-    fun lagPolygon(coordinates: ArrayList<ArrayList<ArrayList<Double>>>): ArrayList<Point> {
-        val listeMedPoints = ArrayList<Point>()
-        for (ytterListe in coordinates) {
-            for (indreListe in ytterListe) {
-                val point = Point(indreListe[0], indreListe[1])
-                listeMedPoints.add(point)
-            }
-
-        }
-        return listeMedPoints
-
-
-    }
-
-    fun lagMultiPolygon(coordinates: ArrayList<ArrayList<ArrayList<ArrayList<Double>>>>): ArrayList<ArrayList<Point>> {
-        val multiPolygonPoints = ArrayList<ArrayList<Point>>()
-        for (coordinatesPolygon in coordinates) {
-            val polygonPoints = ArrayList<Point>()
-            for (ytterListe in coordinatesPolygon) {
-                for (indreListe in ytterListe) {
-                    val point = Point(indreListe[0], indreListe[1])
-                    polygonPoints.add(point)
-                }
-            }
-            multiPolygonPoints.add(polygonPoints)
-        }
-        return multiPolygonPoints
-    }
-
-
-    fun sjekkOmBrukerIPolygon(point: Point, polygon: ArrayList<Point>): Boolean {
-        val antVertices: Int = polygon.size
-
-        val x = point.x
-        val y = point.y
-
-        var inArea: Boolean = false
-
-        var point1 = polygon[0]
-
-        for (i in 1..antVertices) {
-            val point2 = polygon[i % antVertices]
-
-                    //sjekke om om punktet er under den nedre kanten av polygonet
-            if (y > min(point1.y, point2.y)) {
-
-//                    //sjekke om om punktet er over den øvre kanten av polygonet
-                if (y <= max(point1.y, point2.y)) {
-
-                    //sjekke om punktet kan være til venstre for polygonet
-                    if (x <= max(point1.x, point2.x)) {
-
-                        val intersectionX: Double =
-                            (y - point1.y) * (point2.x - point1.x) / (point2.y - point1.y) + point1.x
-
-                        if (point1.x == point2.x || x <= intersectionX) {
-                            inArea = !inArea;
-                        }
-
-                    }
-
-                }
-            }
-            point1 = point2
-        }
-        return inArea
-    }
-
-
-
-
-    fun sjekkOmBrukerIMultiPolygon(
-        point: Point,
-        multiPolygon: ArrayList<ArrayList<Point>>
-    ): Boolean {
-        for (polygon in multiPolygon) {
-            if (sjekkOmBrukerIPolygon(point, polygon)) {
-                return true
-            }
-        }
-        return false
-
-    }
-
-
-    suspend fun henteVarselKort(point:Point): ArrayList<VarselKort>{
+    suspend fun henteVarselKort(latitude:Double, longitude:Double): ArrayList<VarselKort> {
         val fareVarsler = arrayListOf<VarselKort>()
-        val features: List<Features> = hentFeatures()
+        val features: List<Features> =
+            dataSource.getMetAlertData(latitude, longitude)?.features ?: listOf()
         features.forEach { feature ->
             val geometry: Geometry? = feature.geometry
-            if(geometry!=null){
-                when(geometry){
-                    is Polygon -> {
-                        val coordinates= hentCoordinatesPolygon(feature)
-                        val polygon = lagPolygon(coordinates)
-                        val gyldig= sjekkOmBrukerIPolygon(point, polygon)
+            if (geometry != null) {
 
-                        if(gyldig){
-                            lagKort(feature, fareVarsler)
-                        }
-                    }
-                    is MultiPolygon ->{
-                        val coordinates= hentCoordinatesMultiPolygon(feature)
-                        val multiPolygon = lagMultiPolygon(coordinates)
-                        val gyldig= sjekkOmBrukerIMultiPolygon(point, multiPolygon)
-                        if(gyldig){
-                            lagKort(feature, fareVarsler)
-                        }
-                    }
-                }
+                lagKort(feature, fareVarsler)
             }
-
         }
+
+        //debug
+        /*
+        val cards = arrayListOf(
+
+            VarselKort("Pågår", "icon_warning_avalanches_red", "Oslo", "2;yellow;moderate"),
+            VarselKort("Ventes", "icon_warning_avalanches_orange", "Viken", "2;yellow;moderate"),
+            VarselKort("Ferdig", "icon_warning_avalanches_yellow", "Vestland", "2;yellow;moderate"),
+            VarselKort("Pågår", "icon_warning_extreme", "Oslo", "2;yellow;moderate"),
+        )
+        return cards
+
+         */
+        //end debug
         return fareVarsler
-
-
     }
+
     fun lagKort(feature:Features, farevarsler: ArrayList<VarselKort> ){
         val interval = hentInterval(feature)
         val farge = hentFarge(feature.properties?.awarenessLevel)
         val farePaagar = omFarePaagaar(interval)
-
         val kortImageUrl = "${hentIkonID(feature.properties?.event)}_$farge"
-
-
         val lokasjon = feature.properties?.area
-
         val fareNiva = hentFareNivaFraAwarenessLevel(feature.properties?.awarenessLevel)
-
         if(lokasjon!= null && fareNiva != null){
             val varselKort= VarselKort(farePaagar, kortImageUrl, lokasjon, fareNiva)
-            farevarsler.add(varselKort)
+            if(farePaagar != "Ferdig") {    //simple way to remove the warnings that have passed. no param at endpoint for this.
+                farevarsler.add(varselKort)
+            }
         }
     }
 }
-
-
-
-
-fun main ()= runBlocking {
-    val repo:MetAlertsRepo = MetAlertsRepo()
-    val point = Point(16.8645, 69.3163)
-
-    val features: List<Features> = repo.hentFeatures()
-    val feature: Features? = features.getOrNull(1)
-    val coordinates:ArrayList<ArrayList<ArrayList<ArrayList<Double>>>> = repo.hentCoordinatesMultiPolygon(feature)
-    val polygonen:ArrayList<ArrayList<Point>> = repo.lagMultiPolygon(coordinates)
-
-    println(polygonen)
-
-
-    if (repo.sjekkOmBrukerIMultiPolygon(point, polygonen)) {
-        println("Point is inside the polygon")
-    } else {
-        println("Point is outside the polygon")
-    }
-
-}
-
