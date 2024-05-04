@@ -30,7 +30,7 @@ class BankRepository()  {
     }
 
     //this method has to be called within a corutine
-    suspend fun getBankBalance(): Int? {
+    suspend fun getBankBalance(): Int {
         return withContext(Dispatchers.IO) {
             return@withContext bankDao.get().get(0).balance
         }

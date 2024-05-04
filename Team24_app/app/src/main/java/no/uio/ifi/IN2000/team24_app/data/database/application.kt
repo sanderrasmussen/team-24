@@ -65,6 +65,9 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             val pants = Clothes(R.drawable.legs_pants,"Pants", 5,  25, R.drawable.alt_legs_pants, "legs", true)
             val shorts = Clothes(R.drawable.legs_shorts,"Shorts", 25,  15, R.drawable.alt_legs_shorts, "legs", true)
             MyDatabase.getInstance().clothesDao().insertAll(paintLegs)
+            MyDatabase.getInstance().clothesDao().insertAll(pants)
+            MyDatabase.getInstance().clothesDao().insertAll(shorts)
+
         }
     }
 }

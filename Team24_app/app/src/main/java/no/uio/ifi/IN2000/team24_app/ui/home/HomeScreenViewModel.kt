@@ -73,6 +73,7 @@ class HomeScreenViewModel(
         locationForecastRepo.ObserveNext6DaysForecast()
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
+    //
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
 

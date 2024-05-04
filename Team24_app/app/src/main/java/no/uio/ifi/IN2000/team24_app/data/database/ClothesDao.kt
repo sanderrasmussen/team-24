@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import java.util.Date
 
 @Dao
 interface ClothesDao{
@@ -42,4 +43,10 @@ interface ClothesDao{
 
     @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM equipedclothes WHERE id=0)")
     fun getEquipedLegs(): List<Clothes>
+
+    @Query("SELECT lastLoginDate FROM EquipedClothes WHERE id=0")
+    fun getLastDate(): Date
+
+    @Query("UPDATE EquipedClothes SET lastLoginDate=strftime('%Y-%m-%d', 'now') WHERE id=0")
+    fun updateDate()
 }
