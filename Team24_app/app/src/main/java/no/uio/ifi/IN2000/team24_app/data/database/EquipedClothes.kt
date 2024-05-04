@@ -7,9 +7,9 @@ import java.util.Date
 @Entity
 data class EquipedClothes(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val equipedHead: Int,
-    val equipedTorso: Int,
-    val equipedLegs: Int,
+    val equipedHead: Int, //id
+    val equipedTorso: Int, //id
+    val equipedLegs: Int, // id
     val lastLoginDate: Date,
     val temperatureAtFirstLogin: Int
 )

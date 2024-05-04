@@ -13,30 +13,33 @@ interface ClothesDao{
     @Delete
     fun delete(clothing : Clothes)
 
+    @Query("UPDATE Clothes SET unlocked=true WHERE imageAsset= :clothingId")
+    fun setClothingToOwned(clothingId: Int): List<Clothes>
+
     @Query("SELECT * FROM Clothes")
     fun getAllOwnedHeads(): List<Clothes>
 
     @Query("SELECT * FROM Clothes")
     fun getAllOwnedTorsos(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='legs'")
     fun getAllOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='head'")
     fun getAllNotOwnedHeads(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='torso'")
     fun getAllNotOwnedTorsos(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs'")
     fun getAllNotOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedHead FROM equipedclothes WHERE id=0)")
     fun getEquipedHead(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedTorso FROM equipedclothes WHERE id=0)")
     fun getEquipedTorso(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM equipedclothes WHERE id=0)")
     fun getEquipedLegs(): List<Clothes>
 }
