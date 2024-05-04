@@ -216,8 +216,8 @@ fun HomeScreen(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                        //.padding(16.dp),
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
@@ -241,7 +241,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.Normal
                         )
                     }
-                    //Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
 
                     Column() {
@@ -302,9 +302,9 @@ fun HomeScreen(
                                 }
                             },
                         ) {
-                            Icon(
+                            c.Icon(
                                 iconName = "icon_warning_generic_orange",
-                                modifier = Modifier.size(24.dp)
+                                24
                             )
                         }
                         Inventory(homevm.characterState)
@@ -317,9 +317,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        //.padding(top = 16.dp)
-                        .clip(shape = RoundedCornerShape(24.dp))
-                    //.background(color = white)
+                        .padding(top = 16.dp)
 
                 ) {
                     Column(
@@ -357,7 +355,7 @@ fun HomeScreen(
                                 }
                             )
                         }
-                        //Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         if (showToday) {
                             currentWeatherState?.let { WeatherCardsToday(c, currentHour, it) }
                         } else {
@@ -381,7 +379,6 @@ fun HomeScreen(
                     .align(Alignment.BottomCenter)
 
             ) {
-
                 c.NavBar(navController)
             }
         }
@@ -742,13 +739,14 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
 
 @Composable
 fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
+    val c = Components()
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier.padding(horizontal = 5.dp)
         ) {
-            Icon(card.kortImageUrl)
-            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
+            c.Icon(card.kortImageUrl, 50)
+            Text(text = "Fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
         }
 }
 
