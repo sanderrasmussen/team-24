@@ -87,22 +87,17 @@ import no.uio.ifi.IN2000.team24_app.data.character.Legs
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
-import no.uio.ifi.IN2000.team24_app.ui.home.CurrentWeatherInfo
-import no.uio.ifi.IN2000.team24_app.ui.home.getDrawableResourceId
+import no.uio.ifi.IN2000.team24_app.ui.Components
 import java.time.LocalTime
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun StoreScreen(navController: NavController) {
+        val c = Components()
         val viewModel = StoreScreenViewModel()
 
-        val backgroundImage = when(LocalTime.now().hour){
-            in 6..12 -> R.drawable.weather_morning
-            in 12..18 -> R.drawable.weather_day
-            in 18..22 -> R.drawable.weather_noon
-            else -> R.drawable.weather_night
-        }
+        val backgroundImage = c.BackgroundImage()
 
         Box(
             modifier = Modifier.fillMaxSize()
@@ -121,7 +116,7 @@ import java.time.LocalTime
                     Box(modifier = Modifier.weight(1f)) {
                         GridView(viewModel = viewModel)
                     }
-                    NavBar(navController)
+                    c.NavBar(navController)
             }
 
         }
@@ -426,58 +421,6 @@ import java.time.LocalTime
 
 
         }
-
-
-
-    @Composable
-    fun NavBar(navController: NavController){
-        var isClicked by remember { mutableStateOf(false) }
-        Row(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .background(Color.White),
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            Box(modifier = Modifier
-                .clickable { isClicked = true }
-            ) {
-                Icon("quiz")}
-
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable {  navController.navigate("HomeScreen")  }
-            ) {
-                Icon("home")
-            }
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable { isClicked = true }
-            ) {
-                Icon("clothing_store")
-            }
-        }
-        //Spacer(modifier=Modifier.padding(8.dp))
-    }
-
-
-
-    @Composable
-    fun Icon(iconName: String?) {
-        // Hvis iconName er null eller tom streng, vis standardikon
-        if (iconName.isNullOrEmpty()) {
-            return
-        }
-        // Få ressurs-IDen dynamisk ved å bruke navnet på ikonfilen
-        val resourceId = getDrawableResourceId(iconName)
-
-        // Tegn bildet hvis ressurs-IDen er gyldig
-        if (resourceId != 0) {
-            Image(
-                painter = painterResource(id = resourceId),
-                contentDescription = iconName,  //bad description, but better than null. maybe pass desc. as parameter?
-                modifier = Modifier.size(50.dp) // Juster størrelsen etter behov
-            )
-        }
-    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable

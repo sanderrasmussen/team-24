@@ -82,6 +82,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 import androidx.compose.foundation.layout.*
+import no.uio.ifi.IN2000.team24_app.ui.Components
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -92,6 +93,8 @@ fun HomeScreen(
     homevm: HomeScreenViewModel = viewModel(),
 
 ){
+    val c = Components()
+
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
@@ -142,12 +145,8 @@ fun HomeScreen(
         else -> null
     }
 
-    val imageName = when (currentHour){
-        in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
-        in 12 until 18 -> R.drawable.weather_day //12 pm to 6 pm
-        in 18 until 22 -> R.drawable.weather_noon // 6pm to 10pm
-        else -> R.drawable.weather_night// 10pm to 6 am
-    }
+    val imageName = c.BackgroundImage()
+
     //For better visibility the colour of the text for currentweather also changes
     val textColour = when {
         currentHour in 6 until 22 -> Color.Black
@@ -193,42 +192,44 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
 
                 modifier = Modifier
+
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(10.dp)
             ) {
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                        .fillMaxWidth(),
+                        //.padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
                     Column(
                         modifier = Modifier.padding(18.dp)
                     ) {
-                        val formattedDate = date()
+                        val formattedDate = c.date()
                         Text(
                             text = formattedDate ?: "",
                             modifier = Modifier.padding(end = 8.dp),
                             color = textColour,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
 
-                        val formattedDay = day()
+                        val formattedDay = c.day()
                         Text(
                             text = formattedDay ?: "",
                             color = textColour,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    //Spacer(modifier = Modifier.width(16.dp))
 
 
                     Column() {
                         CurrentWeatherInfo(
+                            c,
                             textColour,
                             currentTemperature = currentWeatherDetails?.air_temperature,
                             currentWeatherIcon = currentWeatherDetails?.next_1_hours_symbol_code
@@ -260,14 +261,14 @@ fun HomeScreen(
 
                 Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
-                Spacer(modifier = Modifier.weight(1f))
+                //Spacer(modifier = Modifier.weight(1f))
 
                 Inventory(homevm.characterState)
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        //.padding(top = 16.dp)
                         .clip(shape = RoundedCornerShape(24.dp))
                     //.background(color = white)
 
@@ -307,84 +308,43 @@ fun HomeScreen(
                                 }
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        //Spacer(modifier = Modifier.height(16.dp))
                         if (showToday) {
-                            currentWeatherState?.let { WeatherCardsToday(currentHour, it) }
+                            currentWeatherState?.let { WeatherCardsToday(c, currentHour, it) }
                         } else {
                             if (currentWeatherDetails != null) {
-                                WeatherCardsNextSixDays(
+                                WeatherCardsNextSixDays(c,
                                     currentHour,
                                     next6DaysWeatherState = next6DaysWeatherState
                                 )
                             }
 
+
                         }
                     }
 
                 }
-                Column(
-                    modifier = Modifier
-                        //.align(Alignment.BottomCenter)
-                        .padding(16.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    NavBar(navController)
-                }
 
             }
-
 
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
+
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                NavBar(navController)
+
+                c.NavBar(navController)
             }
         }
 }
 
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getNextSixDays(): List<String> {
-    val currentDay = LocalDate.now()
-    val formatter = TextStyle.SHORT
-    val locale = Locale("no", "NO")
-    val days = mutableListOf<String>()
-
-    for (i in 0 until 6) {
-        val dayOfWeek = currentDay.plusDays(i.toLong()).dayOfWeek.getDisplayName(formatter, locale)
-        days.add(dayOfWeek)
-    }
-    return days
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun date(): String? {
-    val currentDate = LocalDate.now()
-    val formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale("no", "NO"))
-    val formattedDate = currentDate.format(formatter)
-    return (formattedDate)
-
-}
-@RequiresApi(Build.VERSION_CODES.O)
-fun day(): String? {
-    val currentDate = LocalDate.now()
-    val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("no", "NO"))
-    return (dayOfWeek)
-
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsNextSixDays(currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?) {
-    val days = getNextSixDays()
+fun WeatherCardsNextSixDays(c: Components, currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?) {
+    val days = c.getNextSixDays()
     val scrollState = rememberScrollState()
-    val today = day()
+    val today = c.day()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -397,6 +357,7 @@ fun WeatherCardsNextSixDays(currentHour: Int, next6DaysWeatherState: ArrayList<W
                 val weatherDetails = next6DaysWeatherState[index]
                 if (weatherDetails != null) {
                     WeatherCard(
+                        c,
                         currentHour,
                         highlighted = index==0,
                         weatherDetail = weatherDetails,
@@ -409,6 +370,7 @@ fun WeatherCardsNextSixDays(currentHour: Int, next6DaysWeatherState: ArrayList<W
 }
 @Composable
 fun CurrentWeatherInfo(
+    c : Components,
     textColour: Color,
     currentTemperature: Double?,
     currentWeatherIcon: String?
@@ -418,7 +380,7 @@ fun CurrentWeatherInfo(
         Text(
             text = "Nåværende temperatur: Ukjent",
             color = textColour,
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
         )
@@ -428,8 +390,8 @@ fun CurrentWeatherInfo(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Icon(
-                iconName = currentWeatherIcon,
+            c.Icon(
+                iconName = currentWeatherIcon, 70
 
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -437,7 +399,7 @@ fun CurrentWeatherInfo(
             Text(
                 text = "$currentTemperature°C",
                 color = textColour,
-                fontSize = 18.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(8.dp)
             )
@@ -447,7 +409,7 @@ fun CurrentWeatherInfo(
 
 
 @Composable
-fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
+fun WeatherCardsToday(c: Components, currentHour: Int, weatherDetails: List<WeatherDetails>) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
@@ -459,6 +421,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
             WeatherCard(
+                c,
                 currentHour,
                 highlighted = hourToShow == currentHour,
                 weatherDetail = weatherDetail
@@ -472,6 +435,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>) {
 
 @Composable
 fun WeatherCard(
+    c: Components,
     currentHour : Int,
     highlighted:Boolean = false,
     weatherDetail: WeatherDetails,
@@ -514,9 +478,9 @@ fun WeatherCard(
             //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
             //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
             if(weatherDetail.next_1_hours_symbol_code != null) {
-                Icon(weatherDetail.next_1_hours_symbol_code)
+                c.Icon(weatherDetail.next_1_hours_symbol_code, 50)
             }else{
-                Icon(weatherDetail.next_6_hours_symbol_code)
+                c.Icon(weatherDetail.next_6_hours_symbol_code, 50)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -530,71 +494,8 @@ fun WeatherCard(
 
         }
     }
+    Spacer(modifier = Modifier.padding(10.dp))
 }
-@Composable
-fun Icon(iconName: String?) {
-    // if iconName is empty, return
-    if (iconName.isNullOrEmpty()) {
-        return
-    }
-    // get the resourceId of the iconName
-    val resourceId = getDrawableResourceId(iconName)
-
-    // if resourceId available, paint the image
-    if (resourceId != 0) {
-        Image(
-            painter = painterResource(id = resourceId),
-            contentDescription = "Weather Icon",
-            modifier = Modifier.size(50.dp)
-        )
-    }
-}
-
-@SuppressLint("DiscouragedApi")
-@Composable
-fun getDrawableResourceId(iconName: String): Int {
-    val context = LocalContext.current
-    val packageName = context.packageName
-
-    // get resourceId based on icon name
-    return context.resources.getIdentifier(
-        iconName,
-        "drawable",
-        packageName
-    )
-}
-
-//TODO make an aesthetically pleasing navBar with icons for homescreen, storescreen and quizscreen
-@Composable
-fun NavBar(navController: NavController){
-    var isClicked by remember { mutableStateOf(false) }
-    Spacer(modifier = Modifier.height(16.dp))
-    Row(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth()
-        .background(Color.White),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Box(modifier = Modifier
-            .clickable { isClicked = true }
-        ) {
-            Icon("quiz")}
-
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable { isClicked = true }
-            ) {
-                Icon("home")
-            }
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable {  navController.navigate("StoreScreen")  }
-            ) {
-                Icon("clothing_store")
-            }
-        }
-        //Spacer(modifier=Modifier.padding(8.dp))
-    }
 
 @Composable
 fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
@@ -763,6 +664,7 @@ fun AlertCardCarousel(alerts:List<VarselKort>) {
 
 @Composable
 fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean = true, modifier: Modifier = Modifier){
+    val c = Components()
     Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
@@ -782,7 +684,7 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
                         ) {
                             androidx.compose.material3.Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "forrige varsel"
+                                contentDescription = "Forrige varsel"
                             )
                         }
                     }
@@ -791,16 +693,16 @@ fun AlertCard(card:VarselKort, changeCard: (Int) ->Unit, showButtons : Boolean =
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                            Icon(card.kortImageUrl)
-                            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
+                            c.Icon(card.kortImageUrl, 50)
+                            Text(text = "Fare ${card.farePaagar} i ${card.lokasjon}")
                             //TODO update repo to deliver a more concise UI-friendly string
-                            Text(text = "nivå: ${card.fareNiva.split(";")[2]}")
+                            Text(text = "Nivå: ${card.fareNiva.split(";")[2]}")
                     }
                     if(showButtons) {
                         Button(onClick = { changeCard(1) }) {
                             androidx.compose.material3.Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "neste varsel"
+                                contentDescription = "Neste varsel"
                             )
                         }
                     }
