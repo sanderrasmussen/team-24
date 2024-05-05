@@ -51,7 +51,7 @@ abstract class Clothing(
     open val imageAsset: Int,
     open val price: Int,
     open val altAsset: Int,
-    val unlocked: Boolean = false
+    var unlocked: Boolean = false
  )
 
 
