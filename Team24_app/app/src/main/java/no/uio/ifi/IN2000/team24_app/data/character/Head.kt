@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
 
 data class Head(
@@ -8,11 +9,11 @@ data class Head(
 ):Clothing(name, heatValue, imageAsset, price, altAsset){
 
 }
-val clothesRepo = ClothesRepository()
+private val clothesRepo = ClothesRepository()
 val paintHead = Head("Paint", 0, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
 val short_hair = Head("Short Hair", 25, R.drawable.head_short_hair, 30, R.drawable.alt_head_short_hair)
-suspend fun heads(): List<Head> {
+fun heads(): List<Head> = runBlocking{
 
-    return clothesRepo.getAllOwnedHeads()
+    clothesRepo.getAllOwnedHeads()
 
 }

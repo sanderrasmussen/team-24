@@ -67,13 +67,16 @@ class HomeScreenViewModel(
 
 
 ): ViewModel(){
-    var currentWeatherState:StateFlow<ArrayList<WeatherDetails>?> =
-        locationForecastRepo.ObserveTodayWeather();
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
-        locationForecastRepo.ObserveNext6DaysForecast()
+
+    private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
+    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
+
+    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails>> = _next6DaysState
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
     //
+
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
 
@@ -100,7 +103,8 @@ class HomeScreenViewModel(
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value?.first()?.air_temperature ?: 0.0
+        val temp: Double = currentWeatherState.value.firstOrNull()?.air_temperature ?: 0.0//Sander endret denne for å unngå NoSuchElementException om listen skulle være tom.
+
         Log.d(TAG, "Temp: $temp")
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
@@ -147,10 +151,17 @@ class HomeScreenViewModel(
                      _userLocation = LocationTracker(context).getLocation()
                  }
                  Log.d(TAG, "Position: ${_userLocation.toString()}")
+
                  locationForecastRepo.fetchLocationForecast(
                      _userLocation?.latitude ?: 59.913868,
                      _userLocation?.longitude ?: 10.752245
                  )
+                 _currentWeatherState.update {
+                     locationForecastRepo.getTodayWeather()
+                 }
+                 _next6DaysState.update {
+                     locationForecastRepo.getNext6daysForecast()
+                 }
 
             }
      }

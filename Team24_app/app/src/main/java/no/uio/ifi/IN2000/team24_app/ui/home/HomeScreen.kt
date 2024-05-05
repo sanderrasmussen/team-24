@@ -87,8 +87,8 @@ fun HomeScreen(
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
-    val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
-    val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
+    val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
+    val next6DaysWeatherState:ArrayList<WeatherDetails> by homevm.next6DaysState.collectAsState()
     val alertsUiState by homevm.alerts.collectAsState()
     val balance by homevm.balance.collectAsState()
 
@@ -287,7 +287,7 @@ fun day(): String? {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails?>?) {
+fun WeatherCardsNextSixDays(next6DaysWeatherState: ArrayList<WeatherDetails>) {
     val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()

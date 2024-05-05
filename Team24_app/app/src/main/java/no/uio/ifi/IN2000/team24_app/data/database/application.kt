@@ -68,6 +68,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             MyDatabase.getInstance().clothesDao().insertAll(pants)
             MyDatabase.getInstance().clothesDao().insertAll(shorts)
 
+            MyDatabase.getInstance().clothesDao().updateDate()
         }
     }
 }

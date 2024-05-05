@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.TypeConverter
 import java.util.Date
 
 @Dao
@@ -15,12 +16,12 @@ interface ClothesDao{
     fun delete(clothing : Clothes)
 
     @Query("UPDATE Clothes SET unlocked=true WHERE imageAsset= :clothingId")
-    fun setClothingToOwned(clothingId: Int): List<Clothes>
+    fun setClothingToOwned(clothingId: Int)
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='head'")
     fun getAllOwnedHeads(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes")
+    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='torso'")
     fun getAllOwnedTorsos(): List<Clothes>
 
     @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='legs'")
@@ -35,13 +36,13 @@ interface ClothesDao{
     @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs'")
     fun getAllNotOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedHead FROM equipedclothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT EquipedHead FROM EquipedClothes WHERE id=0)")
     fun getEquipedHead(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedTorso FROM equipedclothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedTorso FROM EquipedClothes WHERE id=0)")
     fun getEquipedTorso(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM equipedclothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM EquipedClothes WHERE id=0)")
     fun getEquipedLegs(): List<Clothes>
 
     @Query("SELECT lastLoginDate FROM EquipedClothes WHERE id=0")
@@ -49,4 +50,16 @@ interface ClothesDao{
 
     @Query("UPDATE EquipedClothes SET lastLoginDate=strftime('%Y-%m-%d', 'now') WHERE id=0")
     fun updateDate()
+}
+//I supposedly needed this in order to store Date in roomDB
+class DateConverter {
+    @TypeConverter
+    fun toDate(timestamp: Long): Date {
+        return Date(timestamp)
+    }
+
+    @TypeConverter
+    fun toTimestamp(date: Date): Long {
+        return date.time
+    }
 }
