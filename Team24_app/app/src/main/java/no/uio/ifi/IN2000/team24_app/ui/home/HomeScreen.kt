@@ -740,7 +740,7 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
 @Composable
 fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
     val c = Components()
-        Column(
+    Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier.padding(horizontal = 5.dp)

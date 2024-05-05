@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import no.uio.ifi.IN2000.team24_app.R
 import java.time.LocalDate
 import java.time.LocalTime
@@ -32,6 +33,10 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 class Components {
+
+    //This function returns a list of the name of next six days in a short format
+    //for example man for Mandag. The language it returns it in is norwegian which is determined
+    //by the locale variable
     @RequiresApi(Build.VERSION_CODES.O)
     fun getNextSixDays(): List<String> {
         val currentDay = LocalDate.now()
@@ -46,7 +51,7 @@ class Components {
         return days
     }
 
-
+    //This function returns the current date in the format dd.MMMM yyyy in Norwegian
     @RequiresApi(Build.VERSION_CODES.O)
     fun date(): String? {
         val currentDate = LocalDate.now()
@@ -55,6 +60,8 @@ class Components {
         return (formattedDate)
 
     }
+
+    //This function returns the current day in Norwegian
     @RequiresApi(Build.VERSION_CODES.O)
     fun day(): String? {
         val currentDate = LocalDate.now()
@@ -63,7 +70,8 @@ class Components {
 
     }
 
-
+    // This function returns the resource ID of the background image determined by the time
+    // of the day
     @RequiresApi(Build.VERSION_CODES.O)
     fun BackgroundImage(): Int {
         return when (LocalTime.now().hour){
@@ -75,6 +83,8 @@ class Components {
 
     }
 
+    //This function takes an icon name and size as arguments and then displays the icon
+    //in a composable UI
     @Composable
     fun Icon(iconName: String?, size: Int) {
         // if iconName is empty, return
@@ -94,6 +104,9 @@ class Components {
         }
     }
 
+
+
+    //This function returns the resourceID for a given icon name.
     @SuppressLint("DiscouragedApi")
     @Composable
     fun getDrawableResourceId(iconName: String): Int {
@@ -108,9 +121,14 @@ class Components {
         )
     }
 
-    //TODO make an aesthetically pleasing navBar with icons for homescreen, storescreen and quizscreen
+//Navigation bar which allows users to navigate between three different screens
     @Composable
     fun NavBar(navController: NavController){
+        //get the current back stack entry associated with the navController
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+    //get the route assosiated with the current back stack entry
+        val currentRoute = navBackStackEntry?.destination?.route
+
         var isClicked by remember { mutableStateOf(false) }
 
         Row(modifier = Modifier
@@ -125,19 +143,30 @@ class Components {
                 Icon("quiz", 40)}
 
             Spacer(modifier = Modifier.padding(8.dp))
+
             Box(modifier = Modifier
-                .clickable {  navController.navigate("HomeScreen")  }
+                .clickable {
+                    if (currentRoute != "HomeScreen") { //navigates to homescreen if not already on it
+                        navController.navigate("HomeScreen")
+                    }
+                }
             ) {
                 Icon("home", 40)
             }
+
             Spacer(modifier = Modifier.padding(8.dp))
+
             Box(modifier = Modifier
-                .clickable {  navController.navigate("StoreScreen")  }
+                .clickable {
+                    if (currentRoute != "StoreScreen") { //navigates to storescreen if not already on it
+                        navController.navigate("StoreScreen")
+                    }
+                }
             ) {
                 Icon("clothing_store", 40)
             }
         }
-        //Spacer(modifier=Modifier.padding(8.dp))
+
     }
 
 
