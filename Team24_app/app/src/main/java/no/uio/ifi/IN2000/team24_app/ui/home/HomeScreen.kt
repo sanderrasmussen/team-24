@@ -364,7 +364,6 @@ fun HomeScreen(
                                 }
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
                         if (showToday) {
                             currentWeatherState?.let { WeatherCardsToday(currentHour= currentHour, weatherDetails = it, detailState = showWeatherDetailCard) }
                         } else {
@@ -379,7 +378,6 @@ fun HomeScreen(
                 }
 
             }
-
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -411,7 +409,6 @@ fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<
                 if (weatherDetails != null) {
                     WeatherCard(
                         currentHour,
-                        highlighted = index==0,
                         weatherDetail = weatherDetails,
                         titleOverride = day,
                         onClick = { detailState.value = weatherDetails })
@@ -467,20 +464,15 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, de
             .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically
 
     ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
-            val hourToShow = (currentHour + index) % 24
             WeatherCard(
                 currentHour = currentHour,
-                highlighted = hourToShow == currentHour,
                 weatherDetail = weatherDetail,
                 onClick = { detailState.value = weatherDetail },
             )
         }
-
-
     }
 }
 
@@ -491,7 +483,6 @@ fun WeatherCard(
     weatherDetail: WeatherDetails,
     onClick : () -> Unit,
     modifier : Modifier = Modifier,
-    highlighted:Boolean = false,
     titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
 ) {
     val cardColour = when (currentHour)  {
@@ -506,7 +497,7 @@ fun WeatherCard(
 
     Card(
         modifier = modifier
-            .padding(vertical = 10.dp, horizontal = 3.dp)
+            .padding(vertical = 16.dp, horizontal = 4.dp)
             .height(150.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
@@ -516,7 +507,7 @@ fun WeatherCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
