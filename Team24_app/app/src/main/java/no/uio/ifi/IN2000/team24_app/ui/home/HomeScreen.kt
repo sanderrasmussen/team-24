@@ -91,6 +91,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
 import androidx.lifecycle.ViewModel
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.Icon
@@ -787,7 +788,7 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 6.dp, vertical = 12.dp),
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
@@ -821,9 +822,14 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
 
 
                     }else { //this is one of the next6days-cards
+                        val scrollState = rememberScrollState()
+                        LaunchedEffect(Unit) { scrollState.animateScrollTo(0) } //on first compose, scroll to top
                         Text(text = "detaljer for $dayStr", fontSize = 24.sp)
-                        //! here's the bitch abt this - to get hour by hour we need a new method from the repo, but i have no fucking idea whats up with the repo... still waiting for some refactor
                         Column(
+                            modifier = Modifier
+                                .height(200.dp)
+                                .verticalScroll(scrollState)
+
 
                         ) {
                             weatherDetails.forEach { hourlyDetail ->
