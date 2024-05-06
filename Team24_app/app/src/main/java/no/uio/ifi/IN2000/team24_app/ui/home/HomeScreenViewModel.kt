@@ -153,7 +153,12 @@ class HomeScreenViewModel(
          viewModelScope.launch(Dispatchers.IO) {
             if (_userLocation.value == null) {
                 val tracker = LocationTracker(context)
-                _userLocation.value = tracker.getLocation().result
+                tracker.getLocation().addOnSuccessListener { location ->
+                    Log.d(TAG, "In onSuccessListener w/ location: $location")
+                    _userLocation.update { location }
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "Failed to get location: ${e.message}")
+                }
             }
          }
         getCurrentWeather()
@@ -166,7 +171,7 @@ class HomeScreenViewModel(
             //!position broke, todo look into LocationTracker
             Log.d(
                 TAG,
-                "Position: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}"
+                "Position in getCurrentWeather: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}"
             )
             locationForecastRepo.fetchLocationForecast(
                 _userLocation.value?.latitude ?: 59.913868,
@@ -180,6 +185,10 @@ class HomeScreenViewModel(
     fun getRelevantAlerts() {
         viewModelScope.launch(Dispatchers.IO) {
             //!position broke, todo look into LocationTracker
+            Log.d(
+                TAG,
+                "Position in getCurrentWeather: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}"
+            )
             val cards = metAlertsRepo.henteVarselKort(
                 Point(
                     _userLocation.value?.latitude ?: 59.913868,
