@@ -45,6 +45,15 @@ interface ClothesDao{
     @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM EquipedClothes WHERE id=0)")
     fun getEquipedLegs(): List<Clothes>
 
+    @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
+    fun writeEquipedHead(clothingId : Int)
+
+    @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
+    fun writeEquipedTorso(clothingId: Int)
+
+    @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
+    fun writeEquipedLegs(clothingId: Int)
+
     @Query("SELECT lastLoginDate FROM EquipedClothes WHERE id=0")
     fun getLastDate(): Date
 

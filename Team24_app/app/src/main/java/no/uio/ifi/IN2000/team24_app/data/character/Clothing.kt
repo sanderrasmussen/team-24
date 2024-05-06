@@ -41,12 +41,15 @@ abstract class Clothing(
     open val imageAsset: Int,
     open val price: Int,
     open val altAsset: Int,
-    val unlocked: Boolean = false
+    var unlocked: Boolean = false
  )
 
-
-fun writeClothesToDisk(character: Character){
+private val clothingRepo = ClothesRepository()
+suspend fun writeEquipedClothesToDisk(character: Character){//TO BE CALLED FROM VIEWMODEL
     //TODO, IMPORTANT! THIS SHOULD CALL A SEPARATE ASYNC-METHOD, TO WRITE ON AN IO-THREAD
+    clothingRepo.writeEquipedHead(character.head.imageAsset)
+    clothingRepo.writeEquipedTorso(character.torso.imageAsset)
+    clothingRepo.writeEquipedLegs(character.legs.imageAsset)
 }
 
 @Composable

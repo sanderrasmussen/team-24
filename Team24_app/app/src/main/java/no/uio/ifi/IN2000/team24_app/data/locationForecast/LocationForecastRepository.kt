@@ -86,7 +86,7 @@ class LocationForecastRepository{
         return weatherNow
     }
 
-    @SuppressLint("NewApi") //THIS CODE DEFFENITELY NEEDS REFACTORING HOWEVER IT SHOULD WORK FOR NOW
+    @SuppressLint("NewApi") //THIS CODE HAS BENN REFACTORED AND SHOULD NOT CASE INDEX OUT OF BOUNDS ANYMORE
     fun keepFirstIndexUpToDate()  {
 
             var currentTime = LocalDateTime.now()
@@ -107,7 +107,6 @@ class LocationForecastRepository{
 
                 currentTime = LocalDateTime.now()
 
-                // Update stateflows based on new data
                 forecast = timeseriesCopy.getOrNull(0)?.time
                 forecast = forecast?.replace("Z", "")
                 forecast = forecast?.replace("T", ":")

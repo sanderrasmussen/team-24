@@ -65,6 +65,18 @@ class ClothesRepository {
         return  convertToLegs(clothesDao.getEquipedLegs().first())
     }
 
+    fun writeEquipedHead(immageAsset :Int){
+        clothesDao.writeEquipedHead(immageAsset)
+    }
+
+    fun writeEquipedTorso(immageAsset : Int){
+        clothesDao.writeEquipedTorso(immageAsset)
+    }
+
+    fun writeEquipedLegs(immageAsset: Int){
+        clothesDao.writeEquipedLegs(immageAsset)
+    }
+
     fun updateDate(){
         clothesDao.updateDate()
     }
