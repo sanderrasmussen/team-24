@@ -38,7 +38,8 @@ class LocationForecastRepository{
     private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     private var locationForecast : LocationForecast? = null //PREFEREABLY only locationforecast should be nullable
 
-    private var forecastMap : HashMap<String, ArrayList<WeatherDetails>>? = null
+    private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
+
     //re-fetching api every hour is what i have in mind
     suspend fun fetchLocationForecast(lat:Double, lon: Double): LocationForecast? {
         //get forecast object
@@ -46,6 +47,7 @@ class LocationForecastRepository{
             locationForecast = dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
         }
         keepFirstIndexUpToDate()
+        forecastMap= organizeForecastIntoMapByDay()
         return locationForecast;
 
     }
@@ -132,7 +134,7 @@ class LocationForecastRepository{
         return todayWeather
     }
 
-    fun getWeatherOnDate(date : String?) : ArrayList<WeatherDetails>? {
+    fun getWeatherOnDate(date : String) : ArrayList<WeatherDetails>? {
         return forecastMap?.get(date)
     }
 
@@ -150,8 +152,8 @@ class LocationForecastRepository{
         return next7DaysForecast
     }
     @SuppressLint("NewApi")
-    fun getNext6daysForecast() :ArrayList<WeatherDetails> { //returns next 6 days with 12:00 as only weatherdetails object of each day
-        var next6DaysForecast = ArrayList<WeatherDetails>()
+    fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
+        var next6DaysForecast = ArrayList<WeatherDetails?>()
         for (i in 1..7) {
             val current = LocalDateTime.now().plusDays(i.toLong())
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -167,8 +169,8 @@ class LocationForecastRepository{
 
 
     }
-    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
-        var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
+    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>> {
+        var ForecastMap  = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
             var weatherObject : WeatherDetails = createWeatherDetailObject(index)
             var date = e.time?.split("T")?.get(0)
@@ -178,10 +180,10 @@ class LocationForecastRepository{
 
             if (ForecastMap != null) {
                 if (!ForecastMap.containsKey(date)){
-                    ForecastMap!![date] = arrayListOf<WeatherDetails>()
+                    ForecastMap[date] = arrayListOf<WeatherDetails>()
                 }
             }
-            ForecastMap!![date]?.add(weatherObject)
+            ForecastMap[date]?.add(weatherObject)
         }
         return ForecastMap
     }

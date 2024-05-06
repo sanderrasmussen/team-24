@@ -69,10 +69,10 @@ class HomeScreenViewModel(
 ): ViewModel(){
 
     private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
-    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
+    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails?>?>(ArrayList())
 
     val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails>> = _next6DaysState
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
     //
