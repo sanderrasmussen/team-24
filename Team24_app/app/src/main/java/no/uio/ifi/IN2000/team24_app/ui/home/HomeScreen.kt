@@ -13,6 +13,7 @@ import java.time.LocalDate
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +69,9 @@ import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -86,6 +90,13 @@ import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
+import androidx.compose.foundation.layout.*
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.Icon
+import no.uio.ifi.IN2000.team24_app.ui.NavBar
+import no.uio.ifi.IN2000.team24_app.ui.date
+import no.uio.ifi.IN2000.team24_app.ui.day
+import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
@@ -112,9 +123,6 @@ fun HomeScreen(
         //alertsUiState.value.alerts.isNotEmpty()
         false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
     )}
-
-    LocationPermissionCard()
-
     if(showAlerts.value){
         AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
     }
@@ -123,6 +131,10 @@ fun HomeScreen(
         WeatherDetailCard(showWeatherDetailCard)
     }
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
+
+    Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
+
+    LocationPermissionCard()
 
     val white = Color.White
     val gray = Color(android.graphics.Color.parseColor("#cfd0d2"))
@@ -159,12 +171,8 @@ fun HomeScreen(
         else -> null
     }
 
-    val imageName = when (currentHour){
-        in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
-        in 12 until 18 -> R.drawable.weather_day //12 pm to 6 pm
-        in 18 until 22 -> R.drawable.weather_noon // 6pm to 10pm
-        else -> R.drawable.weather_night// 10pm to 6 am
-    }
+    val imageName = BackgroundImage()
+
     //For better visibility the colour of the text for currentweather also changes
     val textColour = when {
         currentHour in 6 until 22 -> Color.Black
@@ -211,8 +219,9 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
 
                 modifier = Modifier
+
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(10.dp)
             ) {
 
                 Row(
@@ -230,7 +239,7 @@ fun HomeScreen(
                             text = formattedDate ?: "",
                             modifier = Modifier.padding(end = 8.dp),
                             color = textColour,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -238,7 +247,7 @@ fun HomeScreen(
                         Text(
                             text = formattedDay ?: "",
                             color = textColour,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }
@@ -254,7 +263,6 @@ fun HomeScreen(
                     }
 
                 }
-                //NavBar(navController)
 
                 SatisfactionBar(satisfaction) // change to progress = satisfaction
 
@@ -263,26 +271,62 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(20.dp)
+                        .height(40.dp)
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.coin),
+                        contentDescription = "currency",
+                        modifier = Modifier.size(40.dp)
+                    )
                     Text(
-                        text = "Penger: ${balance}",
-                        color = Color.Black
+                        text = "${balance}",
+                        color = textColour,
+                        fontSize = 30.sp
                     )
                 }
 
-                Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
 
+               Box(
+                   modifier = Modifier.fillMaxWidth(),
+                   contentAlignment = Alignment.Center,
+                   )
+               {
+                    Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
+                    Column (
+                       modifier = Modifier.align(CenterEnd),
+                        horizontalAlignment = End,
+
+                    ) {//the column with the inventory and the alert button
+                        val context = LocalContext.current
+                        Button(
+                            onClick = {
+                                if (alertsUiState.value.alerts.isNotEmpty()) {
+                                    showAlerts.value = true
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Ingen farevarsler for din posisjon",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                        ) {
+                            Icon(
+                                iconName = "icon_warning_generic_orange",
+                                24
+                            )
+                        }
+                        Inventory(homevm.characterState)
+                    }
+
+                }
                 Spacer(modifier = Modifier.weight(1f))
 
-                Inventory(homevm.characterState)
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
-                        .clip(shape = RoundedCornerShape(24.dp))
-                    //.background(color = white)
 
                 ) {
                     Column(
@@ -320,62 +364,38 @@ fun HomeScreen(
                                 }
                             )
                         }
-
                         Spacer(modifier = Modifier.height(16.dp))
-
                         if (showToday) {
                             currentWeatherState?.let { WeatherCardsToday(currentHour= currentHour, weatherDetails = it, detailState = showWeatherDetailCard) }
                         } else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(currentHour, next6DaysWeatherState = next6DaysWeatherState, detailState = showWeatherDetailCard)
                             }
-                        }
 
+
+                        }
                     }
+
                 }
+
+            }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+
+            ) {
+                NavBar(navController)
             }
         }
-
-    }
-
-
-
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getNextSixDays(): List<String> {
-    val currentDay = LocalDate.now()
-    val formatter = TextStyle.SHORT
-    val locale = Locale("no", "NO")
-    val days = mutableListOf<String>()
-
-    for (i in 0 until 6) {
-        val dayOfWeek = currentDay.plusDays(i.toLong()).dayOfWeek.getDisplayName(formatter, locale)
-        days.add(dayOfWeek)
-    }
-    return days
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun date(): String? {
-    val currentDate = LocalDate.now()
-    val formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale("no", "NO"))
-    val formattedDate = currentDate.format(formatter)
-    return (formattedDate)
-
-}
-@RequiresApi(Build.VERSION_CODES.O)
-fun day(): String? {
-    val currentDate = LocalDate.now()
-    val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("no", "NO"))
-    return (dayOfWeek)
-
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsNextSixDays(currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?,detailState: MutableState<WeatherDetails?>) {
+fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?,detailState: MutableState<WeatherDetails?>) {
     val days = getNextSixDays()
+
     val scrollState = rememberScrollState()
     val today = day()
     Row(
@@ -412,7 +432,7 @@ fun CurrentWeatherInfo(
         Text(
             text = "Nåværende temperatur: Ukjent",
             color = textColour,
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
         )
@@ -423,7 +443,7 @@ fun CurrentWeatherInfo(
         ) {
 
             Icon(
-                iconName = currentWeatherIcon,
+                iconName = currentWeatherIcon, 70
 
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -431,7 +451,7 @@ fun CurrentWeatherInfo(
             Text(
                 text = "$currentTemperature°C",
                 color = textColour,
-                fontSize = 18.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(8.dp)
             )
@@ -454,12 +474,14 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, de
         weatherDetails.forEachIndexed { index, weatherDetail ->
             val hourToShow = (currentHour + index) % 24
             WeatherCard(
-                currentHour,
+                currentHour = currentHour,
                 highlighted = hourToShow == currentHour,
                 weatherDetail = weatherDetail,
                 onClick = { detailState.value = weatherDetail },
             )
         }
+
+
     }
 }
 
@@ -512,9 +534,9 @@ fun WeatherCard(
             //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
             //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
             if(weatherDetail.next_1_hours_symbol_code != null) {
-                Icon(weatherDetail.next_1_hours_symbol_code)
+                Icon(weatherDetail.next_1_hours_symbol_code, 50)
             }else{
-                Icon(weatherDetail.next_6_hours_symbol_code)
+                Icon(weatherDetail.next_6_hours_symbol_code, 50)
             }
             Text(
                 text = "${weatherDetail.air_temperature}°C",
@@ -526,71 +548,8 @@ fun WeatherCard(
             )
         }
     }
+    Spacer(modifier = Modifier.padding(10.dp))
 }
-@Composable
-fun Icon(iconName: String?, modifier: Modifier = Modifier) {
-    // Hvis iconName er null eller tom streng, vis standardikon
-
-    if (iconName.isNullOrEmpty()) {
-        return
-    }
-    // get the resourceId of the iconName
-    val resourceId = getDrawableResourceId(iconName)
-
-    // if resourceId available, paint the image
-    if (resourceId != 0) {
-        Image(
-            painter = painterResource(id = resourceId),
-            contentDescription = iconName,  //bad description, but better than null. maybe pass desc. as parameter?
-            modifier = modifier.size(50.dp) // Juster størrelsen etter behov
-        )
-    }
-}
-
-@SuppressLint("DiscouragedApi")
-@Composable
-fun getDrawableResourceId(iconName: String): Int {
-    val context = LocalContext.current
-    val packageName = context.packageName
-
-    // get resourceId based on icon name
-    return context.resources.getIdentifier(
-        iconName,
-        "drawable",
-        packageName
-    )
-}
-
-//TODO make an aesthetically pleasing navBar with icons for homescreen, storescreen and quizscreen
-@Composable
-fun NavBar(navController: NavController){
-    var isClicked by remember { mutableStateOf(false) }
-    Spacer(modifier=Modifier.padding(8.dp))
-    Row(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth()
-        .background(Color.White),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
-        Box(modifier = Modifier
-            .clickable { isClicked = true }
-        ) {
-            Icon("quiz")}
-
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable { isClicked = true }
-            ) {
-                Icon("home")
-            }
-            Spacer(modifier = Modifier.padding(8.dp))
-            Box(modifier = Modifier
-                .clickable {  navController.navigate("SettingsScreen")  }
-            ) {
-                Icon("settings")
-            }
-        }
-        //Spacer(modifier=Modifier.padding(8.dp))
-    }
 
 @Composable
 fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
@@ -704,95 +663,100 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
                             )
                         }
                     }
-                    Row(    //the row for the alert cards and the navigation buttons
-                        modifier = Modifier.padding(4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ){
-                        Button(
-                            onClick = {
-                                index = (index + -1) % alerts.size
-                                if (index < 0) index = alerts.size - 1
-                                      },
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "forrige varsel",
-                            )
-                        }
+
+
                         if (alerts.size == 1) {
                             //there is only one alert
                             AlertCard(
                                 card = alerts[0],
                             )
                         } else {
-                            //there are multiple alerts
-                            LazyRow(
-                                state = scrollState,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .height(130.dp)
+                            Row(    //the row for the alert cards and the navigation buttons
+                                modifier = Modifier.padding(4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                itemsIndexed(alerts) { i, card ->
-                                    if (i == index) {
-                                        AlertCard(
-                                            card = card,
-                                            modifier = Modifier
-                                                .width(130.dp)
-                                        )
+                                Button(
+                                    onClick = {
+                                        index = (index + -1) % alerts.size
+                                        if (index < 0) index = alerts.size - 1
+                                    },
+                                ) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "forrige varsel",
+                                    )
+                                }
+                                //there are multiple alerts
+                                LazyRow(
+                                    state = scrollState,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .height(130.dp)
+                                ) {
+                                    itemsIndexed(alerts) { i, card ->
+                                        if (i == index) {
+                                            AlertCard(
+                                                card = card,
+                                                modifier = Modifier
+                                                    .width(130.dp)
+                                            )
+                                        }
                                     }
                                 }
+                                Button(onClick = {
+                                    index = (index + 1) % alerts.size
+                                    if (index < 0) index = alerts.size - 1
+                                }) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = "neste varsel"
+                                    )
+                                }
                             }
+                            Row ( //the "scroll-bar", except each dot is clickable :). only really makes sense to show a scroll bar if there are multiple elements.
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.height(16.dp)
+                            ){
+                                alerts.forEachIndexed { j, card ->
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
+                                        onClick = {index = j},
+                                        content = {},
+                                        modifier = Modifier
+                                            .padding(2.dp)
+                                            .width(12.dp)
+                                            .height(12.dp)
+                                            .clip(shape = CircleShape),
+                                    )
+                                }
+                            }
+
                         }
-                        Button(onClick = {
-                            index = (index + 1) % alerts.size
-                            if (index < 0) index = alerts.size - 1
-                        }) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "neste varsel"
-                            )
-                        }
+
                     }
-                        Row ( //the "scroll-bar", except each dot is clickable :)
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.height(16.dp)
-                        ){
-                            alerts.forEachIndexed { j, card ->
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
-                                    onClick = {index = j},
-                                    content = {},
-                                    modifier = Modifier
-                                        .padding(2.dp)
-                                        .width(12.dp)
-                                        .height(12.dp)
-                                        .clip(shape = CircleShape),
-                                )
-                            }
-                        }
+
                     }
 
                 }
             }
         }
-    }
+
 
 
 
 @Composable
 fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
-        Column(
+
+    Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
+            modifier = modifier.padding(horizontal = 5.dp)
         ) {
-            Icon(card.kortImageUrl)
-            Text(text = "fare ${card.farePaagar} i ${card.lokasjon}")
-            Text(text = "nivå: ${card.fareNiva}")
+            Icon(card.kortImageUrl, 50)
+            Text(text = "Fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
         }
-
 }
 
 private fun windDirection(degrees: Double?): String {
@@ -853,13 +817,13 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifi
                         }
                     }
                     if(dayStr==null) {  //this is for today
+                        Icon(iconName = weatherDetail.next_1_hours_symbol_code, size=50)
                         Text(text = "detaljer for klokken ${weatherDetail.time}", fontSize = 24.sp)
                         Text(text ="temperatur: ${weatherDetail.air_temperature}°C", fontSize = 18.sp)
                         Text(text="nedbørsmengde: ${weatherDetail.next_1_hours_precipitation_amount}mm", fontSize = 18.sp)
                         Text(text="skyer: ${weatherDetail.cloud_area_fraction}% dekning", fontSize = 18.sp)
                         Text(text = "vindstyrke: ${weatherDetail.wind_speed}m/s", fontSize = 18.sp)
                         Text(text = "vindretning: ${windDirection(weatherDetail.wind_from_direction)}", fontSize = 18.sp)
-                        Icon(iconName = weatherDetail.next_1_hours_symbol_code)
 
 
                     }else { //this is one of the next6days-cards
@@ -889,7 +853,7 @@ fun AlertCardPreview(){
 }
 */
 
-/*
+
 @Preview(showSystemUi = true)
 @Composable
 fun AlertCarouselPreview(){
@@ -906,7 +870,6 @@ fun AlertCarouselPreview(){
         AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
     }
 }
-*/
 
 /*
 @Preview()
@@ -929,6 +892,8 @@ fun WeatherCardPreview(){
 }
 */
 
+
+/*
 @Preview(showSystemUi = true)
 @Composable
 fun WeatherDetailCardPreview() {
@@ -951,7 +916,9 @@ fun WeatherDetailCardPreview() {
     val weatherDetailState: MutableState<WeatherDetails?> =
         remember { mutableStateOf(weatherDetail) }
 }
+*/
 
+/*
 @Preview()
 @Composable
 fun WeatherCardsTodayPreview(){
@@ -1025,3 +992,5 @@ fun WeatherCardsTodayPreview(){
         WeatherCardsToday(12, weatherDetails, showState)
     }
 }
+
+*/
