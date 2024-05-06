@@ -32,8 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.test.core.app.ActivityScenario.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * This class represents a piece of clothing in the game.
@@ -54,9 +59,21 @@ abstract class Clothing(
     var unlocked: Boolean = false
  )
 
-
-fun writeClothesToDisk(character: Character){
+private val clothingRepo = ClothesRepository()
+fun writeEquipedClothesToDisk(character: Character) {
     //TODO, IMPORTANT! THIS SHOULD CALL A SEPARATE ASYNC-METHOD, TO WRITE ON AN IO-THREAD
+    CoroutineScope(Dispatchers.IO).launch {
+        clothingRepo.writeEquipedHead(character.head.imageAsset)
+        clothingRepo.writeEquipedTorso(character.torso.imageAsset)
+        clothingRepo.writeEquipedLegs(character.legs.imageAsset)
+    }
+}
+suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
+    return@withContext Character(
+        clothingRepo.getEquipedHead(),
+        clothingRepo.getEquipedTorso(),
+        clothingRepo.getEquipedLegs()
+    )
 }
 
 @Composable
@@ -74,6 +91,7 @@ fun Inventory(characterState:MutableStateFlow<Character>, modifier:Modifier=Modi
             is Head -> {
                 characterState.update{
                     it.copy(head = clothing)
+
                 }
             }
             is Torso -> {
@@ -91,6 +109,7 @@ fun Inventory(characterState:MutableStateFlow<Character>, modifier:Modifier=Modi
         characterState.update {
             it.copy(temperature = it.findAppropriateTemp())
         }
+        writeEquipedClothesToDisk(characterState.value) //Writing equuiped clothes to disk
         showInventory = false // then, close the dialog.
     }
 

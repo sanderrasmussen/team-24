@@ -8,8 +8,8 @@ data class Clothes(
     @PrimaryKey val imageAsset: Int,
     val name:String,
     val heatValue: Int,
-
     val price: Int,
     val altAsset: Int,
+    val bodyPart : String, //should be "legs", "torso" or "head"
     val unlocked: Boolean = false
 )
