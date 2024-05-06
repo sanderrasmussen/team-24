@@ -400,7 +400,6 @@ fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<
             .fillMaxSize()
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
         days.forEach { day ->
             if (today != null && next6DaysWeatherState != null) {
