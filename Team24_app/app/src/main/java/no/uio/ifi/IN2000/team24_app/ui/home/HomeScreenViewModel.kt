@@ -23,6 +23,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
+
+import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
+
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
@@ -52,11 +55,15 @@ class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
+    private val bankRepo : BankRepository = BankRepository(),
+
     private var _userLocation : Location? = null,
     private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
     val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow(),
     private var _satisfaction : MutableStateFlow<SatisfactionUiState> = MutableStateFlow(SatisfactionUiState()),
-    val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow()
+    val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow(),
+    private var _balance: MutableStateFlow<Int?> = MutableStateFlow(0),
+    val balance: StateFlow<Int?> = _balance.asStateFlow(),
 
 
 ): ViewModel(){
@@ -65,8 +72,6 @@ class HomeScreenViewModel(
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
         locationForecastRepo.ObserveNext6DaysForecast()
 
-
-    //TODO character should be stored in viewmodel, and needs the current temp (from currentWeatherState)
     //this is just to render a default character, TODO should call a load from disk()-method on create
     private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
     val characterState = MutableStateFlow(character)
@@ -74,6 +79,18 @@ class HomeScreenViewModel(
 
     init {
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
+        getBalanceFromDb()
+    }
+
+
+    fun getBalanceFromDb() {
+
+        viewModelScope.launch {
+            _balance.update {
+
+                bankRepo.getBankBalance()
+            }
+        }
     }
 
 
@@ -82,7 +99,7 @@ class HomeScreenViewModel(
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value?.first()?.air_temperature ?: 0.0
+        val temp: Double = currentWeatherState.value?.firstOrNull()?.air_temperature ?: 0.0
         Log.d(TAG, "Temp: $temp")
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
