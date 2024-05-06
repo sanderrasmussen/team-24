@@ -14,10 +14,13 @@ interface QuestionDao {
     @Delete
     fun delete(question : Question)
 
-    @Query("SELECT * FROM Question WHERE question.category = :category")
-    fun getCategoryQuestions(category: Category): List<Question>
+    @Query("SELECT * FROM Question WHERE question.categoryName = :categoryName")
+    fun getCategoryQuestions(categoryName: String): List<Question>
 
-    @Query("SELECT * FROM Question WHERE question.category = :category AND question.answered = false")
-    fun getUnansweredCategoryQuestions(category: Category): List<Question>
+    @Query("SELECT * FROM Question WHERE question.categoryName = :categoryName AND question.answered = false")
+    fun getUnansweredCategoryQuestions(categoryName: String): List<Question>
+
+    @Query("SELECT * From Question WHERE question.answered = true")
+    fun getTrainingCategoryQuestions(categoryName: String)
 
 }

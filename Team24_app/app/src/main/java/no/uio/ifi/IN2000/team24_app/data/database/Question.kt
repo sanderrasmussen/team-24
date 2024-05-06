@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class Question(
 
     @PrimaryKey val question: String,
-    val category: Category,
+    val categoryName: String,
     val options: List<String>,
     val correctOption: Int,
     val answered: Boolean = false
