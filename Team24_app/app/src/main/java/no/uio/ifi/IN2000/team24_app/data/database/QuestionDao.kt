@@ -14,6 +14,9 @@ interface QuestionDao {
     @Delete
     fun delete(question : Question)
 
+    @Query("SELECT * FROM Question")
+    fun getAllQuestions(): List<Question>
+
     @Query("SELECT * FROM Question WHERE question.categoryName = :categoryName")
     fun getCategoryQuestions(categoryName: String): List<Question>
 
@@ -21,7 +24,7 @@ interface QuestionDao {
     fun getUnansweredCategoryQuestions(categoryName: String): List<Question>
 
     @Query("SELECT * From Question WHERE question.answered = true")
-    fun getTrainingCategoryQuestions(categoryName: String)
+    fun getTrainingCategoryQuestions(): List<Question>
 
     @Query("UPDATE Question SET answered = true WHERE question = :questionName")
     fun updateQuestionAnswered(questionName: String)
