@@ -1,32 +1,24 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import java.time.LocalDate
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
@@ -40,19 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -64,13 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment.Companion.CenterEnd
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -84,18 +62,17 @@ import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
-import no.uio.ifi.IN2000.team24_app.data.character.Inventory
-import no.uio.ifi.IN2000.team24_app.data.character.Player
+import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
+import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
-import androidx.lifecycle.ViewModel
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
+import no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
+import no.uio.ifi.IN2000.team24_app.ui.components.character.SatisfactionBar
 import no.uio.ifi.IN2000.team24_app.ui.date
 import no.uio.ifi.IN2000.team24_app.ui.day
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
@@ -543,32 +520,6 @@ fun WeatherCard(
     Spacer(modifier = Modifier.padding(10.dp))
 }
 
-@Composable
-fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-    ) {
-        Image(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            painter = painterResource(id = satisfactionUiState.unsatisfiedIcon), contentDescription = "unsatisfied")
-        LinearProgressIndicator(
-            progress = { satisfactionUiState.fillPercent },
-            modifier = Modifier
-                .height(15.dp)
-                .clip(CircleShape),
-            color = satisfactionUiState.color
-        )
-        Image(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            painter = painterResource(id = R.drawable.happy), contentDescription = "satisfied")   //todo custom icon, can still be hardcoded
-    }
-}
-
-
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -602,154 +553,6 @@ fun LocationPermissionCard(){
     }
 }
 
-@Composable
-fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean>, modifier: Modifier = Modifier) {
-    //val alertsState by alertsFlow.collectAsState()
-    val alerts = alertsUi.alerts
-    Log.d("ALERTDEBUGcomponent", "AlertCardCarousel called w alerts: ${alerts.size}")
-
-    var index by remember { mutableIntStateOf(0) }
-
-    val scrollState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(index) {
-        coroutineScope.launch {
-            scrollState.animateScrollToItem(index)
-        }
-    }
-
-
-    if (showAlerts.value) {
-        Dialog(
-            onDismissRequest = { showAlerts.value = false },
-            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
-        ) {
-            Card(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    //verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(//the row for the close button
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp)
-                            .height(24.dp)
-                    ) {
-                        IconButton(
-                            onClick = { showAlerts.value = false },
-                            modifier = Modifier
-                                .width(24.dp)
-                                .height(24.dp)
-                        ) {
-                            androidx.compose.material3.Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "lukk dialog",
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-
-
-                        if (alerts.size == 1) {
-                            //there is only one alert
-                            AlertCard(
-                                card = alerts[0],
-                            )
-                        } else {
-                            Row(    //the row for the alert cards and the navigation buttons
-                                modifier = Modifier.padding(4.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Button(
-                                    onClick = {
-                                        index = (index + -1) % alerts.size
-                                        if (index < 0) index = alerts.size - 1
-                                    },
-                                ) {
-                                    androidx.compose.material3.Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "forrige varsel",
-                                    )
-                                }
-                                //there are multiple alerts
-                                LazyRow(
-                                    state = scrollState,
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier
-                                        .height(130.dp)
-                                ) {
-                                    itemsIndexed(alerts) { i, card ->
-                                        if (i == index) {
-                                            AlertCard(
-                                                card = card,
-                                                modifier = Modifier
-                                                    .width(130.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                                Button(onClick = {
-                                    index = (index + 1) % alerts.size
-                                    if (index < 0) index = alerts.size - 1
-                                }) {
-                                    androidx.compose.material3.Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = "neste varsel"
-                                    )
-                                }
-                            }
-                            Row ( //the "scroll-bar", except each dot is clickable :). only really makes sense to show a scroll bar if there are multiple elements.
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.Bottom,
-                                modifier = Modifier.height(16.dp)
-                            ){
-                                alerts.forEachIndexed { j, card ->
-                                    Button(
-                                        colors = ButtonDefaults.buttonColors(if (j == index) Color.Black else Color.Gray),
-                                        onClick = {index = j},
-                                        content = {},
-                                        modifier = Modifier
-                                            .padding(2.dp)
-                                            .width(12.dp)
-                                            .height(12.dp)
-                                            .clip(shape = CircleShape),
-                                    )
-                                }
-                            }
-
-                        }
-
-                    }
-
-                    }
-
-                }
-            }
-        }
-
-
-
-
-@Composable
-fun AlertCard(card:VarselKort, modifier: Modifier = Modifier){
-
-    Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding(horizontal = 5.dp)
-        ) {
-            Icon(card.kortImageUrl, 50)
-            Text(text = "Fare ${card.farePaagar} i ${card.lokasjon}\nnivå: ${card.fareNiva}")
-        }
-}
 
 private fun windDirection(degrees: Double?): String {
     if(degrees == null) return "ukjent"
@@ -829,8 +632,6 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
                             modifier = Modifier
                                 .height(200.dp)
                                 .verticalScroll(scrollState)
-
-
                         ) {
                             weatherDetails.forEach { hourlyDetail ->
                                 Row (

@@ -56,7 +56,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Clothing
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Head
 import no.uio.ifi.IN2000.team24_app.data.character.Legs
-import no.uio.ifi.IN2000.team24_app.data.character.Player
+import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
