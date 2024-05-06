@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -113,10 +114,10 @@ class LocationForecastRepository{
 
                 var currentTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
-
-                var forecast = getTimeseries()?.get(0)?.time
-                forecast = forecast?.replace("Z", "")
-                forecast = forecast?.replace("T", ":")
+                var forecast = getTimeseries()?.get(0)?.time?: "1970-01-01T00:00:00Z"   //avoids a crash if the list is empty
+                Log.d("FORECAST", forecast)
+                forecast = forecast.replace("Z", "")
+                forecast = forecast.replace("T", ":")
                 var forecastTime = LocalDateTime.parse(forecast, formatter)
 
                 // Make a copy of the list to avoid ConcurrentModificationException
@@ -130,9 +131,9 @@ class LocationForecastRepository{
                     currentTime = LocalDateTime.now()
 
                     // Update stateflows based on new data
-                    forecast = timeseriesCopy.getOrNull(0)?.time
-                    forecast = forecast?.replace("Z", "")
-                    forecast = forecast?.replace("T", ":")
+                    forecast = timeseriesCopy.getOrNull(0)?.time?:"1970-00-00T00:00:00Z"    //avoids a crash if the list is empty
+                    forecast = forecast.replace("Z", "")
+                    forecast = forecast.replace("T", ":")
                     forecastTime = LocalDateTime.parse(forecast, formatter)
 
 
