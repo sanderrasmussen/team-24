@@ -54,6 +54,7 @@ class ClothesRepository {
 
     //Equipped clothes:
     fun getEquipedHead(): Head{
+
         return convertToHead(clothesDao.getEquipedHead().first())
     }
 

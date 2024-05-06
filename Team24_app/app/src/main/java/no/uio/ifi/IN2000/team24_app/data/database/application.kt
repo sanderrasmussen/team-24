@@ -13,6 +13,7 @@ import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Head
 import no.uio.ifi.IN2000.team24_app.data.character.Legs
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
+import java.util.Date
 
 
 object MyDatabase {
@@ -46,6 +47,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             MyDatabase.getInstance().bankDao().insertAll(Bank(1000))
 
             //clothing tables:
+
             //heads:
             val short_hair :Clothes= Clothes(R.drawable.head_short_hair,"Short Hair", 25,  30, R.drawable.alt_head_short_hair,"head",true)
             val paint_head : Clothes = Clothes(R.drawable.paint_head, "Paint", 0, 10000, R.drawable.paint_head_alt,"head",false)
@@ -68,6 +70,17 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             MyDatabase.getInstance().clothesDao().insertAll(pants)
             MyDatabase.getInstance().clothesDao().insertAll(shorts)
 
+            //setting inital selected clothing
+            //inserting equiped clothes table
+            val equipedClothes = EquipedClothes(
+                0,
+                short_hair.imageAsset,
+                long_sleeve.imageAsset,
+                pants.imageAsset,
+                Date() ,
+                15 //initial value of 15 at first login
+            )
+            MyDatabase.getInstance().clothesDao().insertEquipedClothesTable(equipedClothes)
             MyDatabase.getInstance().clothesDao().updateDate()
         }
     }

@@ -12,6 +12,9 @@ interface ClothesDao{
     @Insert
     fun insertAll(vararg clothing: Clothes)
 
+    @Insert
+    fun insertEquipedClothesTable(vararg equipedClothes: EquipedClothes)
+
     @Delete
     fun delete(clothing : Clothes)
 
@@ -36,22 +39,22 @@ interface ClothesDao{
     @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs'")
     fun getAllNotOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT EquipedHead FROM EquipedClothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT EquipedHead FROM EquipedClothes )")
     fun getEquipedHead(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedTorso FROM EquipedClothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedTorso FROM EquipedClothes )")
     fun getEquipedTorso(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM EquipedClothes WHERE id=0)")
+    @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT equipedLegs FROM EquipedClothes )")
     fun getEquipedLegs(): List<Clothes>
 
     @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
     fun writeEquipedHead(clothingId : Int)
 
-    @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
+    @Query("UPDATE EquipedClothes SET equipedTorso= :clothingId")
     fun writeEquipedTorso(clothingId: Int)
 
-    @Query("UPDATE EquipedClothes SET equipedHead= :clothingId")
+    @Query("UPDATE EquipedClothes SET equipedLegs= :clothingId")
     fun writeEquipedLegs(clothingId: Int)
 
     @Query("SELECT lastLoginDate FROM EquipedClothes WHERE id=0")
@@ -59,6 +62,8 @@ interface ClothesDao{
 
     @Query("UPDATE EquipedClothes SET lastLoginDate=strftime('%Y-%m-%d', 'now') WHERE id=0")
     fun updateDate()
+
+    //TODO make set temperature last login
 }
 //I supposedly needed this in order to store Date in roomDB
 class DateConverter {

@@ -29,6 +29,7 @@ import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
@@ -77,14 +78,20 @@ class HomeScreenViewModel(
     //this is just to render a default character, TODO should call a load from disk()-method on create
     //
 
-    private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    private var character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first()) //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(character)
 
 
     init {
+        //I will now laod from disk
+        viewModelScope.launch {
+            characterState.update { loadSelectedClothes() }
+        }
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
         getBalanceFromDb()
+
     }
+
 
 
     fun getBalanceFromDb() {
