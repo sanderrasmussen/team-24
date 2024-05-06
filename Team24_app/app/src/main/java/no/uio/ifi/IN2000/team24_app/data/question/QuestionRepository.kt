@@ -12,35 +12,35 @@ class QuestionRepository {
     // FUNCTIONS FOR FETCHING QUESTIONS FROM CATEGORIES
 
     // function to get all questions
-    suspend fun getAllQuestions(): List<Question> {
+    suspend fun getAllQuestions(): List<String> {
 
         return questionDao.getAllQuestions()
 
     }
 
     // function to get questions for a normal category
-    suspend fun getUnansweredCategoryQuestions(categoryName: String): List<Question> {
+    suspend fun getUnansweredCategoryQuestions(categoryName: String): List<String> {
 
         return questionDao.getUnansweredCategoryQuestions(categoryName)
 
     }
 
     // function to get questions for a normal category when all questions are answered
-    suspend fun getAllCategoryQuestions(categoryName: String): List<Question> {
+    suspend fun getAllCategoryQuestions(categoryName: String): List<String> {
 
         return questionDao.getCategoryQuestions(categoryName)
 
     }
 
     // function to get training category questions
-    suspend fun getTrainingCategoryQuestions(): List<Question> {
+    suspend fun getTrainingCategoryQuestions(): List<String> {
 
         return questionDao.getTrainingCategoryQuestions()
 
     }
 
     // function to get questions for a selected category
-    suspend fun getCategoryQuestions(categoryName: String): List<Question> {
+    suspend fun getCategoryQuestions(categoryName: String): List<String> {
 
         // checks if all questions are unanswered
         if (getTrainingCategoryQuestions() == getAllQuestions()) {
@@ -65,6 +65,12 @@ class QuestionRepository {
             return getUnansweredCategoryQuestions(categoryName)
 
         }
+
+    }
+
+    suspend fun getQuestion(questionName: String): Question {
+
+        return questionDao.getQuestion(questionName)
 
     }
 
