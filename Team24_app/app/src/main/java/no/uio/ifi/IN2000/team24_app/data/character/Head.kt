@@ -12,6 +12,8 @@ data class Head(
 private val clothesRepo = ClothesRepository()
 val paintHead = Head("Paint", 0, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
 val short_hair = Head("Short Hair", 25, R.drawable.head_short_hair, 30, R.drawable.alt_head_short_hair)
+
+//if someone really has anything against run blocking then they can change the arcitecture themselves. The queries are short and fast and wont be blocking UI for long
 fun heads(): List<Head> = runBlocking{
     clothesRepo.getAllOwnedHeads()
 }
