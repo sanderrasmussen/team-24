@@ -3,6 +3,8 @@ package no.uio.ifi.IN2000.team24_app.data.database
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.TypeConverter
+import java.util.Date
 
 interface CategoryDao {
 
@@ -15,4 +17,24 @@ interface CategoryDao {
     @Query("SELECT * FROM Category")
     fun getAll(): List<Category>
 
+    @Query("UPDATE Category SET lastDateAnswered = strftime('%Y-%m-%d', 'now') WHERE category = :categoryName")
+    fun updateCategoryLastDateAnswered(categoryName: String)
+
 }
+
+class DateConverter {
+    @TypeConverter
+    fun toDate(timestamp: Long): Date {
+
+        return Date(timestamp)
+
+    }
+
+    @TypeConverter
+    fun toTimestamp(date: Date): Long {
+
+        return date.time
+
+    }
+}
+

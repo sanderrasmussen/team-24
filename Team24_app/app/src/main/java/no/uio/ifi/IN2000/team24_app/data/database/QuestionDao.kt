@@ -23,4 +23,7 @@ interface QuestionDao {
     @Query("SELECT * From Question WHERE question.answered = true")
     fun getTrainingCategoryQuestions(categoryName: String)
 
+    @Query("UPDATE Question SET answered = true WHERE question = :questionName")
+    fun updateQuestionAnswered(questionName: String)
+
 }
