@@ -15,7 +15,13 @@ interface CategoryDao {
     fun delete(category : Category)
 
     @Query("SELECT * FROM Category")
-    fun getAll(): List<Category>
+    fun getAllCategories(): List<Category>
+
+    @Query("SELECT * FROM Category where category = :categoryName")
+    fun getCategory(categoryName: String): Category
+
+    @Query("SELECT lastDateAnswered FROM Category WHERE category = :categoryName")
+    fun getCategoryLastDateAnswered(categoryName: String): Date
 
     @Query("UPDATE Category SET lastDateAnswered = strftime('%Y-%m-%d', 'now') WHERE category = :categoryName")
     fun updateCategoryLastDateAnswered(categoryName: String)
@@ -23,6 +29,7 @@ interface CategoryDao {
 }
 
 class DateConverter {
+
     @TypeConverter
     fun toDate(timestamp: Long): Date {
 
@@ -36,5 +43,6 @@ class DateConverter {
         return date.time
 
     }
+
 }
 
