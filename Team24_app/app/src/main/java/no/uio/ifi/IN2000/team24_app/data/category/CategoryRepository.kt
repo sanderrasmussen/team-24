@@ -9,6 +9,8 @@ class CategoryRepository {
     private val database = MyDatabase.getInstance()
     private val categoryDao = database.categoryDao()
 
+    // FUNCTIONS FOR FETCHING CATEGORIES
+
     suspend fun getAllCategories(): List<Category> {
 
         return categoryDao.getAllCategories()
@@ -26,6 +28,8 @@ class CategoryRepository {
         return categoryDao.getCategoryLastDateAnswered(categoryName)
 
     }
+
+    // FUNCTION TO CHANGE LAST DATE ANSWERED VALUE FOR CATEGORY
 
     suspend fun updateCategoryLastDateAnswered(categoryName: String) {
 

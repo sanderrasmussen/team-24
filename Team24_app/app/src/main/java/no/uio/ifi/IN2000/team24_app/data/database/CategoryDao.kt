@@ -23,6 +23,9 @@ interface CategoryDao {
     @Query("SELECT lastDateAnswered FROM Category WHERE category = :categoryName")
     fun getCategoryLastDateAnswered(categoryName: String): Date
 
+    @Query("SELECT points FROM Category WHERE category = :categoryName")
+    fun getCategoryPoints(categoryName: String): Int
+
     @Query("UPDATE Category SET lastDateAnswered = strftime('%Y-%m-%d', 'now') WHERE category = :categoryName")
     fun updateCategoryLastDateAnswered(categoryName: String)
 
