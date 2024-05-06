@@ -327,7 +327,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
-
+                        .clip(shape = RoundedCornerShape(24.dp))
                 ) {
                     Column(
                         modifier = Modifier
@@ -395,7 +395,6 @@ fun HomeScreen(
 @Composable
 fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?,detailState: MutableState<WeatherDetails?>) {
     val days = getNextSixDays()
-
     val scrollState = rememberScrollState()
     val today = day()
     Row(
@@ -506,9 +505,9 @@ fun WeatherCard(
    // val height = if (hour == currentHour) 120.dp else 118.dp
 
     Card(
-        modifier = Modifier
-            .padding(5.dp)
-            .width(90.dp),
+        modifier = modifier
+            .padding(vertical = 10.dp, horizontal = 3.dp)
+            .height(150.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
