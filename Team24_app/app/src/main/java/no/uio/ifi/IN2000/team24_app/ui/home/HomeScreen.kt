@@ -91,6 +91,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Inventory
 import no.uio.ifi.IN2000.team24_app.data.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 import androidx.compose.foundation.layout.*
+import androidx.lifecycle.ViewModel
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
@@ -113,7 +114,7 @@ fun HomeScreen(
     val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
 
-    val showWeatherDetailCard = remember { mutableStateOf(null as WeatherDetails?)}
+    val weatherDetailState by homevm.weatherDetails.collectAsState()
     val alertsUiState = homevm.alerts.collectAsState()
     val balance by homevm.balance.collectAsState()
 
@@ -127,8 +128,8 @@ fun HomeScreen(
         AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
     }
 
-    if(showWeatherDetailCard.value != null){
-        WeatherDetailCard(showWeatherDetailCard)
+    if(weatherDetailState.weatherDetails != null){
+        WeatherDetailCard(weatherDetailState = weatherDetailState, vm = homevm)
     }
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
 
@@ -365,10 +366,10 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                            currentWeatherState?.let { WeatherCardsToday(currentHour= currentHour, weatherDetails = it, detailState = showWeatherDetailCard) }
+                            currentWeatherState?.let { WeatherCardsToday(currentHour= currentHour, weatherDetails = it,vm = homevm) }
                         } else {
                             if (currentWeatherDetails != null) {
-                                WeatherCardsNextSixDays(currentHour, next6DaysWeatherState = next6DaysWeatherState, detailState = showWeatherDetailCard)
+                                WeatherCardsNextSixDays(currentHour, next6DaysWeatherState = next6DaysWeatherState, vm = homevm)
                             }
 
 
@@ -391,7 +392,7 @@ fun HomeScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?,detailState: MutableState<WeatherDetails?>) {
+fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?, vm:HomeScreenViewModel) {
     val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()
@@ -410,7 +411,7 @@ fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<
                         currentHour,
                         weatherDetail = weatherDetails,
                         titleOverride = day,
-                        onClick = { detailState.value = weatherDetails })
+                        onClick = { vm.updateWeatherDetails(weatherDetails = weatherDetails, dayStr = day) })
                 }
             }
         }
@@ -455,8 +456,9 @@ fun CurrentWeatherInfo(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, detailState: MutableState<WeatherDetails?>) {
+fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, vm: HomeScreenViewModel) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
@@ -469,7 +471,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, de
             WeatherCard(
                 currentHour = currentHour,
                 weatherDetail = weatherDetail,
-                onClick = { detailState.value = weatherDetail },
+                onClick = { vm.updateWeatherDetails(weatherDetail) },
             )
         }
     }
@@ -755,27 +757,29 @@ private fun windDirection(degrees: Double?): String {
     return directions[index]
 }
 
+
 /*
 alright these params are a mess, but basically:
 - weatherDetailState is the state that holds the weatherDetails object that is to be displayed in the card. if this is null, the card will not be displayed.
 - modifier is the modifier for the card itself
 - dayStr is the string for the day to display(e.g. "man." , "tir."...) IF the card is for one of the next 6 days. if this is null, the card is for a time today.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifier: Modifier = Modifier, dayStr:String? = null,){
+fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScreenViewModel, modifier: Modifier = Modifier,){
     //TODO the units are hardcoded as string-values, but could well change from the API.
     //TODO the endpoint does take this into account, but it is discarded in the repo??. needs to be passed to viewModel?
     Dialog(
-        onDismissRequest = { weatherDetailState.value = null },
+        onDismissRequest = { vm.updateWeatherDetails(null) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
 
     ) {
-        if(weatherDetailState.value != null) {
-            val weatherDetail : WeatherDetails = weatherDetailState.value!!
+        if(weatherDetailState.weatherDetails != null) {
+            val weatherDetails : List<WeatherDetails> = weatherDetailState.weatherDetails!!
+            val dayStr = weatherDetailState.dayStr
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(240.dp)
                     ,
                 shape = RoundedCornerShape(16.dp)
 
@@ -783,7 +787,7 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifi
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(6.dp),
+                        .padding(horizontal = 6.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
@@ -792,7 +796,7 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifi
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         IconButton(
-                            onClick = { weatherDetailState.value = null },
+                            onClick = { vm.updateWeatherDetails(null) },
                             modifier = Modifier
                                 .padding(4.dp)
                                 .width(24.dp)
@@ -806,6 +810,7 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifi
                         }
                     }
                     if(dayStr==null) {  //this is for today
+                        val weatherDetail = weatherDetails[0]
                         Icon(iconName = weatherDetail.next_1_hours_symbol_code, size=50)
                         Text(text = "detaljer for klokken ${weatherDetail.time}", fontSize = 24.sp)
                         Text(text ="temperatur: ${weatherDetail.air_temperature}°C", fontSize = 18.sp)
@@ -818,6 +823,19 @@ fun WeatherDetailCard(weatherDetailState : MutableState<WeatherDetails?>, modifi
                     }else { //this is one of the next6days-cards
                         Text(text = "detaljer for $dayStr", fontSize = 24.sp)
                         //! here's the bitch abt this - to get hour by hour we need a new method from the repo, but i have no fucking idea whats up with the repo... still waiting for some refactor
+                        Column(
+
+                        ) {
+                            weatherDetails.forEach { hourlyDetail ->
+                                Row (
+                                    horizontalArrangement = Arrangement.Center
+                                ){
+                                    Text(text = "Kl. ${hourlyDetail.time}: ${hourlyDetail.air_temperature}°C  ")
+                                    val symbolCode = if(hourlyDetail.next_1_hours_symbol_code!=null)hourlyDetail.next_1_hours_symbol_code else hourlyDetail.next_6_hours_symbol_code
+                                    Icon(iconName = symbolCode, size = 30)
+                                }
+                            }
+                        }
 
                     }
                 }

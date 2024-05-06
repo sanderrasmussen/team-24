@@ -176,7 +176,7 @@ class LocationForecastRepository{
     }
 
     @SuppressLint("NewApi")
-    private fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
+    fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
         var next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
 
         for (i in 0..6) {
@@ -185,12 +185,16 @@ class LocationForecastRepository{
             val date = current.format(formatter)
             next7DaysForecast.add(getWeatherOnDate(date))
         }
+        Log.d("FORECAST", "amount of entries in next7DaysForecast: ${next7DaysForecast.count()}")
+        Log.d("FORECAST", "entries per day: ${next7DaysForecast[1]?.count()}")
+        Log.d("FORECAST", "entries per day: ${next7DaysForecast[6]?.count()}")
 
+        Log.d("FORECAST", "amount of time-entries in next7DaysForecast: ${next7DaysForecast.toString().split("time=").count()}")
         updateNext7DaysForecast(next7DaysForecast)
         return next7DaysForecast
     }
     @SuppressLint("NewApi")
-    private fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
+    private fun getNext6daysForecast() :ArrayList<WeatherDetails?> { //returns next 6 days with 12:00 as only weatherdetails object of each day
         var next6DaysForecast = ArrayList<WeatherDetails?>()
         for (i in 1..7) {
             val current = LocalDateTime.now().plusDays(i.toLong())
@@ -198,7 +202,7 @@ class LocationForecastRepository{
             val date = current.format(formatter)
             var weather = getWeatherOnDate(date)
             weather?.forEach{
-                if (it?.time == "12"){
+                if (it.time == "12"){
                     next6DaysForecast.add(it)
                 }
             }
