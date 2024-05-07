@@ -197,7 +197,6 @@ class HomeScreenViewModel(
                 unsatisfiedIcon = newIcon
             )
         }
-
     }
 
     fun getCurrentWeather(context: Context) {

@@ -30,13 +30,13 @@ interface ClothesDao{
     @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='legs'")
     fun getAllOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='head'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='head' ORDER BY price ASC ")
     fun getAllNotOwnedHeads(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='torso'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='torso' ORDER BY price ASC ")
     fun getAllNotOwnedTorsos(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs' ORDER BY price ASC ")
     fun getAllNotOwnedLegs(): List<Clothes>
 
     @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT EquipedHead FROM EquipedClothes )")
@@ -64,6 +64,12 @@ interface ClothesDao{
     fun updateDate()
 
     //TODO make set temperature last login
+    @Query("SELECT temperatureAtLastLogin FROM EquipedClothes WHERE id=0")
+    fun getTemperatureAtLastLogin(): Int
+
+    @Query("UPDATE EquipedClothes SET temperatureAtLastLogin= :temperature")
+    fun setTemperatureAtLastLogin(temperature: Int)
+
 }
 //I supposedly needed this in order to store Date in roomDB
 class DateConverter {

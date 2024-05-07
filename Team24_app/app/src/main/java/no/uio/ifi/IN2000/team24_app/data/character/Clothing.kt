@@ -44,6 +44,8 @@ import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
+import java.util.Date
+import kotlin.math.abs
 
 /**
  * This class represents a piece of clothing in the game.
@@ -66,20 +68,33 @@ abstract class Clothing(
 
 private val clothingRepo = ClothesRepository()
 fun writeEquipedClothesToDisk(character: Character) {
-    //TODO, IMPORTANT! THIS SHOULD CALL A SEPARATE ASYNC-METHOD, TO WRITE ON AN IO-THREAD
     CoroutineScope(Dispatchers.IO).launch {
         clothingRepo.writeEquipedHead(character.head.imageAsset)
         clothingRepo.writeEquipedTorso(character.torso.imageAsset)
         clothingRepo.writeEquipedLegs(character.legs.imageAsset)
+        //todo: write last login date?
     }
 }
 suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
-
-    return@withContext Character(
+    //this code checks the value of the clothes yesterday and the actual temperature, and
+    val character  = Character(
         clothingRepo.getEquipedHead(),
         clothingRepo.getEquipedTorso(),
         clothingRepo.getEquipedLegs()
     )
+    val lastDate = clothingRepo.getLastDate()
+    val today = Date()
+    if(lastDate != today) {
+        val lastTemperature = clothingRepo.getTemperatureAtLastLogin()
+        val playerTemperature = character.findAppropriateTemp()
+        val delta = playerTemperature - lastTemperature
+        val points = maxOf(0.0, 10-abs(delta))
+        Log.d("loadSelectedClothes", "Points: $points")
+        if(points>0){
+            //todo: write to bank, and update the last login date in write
+        }
+    }
+    return@withContext character
 }
 fun getDefaultBackupCharacter(): Character {
 

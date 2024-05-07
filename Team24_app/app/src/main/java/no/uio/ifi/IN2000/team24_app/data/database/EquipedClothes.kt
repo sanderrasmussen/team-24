@@ -12,7 +12,7 @@ data class EquipedClothes(
     val equipedTorso: Int, //id
     val equipedLegs: Int, // id
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP") val lastLoginDate: Date,
-    val temperatureAtFirstLogin: Int
+    val temperatureAtLastLogin: Int
 )
 //trenger alle euqiped , last date logged inn, temperature when logged inn first
 

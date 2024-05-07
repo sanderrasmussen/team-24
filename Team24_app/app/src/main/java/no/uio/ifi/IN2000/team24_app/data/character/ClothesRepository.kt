@@ -145,4 +145,11 @@ class ClothesRepository {
             altAsset = clothes.altAsset,
         )
     }
+
+    fun getTemperatureAtLastLogin(): Int {
+        return clothesDao.getTemperatureAtLastLogin()
+    }
+    fun setTemperatureAtLastLogin(temperature: Int){
+        clothesDao.setTemperatureAtLastLogin(temperature)
+    }
 }
