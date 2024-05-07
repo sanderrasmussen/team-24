@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
 import no.uio.ifi.IN2000.team24_app.data.database.Category
+import no.uio.ifi.IN2000.team24_app.data.question.QuestionRepository
 
 data class CategoryUiState(
 
@@ -21,14 +22,25 @@ data class CategoryUiState(
 
 )
 
+data class QuestionsUiState(
+
+    val questions: List<String> = emptyList()
+
+)
+
 class CategoryScreenViewModel: ViewModel() {
 
     // category repo to fetch category from
     private val categoryRepository: CategoryRepository = CategoryRepository()
+    private val questionRepository: QuestionRepository = QuestionRepository()
 
     // ui state values for fetching category
     private val _categoryUiState = MutableStateFlow(CategoryUiState())
     val categoryUiState: StateFlow<CategoryUiState> = _categoryUiState.asStateFlow()
+
+    // ui state values for fetching category questions
+    private val _questionsUiState = MutableStateFlow(QuestionsUiState())
+    val questionsUiState: StateFlow<QuestionsUiState> = _questionsUiState.asStateFlow()
 
     private var initialization = false
 
@@ -65,6 +77,32 @@ class CategoryScreenViewModel: ViewModel() {
             } catch (e: Exception) {
 
                 Log.e(TAG, "Feil ved henting av kategori: ${e.message}", e)
+
+            }
+
+        }
+
+    }
+
+
+    // funcation to load 3 random category questions to pass to question screen
+    private fun loadQuestionsForCategory(categoryName: String) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+
+                _questionsUiState.update { currentQuestionsUiState ->
+
+                    val questions = questionRepository.getCategoryQuestions(categoryName)
+                    val shuffledQuestions = questions.shuffled().take(3)
+                    currentQuestionsUiState.copy(questions = shuffledQuestions)
+
+                }
+
+            } catch (e: Exception) {
+
+                Log.e(TAG, "Feil ved henting av spoersmaal til kategori: ${e.message}", e)
 
             }
 
