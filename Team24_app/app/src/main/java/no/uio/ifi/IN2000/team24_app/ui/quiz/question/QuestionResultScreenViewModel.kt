@@ -144,7 +144,7 @@ class QuestionResultScreenViewModel: ViewModel() {
 
                     _balanceUiState.update { currentbalanceUiState ->
 
-                        currentbalanceUiState.copy(balance = balance) 
+                        currentbalanceUiState.copy(balance = balance)
                     }
 
                 }
