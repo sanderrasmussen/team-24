@@ -31,7 +31,7 @@ data class CategoryUiState(
 
 class QuestionScreen: ViewModel() {
 
-    // question category and repo to fetch category and question from
+    // question and category and repo to fetch category and question from
     private val categoryRepository: CategoryRepository = CategoryRepository()
     private val questionRepository: QuestionRepository = QuestionRepository()
 
