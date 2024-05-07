@@ -63,6 +63,15 @@ class CategoriesScreenViewModel: ViewModel() {
     // function to fetch category locked value
     private fun getCategoryLockedValue(category: Category): Boolean {
 
+        // check if category is training category
+        // and last date answered is null
+        if (category.category == "Øving" && category.lastDateAnswered == null) {
+
+            // return true, since training category should be locked before doing quiz the first time
+            return true
+
+        }
+
         // get today and last date answered of category as calendar objects
         val today = Calendar.getInstance().apply { time = Date() }
         val lastDateAnswered = Calendar.getInstance().apply { time = category.lastDateAnswered }
