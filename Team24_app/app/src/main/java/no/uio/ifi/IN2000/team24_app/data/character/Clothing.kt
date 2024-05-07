@@ -44,6 +44,7 @@ import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import java.util.Date
 import kotlin.math.abs
 
@@ -72,7 +73,13 @@ fun writeEquipedClothesToDisk(character: Character) {
         clothingRepo.writeEquipedHead(character.head.imageAsset)
         clothingRepo.writeEquipedTorso(character.torso.imageAsset)
         clothingRepo.writeEquipedLegs(character.legs.imageAsset)
-        //todo: write last login date?
+        clothingRepo.updateDate()
+        //todo: any better way to do this? maybe pass the temp as a parameter to this function?
+        //TODO: yeah i think i'll do that, but this works for testing. I'll ask Sander, he knows this part better than me
+        val locForecast = LocationForecastRepository()
+        val temp = locForecast.getWeatherNow()?.air_temperature?:0.0
+        clothingRepo.setTemperatureAtLastLogin(temp.toInt())
+
     }
 }
 suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
@@ -91,7 +98,8 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
         val points = maxOf(0.0, 10-abs(delta))
         Log.d("loadSelectedClothes", "Points: $points")
         if(points>0){
-            //todo: write to bank, and update the last login date in write
+            //TODO: write to bank
+
         }
     }
     return@withContext character

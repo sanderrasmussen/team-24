@@ -63,8 +63,8 @@ interface ClothesDao{
     @Query("UPDATE EquipedClothes SET lastLoginDate=strftime('%Y-%m-%d', 'now') WHERE id=0")
     fun updateDate()
 
-    //TODO make set temperature last login
-    @Query("SELECT temperatureAtLastLogin FROM EquipedClothes WHERE id=0")
+    //TODO: check with Sander that these are right
+    @Query("SELECT temperatureAtLastLogin FROM EquipedClothes") //WHERE id=0??
     fun getTemperatureAtLastLogin(): Int
 
     @Query("UPDATE EquipedClothes SET temperatureAtLastLogin= :temperature")
