@@ -82,6 +82,16 @@ import java.util.Locale
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun backgroundColour(): Color {
+        return when (LocalTime.now().hour)  {
+            in 6 until 12 -> Color(android.graphics.Color.parseColor("#123A44"))
+            in 12 until 18 -> Color(android.graphics.Color.parseColor("#24552E"))
+            in  18 until 22 -> Color(android.graphics.Color.parseColor("#354779"))
+            else -> Color(android.graphics.Color.parseColor("#000d48"))
+        }
+    }
+
     //This function takes an icon name and size as arguments and then displays the icon
     //in a composable UI
     @Composable
