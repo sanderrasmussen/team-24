@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
@@ -32,14 +33,14 @@ class QuestionScreen: ViewModel() {
     private var initialization = false
 
     @MainThread
-    fun initialize(questionName: String) {
+    fun initialize(questionList: List<String>, index: Int) {
 
         if (!initialization) {
 
             initialization = true
             viewModelScope.launch {
 
-                loadQuestionInfo(questionName)
+                loadQuestionInfo(questionList, index)
 
             }
 
@@ -48,13 +49,15 @@ class QuestionScreen: ViewModel() {
     }
 
     // function to fetch categories
-    private fun loadQuestionInfo(questionName: String) {
+    private fun loadQuestionInfo(questionList: List<String>, index: Int) {
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
 
                 _questionUiState.update { currentQuestionUiState ->
+
+                    val questionName = questionList[index]
 
                     val question = questionRepository.getQuestion(questionName)
                     currentQuestionUiState.copy(question = question)
@@ -63,7 +66,7 @@ class QuestionScreen: ViewModel() {
 
             } catch (e: Exception) {
 
-                Log.e(ContentValues.TAG, "Feil ved henting av kategori: ${e.message}", e)
+                Log.e(TAG, "Feil ved henting av spoersmaal: ${e.message}", e)
 
             }
 
