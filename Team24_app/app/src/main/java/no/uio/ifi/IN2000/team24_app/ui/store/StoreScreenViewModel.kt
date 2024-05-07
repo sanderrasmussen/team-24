@@ -58,7 +58,7 @@ class StoreScreenViewModel(): ViewModel() {
             _currentSum.update { bankRepository.getBankBalance() }
             _hodePlagg.update { clothesRepository.getAllNotOwnedHeads()}
             _overdeler.update { clothesRepository.getAllNotOwnedTorsos()}
-            _bukser.update { clothesRepository.getAllOwnedLegs()}
+            _bukser.update { clothesRepository.getAllNotOwnedLegs()}
         }
     }
 
