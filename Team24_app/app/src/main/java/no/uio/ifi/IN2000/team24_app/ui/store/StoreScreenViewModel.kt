@@ -19,16 +19,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.ClothesRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Clothing
 import no.uio.ifi.IN2000.team24_app.data.character.Head
 import no.uio.ifi.IN2000.team24_app.data.character.Legs
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
+import no.uio.ifi.IN2000.team24_app.data.character.getDefaultBackupCharacter
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
 
 class StoreScreenViewModel: ViewModel() {
+
+    val bankRepository = BankRepository()
+    val clothesRepository = ClothesRepository()
 
     private val _hodePlagg: MutableStateFlow<List<Head>> = MutableStateFlow(emptyList())
     val hodePlagg: StateFlow<List<Head>> = _hodePlagg.asStateFlow()
@@ -40,13 +46,13 @@ class StoreScreenViewModel: ViewModel() {
     val bukser: StateFlow<List<Legs>> = _bukser.asStateFlow()
 
 
-    private val characterStore = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    private val characterStore = getDefaultBackupCharacter()
     val characterStateStore = MutableStateFlow(characterStore)
 
     private var _currentSum:MutableStateFlow<Int?> = MutableStateFlow(null)
     val currentSum: StateFlow<Int?> =_currentSum.asStateFlow()
 
-    val bankRepository = BankRepository()
+
 
 
 
@@ -58,10 +64,15 @@ class StoreScreenViewModel: ViewModel() {
 
 
     init {
-        getPlagg()
+        //laod selected clothes from disk
+        viewModelScope.launch {
+            characterStateStore.update { loadSelectedClothes() }
+            getPlagg()
+        }
+
     }
 
-
+    //I assume this is not owned clothes
     private fun getPlagg() {
         viewModelScope.launch {
             try {
@@ -118,7 +129,9 @@ class StoreScreenViewModel: ViewModel() {
 
 
     fun unlockPlagg(plagg: Clothing){
-        plagg.unlocked = true;
+        viewModelScope.launch(Dispatchers.IO) {
+            clothesRepository.setClothingToOwned(plagg.imageAsset)
+        }
         when(plagg){
 
             is Head -> {
@@ -142,50 +155,16 @@ class StoreScreenViewModel: ViewModel() {
 
         }
     }
-    fun hentHodeplagg(): ArrayList<Head> {
-        val listeHead = heads()
-        val lockedHeads = ArrayList<Head>()
-
-        listeHead.forEach { head ->
-            if (!head.unlocked) {
-                lockedHeads.add(head)
-            }
-
-
-        }
-        return lockedHeads
-
+    suspend fun hentHodeplagg(): ArrayList<Head> {
+        return  ArrayList(clothesRepository.getAllNotOwnedHeads())//casting to arraylist, then i dont need to refactor too much
     }
 
-        fun hentOverdeler(): ArrayList<Torso> {
-            val listeOverdeler = torsos()
-            val lockedOverdeler = ArrayList<Torso>()
+    suspend fun hentOverdeler(): ArrayList<Torso> {
+        return ArrayList(clothesRepository.getAllNotOwnedTorsos())
+    }
 
-            listeOverdeler.forEach { overdel ->
-                if (!overdel.unlocked) {
-                    lockedOverdeler.add(overdel)
-                }
-
-            }
-            return lockedOverdeler
-
-        }
-
-
-
-        fun hentBukser(): ArrayList<Legs> {
-            val listeBukser = legs()
-            val lockedBukser = ArrayList<Legs>()
-
-            listeBukser.forEach { bukse ->
-                if (!bukse.unlocked) {
-                    lockedBukser.add(bukse)
-                }
-
-
-            }
-            return lockedBukser
-        }
-
+    suspend fun hentBukser(): ArrayList<Legs> {
+        return ArrayList(clothesRepository.getAllNotOwnedLegs())
+    }
 }
 

@@ -89,7 +89,7 @@ fun HomeScreen(
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
-    val currentWeatherState : ArrayList<WeatherDetails>? by homevm.currentWeatherState.collectAsState()
+    val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
     val next6DaysWeatherState:ArrayList<WeatherDetails?>? by homevm.next6DaysState.collectAsState()
 
     val weatherDetailState by homevm.weatherDetails.collectAsState()

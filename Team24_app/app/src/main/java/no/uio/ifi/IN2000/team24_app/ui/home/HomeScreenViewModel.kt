@@ -30,8 +30,10 @@ import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 
 import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.getDefaultBackupCharacter
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
@@ -80,38 +82,47 @@ class HomeScreenViewModel(
     val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow()
 
 
-): ViewModel(){
-    var currentWeatherState:StateFlow<ArrayList<WeatherDetails>?> =
-        locationForecastRepo.ObserveTodayWeather();
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
-        locationForecastRepo.ObserveNext6DaysForecast()
+): ViewModel() {
+
+    private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
+    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails?>?>(ArrayList())
+
+    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
-    private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    //
+
+    private var character =
+        loadClothesFromDisk() //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(character)
 
 
     init {
+        //I will now laod selected clothes from disk
+        viewModelScope.launch {
+            characterState.update { loadSelectedClothes() }
+        }
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
         getBalanceFromDb()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateWeatherDetails(weatherDetails: WeatherDetails?, dayStr: String? = null){
+    fun updateWeatherDetails(weatherDetails: WeatherDetails?, dayStr: String? = null) {
         _weatherDetails.update {
-            if(weatherDetails == null){
+            if (weatherDetails == null) {
                 return@update WeatherDetailsUiState(null, null)
-            }
-            else if(dayStr == null){
+            } else if (dayStr == null) {
                 return@update WeatherDetailsUiState(listOf(weatherDetails), null)
-            }
-            else{
+            } else {
                 val hours: MutableList<WeatherDetails> = mutableListOf()
                 val days = getNextSixDays()
 
-                val allDetails = locationForecastRepo.getNext7DaysForecast()    //todo maybe change this to recieve//collect the state
+                val allDetails =
+                    locationForecastRepo.getNext7DaysForecast()    //todo maybe change this to recieve//collect the state
                 days.forEachIndexed { index, day ->
-                    if(dayStr == day){
+                    if (dayStr == day) {
                         allDetails[index]?.let { detailsForDay -> hours.addAll(detailsForDay) }
                     }
                 }
@@ -120,6 +131,14 @@ class HomeScreenViewModel(
         }
     }
 
+
+    fun loadClothesFromDisk(): Character {
+        var character = getDefaultBackupCharacter()
+        viewModelScope.launch {
+            character = loadSelectedClothes()
+        }
+        return character
+    }
 
     fun getBalanceFromDb() {
 
@@ -132,26 +151,28 @@ class HomeScreenViewModel(
     }
 
 
-    fun updateSatisfaction(characterTemp: Double){
+    fun updateSatisfaction(characterTemp: Double) {
         var newFillPercent = 0.0f
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value?.firstOrNull()?.air_temperature ?: 0.0
+        val temp: Double = currentWeatherState.value.firstOrNull()?.air_temperature
+            ?: 0.0//Sander endret denne for å unngå NoSuchElementException om listen skulle være tom.
+
         Log.d(TAG, "Temp: $temp")
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
         Log.d(TAG, "Delta: $delta")
 
         //FILL%
-        newFillPercent = maxOf((1 - (abs(delta)/10)).toFloat(), 0.01f)
+        newFillPercent = maxOf((1 - (abs(delta) / 10)).toFloat(), 0.01f)
         Log.d(TAG, "Satisfaction%: $newFillPercent")
 
         //ICON
-        newIcon = if(delta > 0){
+        newIcon = if (delta > 0) {
             Log.d(TAG, "Too hot")
             R.drawable.too_hot
-        }else{
+        } else {
             Log.d(TAG, "Too cold")
             R.drawable.too_cold
         }
@@ -170,13 +191,16 @@ class HomeScreenViewModel(
         }
 
         _satisfaction.update {
-            SatisfactionUiState(fillPercent = newFillPercent, color = newColor, unsatisfiedIcon = newIcon)
+            SatisfactionUiState(
+                fillPercent = newFillPercent,
+                color = newColor,
+                unsatisfiedIcon = newIcon
+            )
         }
 
     }
 
-    fun getCurrentWeather(context:Context) {
-
+    fun getCurrentWeather(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             //!position broke, todo look into LocationTracker
             if (_userLocation == null) {
@@ -184,25 +208,32 @@ class HomeScreenViewModel(
                 _userLocation = LocationTracker(context).getLocation()
             }
             Log.d(TAG, "Position: ${_userLocation.toString()}")
+
             locationForecastRepo.fetchLocationForecast(
                 _userLocation?.latitude ?: 59.913868,
                 _userLocation?.longitude ?: 10.752245
             )
-            val sevenDayDetails = locationForecastRepo.getNext7DaysForecast()
-            _sevenDaysDetailedForecast.update {
-                sevenDayDetails
+            _currentWeatherState.update {
+                locationForecastRepo.getTodayWeather()
             }
+            _next6DaysState.update {
+                locationForecastRepo.getNext6daysForecast()
+            }
+
+            _userLocation = LocationTracker(context).getLocation()
         }
     }
-    
 
-    fun getRelevantAlerts(context: Context){
+    fun getRelevantAlerts(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             //!position broke, todo look into LocationTracker
             if (_userLocation == null) {
                 _userLocation = LocationTracker(context).getLocation()
             }
-            val cards = metAlertsRepo.henteVarselKort(latitude=_userLocation?.latitude ?: 59.913868, longitude=_userLocation?.longitude ?: 10.752245)
+            val cards = metAlertsRepo.henteVarselKort(
+                latitude = _userLocation?.latitude ?: 59.913868,
+                longitude = _userLocation?.longitude ?: 10.752245
+            )
 
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)
@@ -210,3 +241,4 @@ class HomeScreenViewModel(
         }
     }
 }
+
