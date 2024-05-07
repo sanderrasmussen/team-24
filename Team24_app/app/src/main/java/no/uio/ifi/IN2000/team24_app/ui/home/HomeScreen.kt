@@ -76,6 +76,7 @@ import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
 import no.uio.ifi.IN2000.team24_app.ui.components.character.SatisfactionBar
 import no.uio.ifi.IN2000.team24_app.ui.date
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.day
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
@@ -363,7 +364,7 @@ fun HomeScreen(
                         if (showToday) {
                             currentWeatherState.let {
                                 WeatherCardsToday(
-                                    currentHour = currentHour,
+                                    //currentHour = currentHour,
                                     weatherDetails = it,
                                     vm = homevm
                                 )
@@ -371,7 +372,7 @@ fun HomeScreen(
                         } else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
-                                    currentHour,
+                                    //currentHour,
                                     next6DaysWeatherState = next6DaysWeatherState,
                                     vm = homevm
                                 )
@@ -398,7 +399,7 @@ fun HomeScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<WeatherDetails?>?, vm:HomeScreenViewModel) {
+fun WeatherCardsNextSixDays( next6DaysWeatherState: ArrayList<WeatherDetails?>?, vm:HomeScreenViewModel) {
     val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()
@@ -414,7 +415,6 @@ fun WeatherCardsNextSixDays( currentHour: Int, next6DaysWeatherState: ArrayList<
                 val weatherDetails = next6DaysWeatherState[index]
                 if (weatherDetails != null) {
                     WeatherCard(
-                        currentHour,
                         weatherDetail = weatherDetails,
                         titleOverride = day,
                         onClick = { vm.updateWeatherDetails(weatherDetails = weatherDetails, dayStr = day) })
@@ -464,7 +464,7 @@ fun CurrentWeatherInfo(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, vm: HomeScreenViewModel) {
+fun WeatherCardsToday(weatherDetails: List<WeatherDetails>, vm: HomeScreenViewModel) {
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
@@ -475,7 +475,6 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, vm
     ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
             WeatherCard(
-                currentHour = currentHour,
                 weatherDetail = weatherDetail,
                 onClick = { vm.updateWeatherDetails(weatherDetail) },
             )
@@ -484,23 +483,14 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, vm
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherCard(
-    currentHour : Int,
     weatherDetail: WeatherDetails,
     onClick : () -> Unit,
     modifier : Modifier = Modifier,
     titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
 ) {
-    val cardColour = when (currentHour)  {
-        in 6 until 12 -> Color(android.graphics.Color.parseColor("#123A44"))
-        in 12 until 18 -> Color(android.graphics.Color.parseColor("#24552E"))
-        in  18 until 22 -> Color(android.graphics.Color.parseColor("#354779"))
-        else -> Color(android.graphics.Color.parseColor("#000d48"))
-    }
-    val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
-    val backgroundColor = cardColour
-   // val height = if (hour == currentHour) 120.dp else 118.dp
 
     Card(
         modifier = modifier
@@ -508,7 +498,7 @@ fun WeatherCard(
             .height(150.dp),
         shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
+            containerColor = backgroundColour()
         ),
         onClick = { onClick() },
     ) {
@@ -569,7 +559,7 @@ fun LocationPermissionCard(){
                     locationPermissionState.launchPermissionRequest()
                     showCard.value=false
                 }) {
-                    Text(text = "grant location permission")
+                    Text(text = "Grant location permission")
                 }
             },
             dismissButton = {
@@ -611,9 +601,9 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
             val dayStr = weatherDetailState.dayStr
             Card(
                 modifier = modifier
-                    .fillMaxWidth()
-                    ,
-                shape = RoundedCornerShape(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = backgroundColour())
 
             ) {
                 Column(
@@ -643,19 +633,20 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
                     }
                     if(dayStr==null) {  //this is for today
                         val weatherDetail = weatherDetails[0]
-                        Icon(iconName = weatherDetail.next_1_hours_symbol_code, size=50)
-                        Text(text = "detaljer for klokken ${weatherDetail.time}", fontSize = 24.sp)
-                        Text(text ="temperatur: ${weatherDetail.air_temperature}°C", fontSize = 18.sp)
-                        Text(text="nedbørsmengde: ${weatherDetail.next_1_hours_precipitation_amount}mm", fontSize = 18.sp)
-                        Text(text="skyer: ${weatherDetail.cloud_area_fraction}% dekning", fontSize = 18.sp)
-                        Text(text = "vindstyrke: ${weatherDetail.wind_speed}m/s", fontSize = 18.sp)
-                        Text(text = "vindretning: ${windDirection(weatherDetail.wind_from_direction)}", fontSize = 18.sp)
+                        Icon(iconName = weatherDetail.next_1_hours_symbol_code, size = 65)
+                        Text(text = "Detaljer for kl. ${weatherDetail.time}", fontSize = 26.sp, color = Color.White)
+                        Text(text ="Temperatur: ${weatherDetail.air_temperature}°C", fontSize = 22.sp,color = Color.White )
+                        Text(text="Nedbørsmengde: ${weatherDetail.next_1_hours_precipitation_amount}mm", fontSize = 22.sp, color = Color.White)
+                        Text(text="Skyer: ${weatherDetail.cloud_area_fraction}% dekning", fontSize = 22.sp, color = Color.White)
+                        Text(text = "Vindstyrke: ${weatherDetail.wind_speed}m/s", fontSize = 22.sp, color = Color.White)
+                        Text(text = "Vindretning: ${windDirection(weatherDetail.wind_from_direction)}", fontSize = 22.sp, color = Color.White)
+                        Spacer(modifier= Modifier.padding(18.dp))
 
 
                     }else { //this is one of the next6days-cards
                         val scrollState = rememberScrollState()
                         LaunchedEffect(Unit) { scrollState.animateScrollTo(0) } //on first compose, scroll to top
-                        Text(text = "detaljer for $dayStr", fontSize = 24.sp)
+                        Text(text = "Detaljer for $dayStr", fontSize = 26.sp, color = Color.White)
                         Column(
                             modifier = Modifier
                                 .height(200.dp)
@@ -665,9 +656,9 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
                                 Row (
                                     horizontalArrangement = Arrangement.Center
                                 ){
-                                    Text(text = "Kl. ${hourlyDetail.time}: ${hourlyDetail.air_temperature}°C  ")
+                                    Text(text = "Kl. ${hourlyDetail.time}: ${hourlyDetail.air_temperature}°C  ",fontSize = 22.sp, color = Color.White)
                                     val symbolCode = if(hourlyDetail.next_1_hours_symbol_code!=null)hourlyDetail.next_1_hours_symbol_code else hourlyDetail.next_6_hours_symbol_code
-                                    Icon(iconName = symbolCode, size = 30)
+                                    Icon(iconName = symbolCode, size = 35)
                                 }
                             }
                         }
