@@ -117,7 +117,14 @@ fun HomeScreen(
 
     val white = Color.White
     val gray = Color(android.graphics.Color.parseColor("#cfd0d2"))
+    val darkGray = Color(android.graphics.Color.parseColor("#767676"))
+
     val currentHour = LocalTime.now().hour
+
+    val notSelectedColor = when(currentHour){
+        in 12 until 18 -> darkGray
+        else -> gray
+    }
 
     val character by homevm.characterState.collectAsState()
 
@@ -320,7 +327,7 @@ fun HomeScreen(
                         ) {
                             Text(
                                 text = "I dag",
-                                color = if (boldToday) white else gray,
+                                color = if (boldToday) white else notSelectedColor,
                                 fontSize = 20.sp,
                                 fontWeight = if (boldToday) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.clickable {
@@ -333,7 +340,7 @@ fun HomeScreen(
 
                             Text(
                                 text = "Neste 6 dager",
-                                color = if (boldNextSixDays) white else gray,
+                                color = if (boldNextSixDays) white else notSelectedColor,
                                 fontSize = 20.sp,
                                 fontWeight = if (boldNextSixDays) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.clickable {
