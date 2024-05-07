@@ -13,8 +13,8 @@ class CategoryRepository {
 
     // FUNCTIONS FOR FETCHING CATEGORIES
 
-    // function to get category names
-    suspend fun getAllCategories(): List<String> {
+    // function to get all categories
+    suspend fun getAllCategories(): List<Category> {
 
         return categoryDao.getAllCategories()
 
@@ -24,50 +24,6 @@ class CategoryRepository {
     suspend fun getCategory(categoryName: String): Category {
 
         return categoryDao.getCategory(categoryName)
-
-    }
-
-    // function to get category last date answered value
-    suspend fun getCategoryLastDateAnswered(categoryName: String): Date {
-
-        return categoryDao.getCategoryLastDateAnswered(categoryName)
-
-    }
-
-    // function to get category points value
-    suspend fun getCategoryPoints(categoryName: String): Int {
-
-        return categoryDao.getCategoryPoints(categoryName)
-
-    }
-
-    // function to get value if timer should be started
-    suspend fun getCategoryShouldStartTimer(categoryName: String): Boolean {
-
-        return categoryDao.getCategoryShouldStartTimer(categoryName)
-
-    }
-
-    // function to get locked value by comparing lastdateanswered and todays date
-    suspend fun getLockedValue(categoryName: String): Boolean {
-
-        // get today and last date answered as calendar objects
-        val today = Calendar.getInstance().apply {
-
-            time = Date()
-
-        }
-
-        val lastDateAnswered = Calendar.getInstance().apply {
-
-            time = getCategoryLastDateAnswered(categoryName)
-
-        }
-
-        // return check of equal value of objects years, months and day of months
-        return today.get(Calendar.YEAR) == lastDateAnswered.get(Calendar.YEAR) &&
-                today.get(Calendar.MONTH) == lastDateAnswered.get(Calendar.MONTH) &&
-                today.get(Calendar.DAY_OF_MONTH) == lastDateAnswered.get(Calendar.DAY_OF_MONTH)
 
     }
 

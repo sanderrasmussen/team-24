@@ -11,16 +11,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
+import no.uio.ifi.IN2000.team24_app.data.database.Category
+import java.util.Calendar
+import java.util.Date
 
 data class CategoriesUiState(
 
-    val categories: List<String> = emptyList()
-
-)
-
-data class CategoryLockedUiState(
-
-    val locked: Boolean = false
+    val categories: List<Category> = emptyList()
 
 )
 
@@ -33,16 +30,13 @@ class CategoriesScreenViewModel: ViewModel() {
     private val _categoriesUiState = MutableStateFlow(CategoriesUiState())
     val categoriesUiState: StateFlow<CategoriesUiState> = _categoriesUiState.asStateFlow()
 
-    // ui state values for fetching category locked ui state
-    private val _categoryLockedUiState = MutableStateFlow(CategoryLockedUiState())
-    val categoryLockedUiState: StateFlow<CategoryLockedUiState> = _categoryLockedUiState.asStateFlow()
-
     init {
 
         getCategories()
 
     }
 
+    // function to fetch categories
     private fun getCategories() {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -66,26 +60,17 @@ class CategoriesScreenViewModel: ViewModel() {
 
     }
 
-    private fun getCategoryLockedValue(categoryName: String) {
+    // function to fetch category locked value
+    private fun getCategoryLockedValue(category: Category): Boolean {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        // get today and last date answered of category as calendar objects
+        val today = Calendar.getInstance().apply { time = Date() }
+        val lastDateAnswered = Calendar.getInstance().apply { time = category.lastDateAnswered }
 
-            try {
-
-                _categoryLockedUiState.update { currentCategoryLockedUiState ->
-
-                    val locked = categoryRepository.getLockedValue(categoryName)
-                    currentCategoryLockedUiState.copy(locked = locked)
-
-                }
-
-            } catch (e: Exception) {
-
-                Log.e(TAG, "Feil ved henting av kategoriverdi: ${e.message}", e)
-
-            }
-
-        }
+        // return check of equal value of objects years, months and day of months
+        return today.get(Calendar.YEAR) == lastDateAnswered.get(Calendar.YEAR) &&
+                today.get(Calendar.MONTH) == lastDateAnswered.get(Calendar.MONTH) &&
+                today.get(Calendar.DAY_OF_MONTH) == lastDateAnswered.get(Calendar.DAY_OF_MONTH)
 
     }
 
