@@ -27,8 +27,10 @@ import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 
 import no.uio.ifi.IN2000.team24_app.data.character.Character
+import no.uio.ifi.IN2000.team24_app.data.character.getDefaultBackupCharacter
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
+import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
@@ -67,22 +69,38 @@ class HomeScreenViewModel(
 
 
 ): ViewModel(){
-    var currentWeatherState:StateFlow<ArrayList<WeatherDetails>?> =
-        locationForecastRepo.ObserveTodayWeather();
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> =
-        locationForecastRepo.ObserveNext6DaysForecast()
+
+    private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
+    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails?>?>(ArrayList())
+
+    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
 
     //this is just to render a default character, TODO should call a load from disk()-method on create
-    private val character = Character(head = heads().first(), torso = torsos().first(), legs = legs().first())
+    //
+
+    private var character = loadClothesFromDisk() //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(character)
 
 
     init {
+        //I will now laod selected clothes from disk
+        viewModelScope.launch {
+            characterState.update { loadSelectedClothes() }
+        }
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
         getBalanceFromDb()
+
     }
 
 
+    fun loadClothesFromDisk(): Character{
+        var character = getDefaultBackupCharacter()
+        viewModelScope.launch {
+            character= loadSelectedClothes()
+        }
+        return character
+    }
     fun getBalanceFromDb() {
 
         viewModelScope.launch {
@@ -99,7 +117,8 @@ class HomeScreenViewModel(
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value?.firstOrNull()?.air_temperature ?: 0.0
+        val temp: Double = currentWeatherState.value.firstOrNull()?.air_temperature ?: 0.0//Sander endret denne for å unngå NoSuchElementException om listen skulle være tom.
+
         Log.d(TAG, "Temp: $temp")
         Log.d(TAG, "CharacterTemp: $characterTemp")
         val delta = temp - characterTemp
@@ -146,15 +165,23 @@ class HomeScreenViewModel(
                      _userLocation = LocationTracker(context).getLocation()
                  }
                  Log.d(TAG, "Position: ${_userLocation.toString()}")
+
                  locationForecastRepo.fetchLocationForecast(
                      _userLocation?.latitude ?: 59.913868,
                      _userLocation?.longitude ?: 10.752245
                  )
+                 _currentWeatherState.update {
+                     locationForecastRepo.getTodayWeather()
+                 }
+                 _next6DaysState.update {
+                     locationForecastRepo.getNext6daysForecast()
+                 }
 
             }
      }
 
-    
+
+
 
     fun getRelevantAlerts(context: Context){
         viewModelScope.launch(Dispatchers.IO) {

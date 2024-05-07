@@ -1,6 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,38 +35,40 @@ data class WeatherDetails(
     var next_12_hours_precipitation_amount : Double? = null
 )
 
+
 class LocationForecastRepository{
     private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
-    //still unsure how often this hould be updated
-    private var locationForecast : LocationForecast? = null
-
-    //denne skal sendes videre til viewmodel og observeres
-    private val _forecastMap = MutableStateFlow<HashMap<String?, ArrayList<WeatherDetails>>>(HashMap())
-    private val _currentWeather = MutableStateFlow<WeatherDetails?>(null)
-    private val _todayForecast = MutableStateFlow<ArrayList<WeatherDetails>?>(null)
-    private val _next7DaysForecast = MutableStateFlow<ArrayList<ArrayList<WeatherDetails>?>?>(null)
-    private val _next6daysForecast = MutableStateFlow<ArrayList<WeatherDetails?>?>(null)
+    private var locationForecast : LocationForecast? = null //PREFEREABLY only locationforecast should be nullable
 
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
+
     //re-fetching api every hour is what i have in mind
-    suspend fun fetchLocationForecast(lat:Double, lon: Double) {
-        //get forecast object
-        if (locationForecast==null){
-            locationForecast = dataSource.getLocationForecastData(lat, lon)
+    suspend fun fetchLocationForecast(lat:Double, lon: Double): LocationForecast? {
+        try {
+            //get forecast object
+            if (locationForecast == null) {
+                locationForecast =
+                    dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
+            }
+            if (locationForecast!=null){
+                keepFirstIndexUpToDate()
+                forecastMap = organizeForecastIntoMapByDay()
+
+            }
+
         }
-        fetchApiDataEveryHour(lat, lon)
-        keepFirstIndexUpToDate()
-
-
-    }
-    private fun getProperties(): Properties? {
-        return locationForecast?.properties
-    }
-    private fun getTimeseries(): ArrayList<Timeseries>? {
-        return getProperties()?.timeseries
+        catch (e: Exception) {
+            // Håndter eventuelle unntak
+            Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
+        }
+        return locationForecast;
     }
 
-    private fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
+    fun getTimeseries(): ArrayList<Timeseries>? {
+        return locationForecast?.properties?.timeseries
+    }
+
+    fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
         //HUSK SKRIVE TRY CATCH
         var time: String? = getTimeseries()?.get(timeseries_Index)?.time
         var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
@@ -89,73 +93,45 @@ class LocationForecastRepository{
         )
     }
 
-    private fun getWeatherNow(): WeatherDetails? {
+    fun getWeatherNow(): WeatherDetails? {
         var weatherNow =  createWeatherDetailObject(0)
-        updateCurrentWeatherStateFlow(weatherNow)
         return weatherNow
     }
-    private fun fetchApiDataEveryHour(lat:Double, lon: Double) {
-        CoroutineScope(Dispatchers.Default).launch {
-            while (true) {
-                // re-fetch API-data
-                //get forecast object
-                locationForecast = dataSource.getLocationForecastData(lat, lon)
-                // wait one hour
-                delay(3600000)
-            }
-        }
-    }
-    @SuppressLint("NewApi") //THIS CODE DEFFENITELY NEEDS REFACTORING HOWEVER IT SHOULD WORK FOR NOW
-    private fun keepFirstIndexUpToDate() {
-        CoroutineScope(Dispatchers.Default).launch {
 
-            while (true) {
+    @SuppressLint("NewApi") //THIS CODE HAS BENN REFACTORED AND SHOULD NOT CASE INDEX OUT OF BOUNDS ANYMORE
+    fun keepFirstIndexUpToDate()  {
 
-                var currentTime = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
+            var currentTime = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
 
-                var forecast = getTimeseries()?.get(0)?.time
+            var forecast = getTimeseries()?.get(0)?.time
+            forecast = forecast?.replace("Z", "")
+            forecast = forecast?.replace("T", ":")
+            var forecastTime = LocalDateTime.parse(forecast, formatter)
+
+            // Make a copy of the list to avoid ConcurrentModificationException
+            val timeseriesCopy = ArrayList(getTimeseries())
+
+            while (forecastTime.isBefore(currentTime.minusHours(1))) {
+
+                // Remove outdated weather data from the copied list
+                timeseriesCopy.removeAt(0)
+
+                currentTime = LocalDateTime.now()
+
+                forecast = timeseriesCopy.getOrNull(0)?.time
                 forecast = forecast?.replace("Z", "")
                 forecast = forecast?.replace("T", ":")
-                var forecastTime = LocalDateTime.parse(forecast, formatter)
+                forecastTime = LocalDateTime.parse(forecast, formatter)
 
-                // Make a copy of the list to avoid ConcurrentModificationException
-                val timeseriesCopy = ArrayList(getTimeseries())
-
-                while (forecastTime.isBefore(currentTime.minusHours(1))) {
-
-                    // Remove outdated weather data from the copied list
-                    timeseriesCopy.removeAt(0)
-
-                    currentTime = LocalDateTime.now()
-
-                    // Update stateflows based on new data
-                    forecast = timeseriesCopy.getOrNull(0)?.time
-                    forecast = forecast?.replace("Z", "")
-                    forecast = forecast?.replace("T", ":")
-                    forecastTime = LocalDateTime.parse(forecast, formatter)
-
-
-                }
-                // Update the original list with the modified copy
-                locationForecast?.properties?.timeseries = timeseriesCopy
-
-                // Update stateflows based on new data
-                getTodayWeather()
-                organizeForecastIntoMapByDay()
-                getWeatherNow()
-                getNext6daysForecast()
-                getNext7DaysForecast()
-
-                // Recheck every minute
-                delay(60000)
             }
-        }
+            // Update the original list with the modified copy
+            locationForecast?.properties?.timeseries = timeseriesCopy
     }
-    private fun getTodayWeather(): ArrayList<WeatherDetails>? {
+    fun getTodayWeather(): ArrayList<WeatherDetails> {
         var data = getTimeseries()?.subList(0,24)
         var todayDate = data?.get(0)?.time?.split("T")?.get(0)
-        var todayWeather : ArrayList<WeatherDetails>? = ArrayList<WeatherDetails>()
+        var todayWeather : ArrayList<WeatherDetails> = ArrayList<WeatherDetails>()
 
         data?.forEachIndexed { index, e ->
             var date = e.time?.split("T")?.get(0)
@@ -166,16 +142,15 @@ class LocationForecastRepository{
                 todayWeather?.add(weather)
             }
         }
-        updateTodayForecast(todayWeather)//
         return todayWeather
     }
 
-    private fun getWeatherOnDate(date : String?) : ArrayList<WeatherDetails>? {
+    fun getWeatherOnDate(date : String) : ArrayList<WeatherDetails>? {
         return forecastMap?.get(date)
     }
 
     @SuppressLint("NewApi")
-    private fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
+    fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
         var next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
 
         for (i in 0..6) {
@@ -185,11 +160,10 @@ class LocationForecastRepository{
             next7DaysForecast.add(getWeatherOnDate(date))
         }
 
-        updateNext7DaysForecast(next7DaysForecast)
         return next7DaysForecast
     }
     @SuppressLint("NewApi")
-    private fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
+    fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
         var next6DaysForecast = ArrayList<WeatherDetails?>()
         for (i in 1..7) {
             val current = LocalDateTime.now().plusDays(i.toLong())
@@ -202,68 +176,31 @@ class LocationForecastRepository{
                 }
             }
         }
-        updateNext6DayForecast(next6DaysForecast)
         return next6DaysForecast
 
 
     }
-    private fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>>?{
-        var ForecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = HashMap<String?, ArrayList<WeatherDetails>>()
+    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>> {
+        var ForecastMap  = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
             var weatherObject : WeatherDetails = createWeatherDetailObject(index)
             var date = e.time?.split("T")?.get(0)
             var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
 
-            weatherObject.time= time 
+            weatherObject.time= time
 
             if (ForecastMap != null) {
                 if (!ForecastMap.containsKey(date)){
-                    ForecastMap!![date] = arrayListOf<WeatherDetails>()
+                    ForecastMap[date] = arrayListOf<WeatherDetails>()
                 }
             }
-            ForecastMap!![date]?.add(weatherObject)
+            ForecastMap[date]?.add(weatherObject)
         }
-        forecastMap = ForecastMap
-        updateForecastMapStateFlow(ForecastMap)
         return ForecastMap
     }
 
 
-    private fun updateForecastMapStateFlow(newMap : HashMap<String?, ArrayList<WeatherDetails>>?){
-        _forecastMap.update {
-            newMap!!
-        }
 
-    }
-    fun ObserveForecastMap(): StateFlow<HashMap<String?, ArrayList<WeatherDetails>>> = _forecastMap.asStateFlow()
 
-    private fun updateCurrentWeatherStateFlow(weather :  WeatherDetails?){
-        _currentWeather.update {
-            weather!!
-        }
-    }
-    fun ObserveCurrentWeather(): StateFlow<WeatherDetails?> = _currentWeather.asStateFlow()
 
-    private fun updateTodayForecast(forecast : ArrayList<WeatherDetails>?){
-        _todayForecast.update {
-            forecast!!
-        }
-    }
-    fun ObserveTodayWeather(): StateFlow<ArrayList<WeatherDetails>?> = _todayForecast.asStateFlow()
-
-    private fun updateNext7DaysForecast(forecast : ArrayList<ArrayList<WeatherDetails>?>){
-        _next7DaysForecast.update {
-            forecast!!
-        }
-    }
-
-    fun ObserveNext7DaysForecast() : StateFlow<ArrayList<ArrayList<WeatherDetails>?>?> = _next7DaysForecast.asStateFlow()
-
-    private fun updateNext6DayForecast(forecast: ArrayList<WeatherDetails?>?){
-        _next6daysForecast.update {
-            forecast!!
-        }
-    }
-
-    fun ObserveNext6DaysForecast() : StateFlow<ArrayList<WeatherDetails?>?> = _next6daysForecast.asStateFlow()
 }
