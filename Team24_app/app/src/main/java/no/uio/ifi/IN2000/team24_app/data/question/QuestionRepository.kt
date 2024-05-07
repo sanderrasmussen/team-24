@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.question
 
+import androidx.room.Query
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import no.uio.ifi.IN2000.team24_app.data.database.Question
@@ -68,9 +69,24 @@ class QuestionRepository {
 
     }
 
+    // function to get question for a question name
     suspend fun getQuestion(questionName: String): Question {
 
         return questionDao.getQuestion(questionName)
+
+    }
+
+    // function to retrieve options for a question name
+    suspend fun getQuestionOptions(questionName: String): Question {
+
+        return questionDao.getQuestionOptions(questionName)
+
+    }
+
+    // function to retrieve correct option index for a question name
+    suspend fun getCorrectOptionIndex(questionName: String): Question {
+
+        return questionDao.getCorrectOptionIndex(questionName)
 
     }
 

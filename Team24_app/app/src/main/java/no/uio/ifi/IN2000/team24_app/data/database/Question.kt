@@ -9,7 +9,7 @@ data class Question(
     @PrimaryKey val question: String,
     val categoryName: String,
     val options: List<String>,
-    val correctOption: Int,
+    val correctOptionIndex: Int,
     val answered: Boolean = false
 
 )
