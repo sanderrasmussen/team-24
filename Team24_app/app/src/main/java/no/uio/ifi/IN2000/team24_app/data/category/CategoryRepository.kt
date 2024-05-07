@@ -13,8 +13,8 @@ class CategoryRepository {
 
     // FUNCTIONS FOR FETCHING CATEGORIES
 
-    // function to get all categories
-    suspend fun getAllCategories(): List<Category> {
+    // function to get category names
+    suspend fun getAllCategories(): List<String> {
 
         return categoryDao.getAllCategories()
 
