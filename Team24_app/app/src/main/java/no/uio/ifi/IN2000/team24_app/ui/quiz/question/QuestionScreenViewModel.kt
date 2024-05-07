@@ -23,6 +23,12 @@ data class QuestionUiState(
 
 )
 
+data class CategoryUiState(
+
+    val category: no.uio.ifi.IN2000.team24_app.data.database.Category? = null
+
+)
+
 class QuestionScreen: ViewModel() {
 
     // question category and repo to fetch category and question from
