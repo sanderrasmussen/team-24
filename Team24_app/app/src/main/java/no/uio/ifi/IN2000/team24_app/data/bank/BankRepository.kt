@@ -20,7 +20,10 @@ class BankRepository()  {
     private val bankDao = db.bankDao()
 
     suspend fun withdraw( sum : Int) {
-        bankDao.withdraw(sum)
+        var balance = getBankBalance()
+        if (balance-sum >= 0 ){
+            bankDao.withdraw(sum)
+        }
     }
 
     suspend fun deposit( sum : Int)  {

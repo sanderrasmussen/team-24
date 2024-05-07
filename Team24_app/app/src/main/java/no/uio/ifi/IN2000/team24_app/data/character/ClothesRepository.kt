@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import java.util.Date
@@ -40,30 +41,50 @@ class ClothesRepository {
     }
 
     //not owned:
-    fun getAllNotOwnedHeads(): List<Head>{
-        return clothesDao.getAllNotOwnedHeads().map{convertToHead(it)}
+    suspend fun getAllNotOwnedHeads(): List<Head>{
+        return withContext(Dispatchers.IO) withContex@{
+            return@withContex clothesDao.getAllNotOwnedHeads().map{convertToHead(it)} //casting all in list to head
+        }
+
     }
 
-    fun getAllNotOwnedTorsos(): List<Torso>{
-        return clothesDao.getAllNotOwnedTorsos().map{convertToTorso(it)}
+    suspend fun getAllNotOwnedTorsos(): List<Torso>{
+        return withContext(Dispatchers.IO) withContex@{
+            return@withContex clothesDao.getAllNotOwnedTorsos().map{convertToTorso(it)} //casting all in list to head
+        }
     }
 
-    fun getAllNotOwnedLegs(): List<Legs>{
-        return clothesDao.getAllNotOwnedLegs().map { convertToLegs(it) }
+    suspend fun getAllNotOwnedLegs(): List<Legs>{
+        return withContext(Dispatchers.IO) withContex@{
+            return@withContex clothesDao.getAllNotOwnedLegs().map{convertToLegs(it)} //casting all in list to head
+        }
     }
 
     //Equipped clothes:
+    //I had a bug where the first time the app started without any cahce, the app would crash because
+    //equiped clothes list was empty, therefore i check if it is empty and if null or empty load a hardcoded backup character
     fun getEquipedHead(): Head{
-
-        return convertToHead(clothesDao.getEquipedHead().first())
+        var head = clothesDao.getEquipedHead()
+        if (head.isNullOrEmpty()){
+            return backupHead()
+        }
+        return convertToHead(head.first())
     }
 
     fun getEquipedTorso(): Torso{
-        return convertToTorso(clothesDao.getEquipedTorso().first())
+        var torso = clothesDao.getEquipedTorso()
+        if (torso.isNullOrEmpty()){
+            return backupTorso()
+        }
+        return convertToTorso(torso.first())
     }
 
     fun getEquipedLegs(): Legs{
-        return  convertToLegs(clothesDao.getEquipedLegs().first())
+        var legs = clothesDao.getEquipedLegs()
+        if (legs.isNullOrEmpty()){
+            return backupLegs()
+        }
+        return convertToLegs(legs.first())
     }
 
     fun writeEquipedHead(immageAsset :Int){
@@ -83,6 +104,18 @@ class ClothesRepository {
     }
     fun getLastDate() : Date {
         return clothesDao.getLastDate()
+    }
+    fun backupHead(): Head{
+        val short_hair : Clothes = Clothes(R.drawable.head_short_hair,"Short Hair", 25,  30, R.drawable.alt_head_short_hair,"head",true)
+        return convertToHead(short_hair)
+    }
+    fun backupTorso():Torso{
+        val long_sleeve = Clothes(R.drawable.torso_long_sleeves, "Long Sleeve", 5,25, R.drawable.alt_torso_long_sleeve, "torso", true)
+        return convertToTorso(long_sleeve)
+    }
+    fun backupLegs():Legs{
+        val pants = Clothes(R.drawable.legs_pants,"Pants", 5,  25, R.drawable.alt_legs_pants, "legs", true)
+        return convertToLegs(pants)
     }
     //helping methods:
     fun convertToHead(clothes: Clothes): Head {

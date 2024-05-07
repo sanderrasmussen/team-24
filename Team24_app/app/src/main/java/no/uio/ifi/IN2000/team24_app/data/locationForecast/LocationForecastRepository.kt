@@ -1,6 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -42,14 +44,24 @@ class LocationForecastRepository{
 
     //re-fetching api every hour is what i have in mind
     suspend fun fetchLocationForecast(lat:Double, lon: Double): LocationForecast? {
-        //get forecast object
-        if (locationForecast==null){
-            locationForecast = dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
-        }
-        keepFirstIndexUpToDate()
-        forecastMap= organizeForecastIntoMapByDay()
-        return locationForecast;
+        try {
+            //get forecast object
+            if (locationForecast == null) {
+                locationForecast =
+                    dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
+            }
+            if (locationForecast!=null){
+                keepFirstIndexUpToDate()
+                forecastMap = organizeForecastIntoMapByDay()
 
+            }
+
+        }
+        catch (e: Exception) {
+            // Håndter eventuelle unntak
+            Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
+        }
+        return locationForecast;
     }
 
     fun getTimeseries(): ArrayList<Timeseries>? {

@@ -2,6 +2,7 @@ package no.uio.ifi.IN2000.team24_app.data.character
 
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
+import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 
 data class Head(
     override val name: String, override val heatValue: Int, override val imageAsset: Int, override val price: Int,
@@ -17,3 +18,4 @@ val short_hair = Head("Short Hair", 25, R.drawable.head_short_hair, 30, R.drawab
 fun heads(): List<Head> = runBlocking{
     clothesRepo.getAllOwnedHeads()
 }
+
