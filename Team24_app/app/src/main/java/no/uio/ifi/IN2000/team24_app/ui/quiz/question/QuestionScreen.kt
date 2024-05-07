@@ -1,5 +1,18 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -7,6 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import no.uio.ifi.IN2000.team24_app.data.database.Question
@@ -50,6 +69,9 @@ fun QuestionScreen(
         // if timer should not be started, timer should be paused and vice versa
         var pauseTimer: Boolean = !getTimer
 
+        // variable for storing new coins won
+        var newCoinsWon = coinsWon
+
         // start timer until paused
         LaunchedEffect(key1 = readingTime) {
 
@@ -62,7 +84,95 @@ fun QuestionScreen(
 
         }
 
+        Column(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+
+                QuestionScreenHeader(
+
+                    currentProgress,
+                    readingTime,
+                    answeringTime,
+                    pauseTimer,
+                    questionUiState
+
+                )
+
+            }
+
     }
 
 }
+
+@Composable
+fun QuestionScreenHeader(
+
+    currentProgress: Float,
+    readingTime: Int,
+    answeringTime: Int,
+    pauseTimer: Boolean,
+    questionUiState: QuestionUiState
+
+) {
+
+    Column(
+
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+
+        // row for displaying progress and time left to answer
+        Row() {
+
+            // progress indicator
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                color = Color.Green,
+                trackColor = ProgressIndicatorDefaults.linearTrackColor,
+                progress = currentProgress
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // value that displays time
+            val displayTime = if (readingTime > 0 || pauseTimer) readingTime else answeringTime
+
+            Text(
+
+                text = "$displayTime",
+                style = MaterialTheme.typography.titleSmall
+
+            )
+
+        }
+
+        // spacer between progress bar and title
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // question text
+        Text(
+
+            text = questionUiState.question!!.question,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+
+        )
+
+    }
+
+}
+
+
 
