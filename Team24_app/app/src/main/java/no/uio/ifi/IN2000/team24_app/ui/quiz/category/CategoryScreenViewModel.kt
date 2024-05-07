@@ -30,7 +30,7 @@ data class QuestionsUiState(
 
 class CategoryScreenViewModel: ViewModel() {
 
-    // category and question repo to fetch category from
+    // category and question repo to fetch category and question from
     private val categoryRepository: CategoryRepository = CategoryRepository()
     private val questionRepository: QuestionRepository = QuestionRepository()
 
@@ -60,7 +60,7 @@ class CategoryScreenViewModel: ViewModel() {
 
     }
 
-    // function to fetch categories
+    // function to fetch category
     private fun loadCategoryInfo(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
