@@ -32,12 +32,12 @@ class CategoriesScreenViewModel: ViewModel() {
 
     init {
 
-        getCategories()
+        loadCategories()
 
     }
 
     // function to fetch categories
-    private fun getCategories() {
+    private fun loadCategories() {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -61,7 +61,7 @@ class CategoriesScreenViewModel: ViewModel() {
     }
 
     // function to fetch category locked value
-    private fun getCategoryLockedValue(category: Category): Boolean {
+    private fun loadCategoryLockedValue(category: Category): Boolean {
 
         // check if category is training category
         // and last date answered is null
