@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
+
 import android.content.ContentValues.TAG
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -159,6 +160,9 @@ class LocationForecastRepository{
             val date = current.format(formatter)
             next7DaysForecast.add(getWeatherOnDate(date))
         }
+        Log.d("FORECAST", "amount of entries in next7DaysForecast: ${next7DaysForecast.count()}")
+        Log.d("FORECAST", "entries per day: ${next7DaysForecast[1]?.count()}")
+        Log.d("FORECAST", "entries per day: ${next7DaysForecast[6]?.count()}")
 
         return next7DaysForecast
     }
@@ -171,7 +175,7 @@ class LocationForecastRepository{
             val date = current.format(formatter)
             var weather = getWeatherOnDate(date)
             weather?.forEach{
-                if (it?.time == "12"){
+                if (it.time == "12"){
                     next6DaysForecast.add(it)
                 }
             }

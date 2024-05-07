@@ -56,19 +56,19 @@ import no.uio.ifi.IN2000.team24_app.data.character.Clothing
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.character.Head
 import no.uio.ifi.IN2000.team24_app.data.character.Legs
-import no.uio.ifi.IN2000.team24_app.data.character.Player
+import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
-import no.uio.ifi.IN2000.team24_app.ui.Components
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import java.time.LocalTime
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun StoreScreen(navController: NavController) {
-        val c = Components()
         val viewModel = StoreScreenViewModel()
 
-        val backgroundImage = c.BackgroundImage()
+        val backgroundImage = BackgroundImage()
 
         Box(
             modifier = Modifier.fillMaxSize()
@@ -87,7 +87,7 @@ import java.time.LocalTime
                     Box(modifier = Modifier.weight(1f)) {
                         GridView(viewModel = viewModel)
                     }
-                    c.NavBar(navController)
+                    NavBar(navController)
             }
 
         }

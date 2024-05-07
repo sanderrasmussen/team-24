@@ -32,7 +32,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-class Components {
 
     //This function returns a list of the name of next six days in a short format
     //for example man for Mandag. The language it returns it in is norwegian which is determined
@@ -168,6 +167,3 @@ class Components {
         }
 
     }
-
-
-}
