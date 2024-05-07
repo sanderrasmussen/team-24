@@ -68,6 +68,8 @@ import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
@@ -178,6 +180,14 @@ fun HomeScreen(
 
     }
 
+    Scaffold (
+        snackbarHost = {
+            SnackbarHost (
+                hostState = snackbarHostState,
+            )
+        }
+    ) { innerPadding ->
+
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -207,7 +217,7 @@ fun HomeScreen(
                 modifier = Modifier
 
                     .fillMaxSize()
-                    .padding(10.dp)
+                    .padding(innerPadding)
             ) {
 
                 Row(
@@ -272,17 +282,17 @@ fun HomeScreen(
                 }
 
 
-               Box(
-                   modifier = Modifier.fillMaxWidth(),
-                   contentAlignment = Alignment.Center,
-                   )
-               {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                )
+                {
                     Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
-                    Column (
-                       modifier = Modifier.align(CenterEnd),
+                    Column(
+                        modifier = Modifier.align(CenterEnd),
                         horizontalAlignment = End,
 
-                    ) {//the column with the inventory and the alert button
+                        ) {//the column with the inventory and the alert button
                         val context = LocalContext.current
                         Button(
                             onClick = {
@@ -351,10 +361,20 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                            currentWeatherState?.let { WeatherCardsToday(currentHour= currentHour, weatherDetails = it,vm = homevm) }
+                            currentWeatherState.let {
+                                WeatherCardsToday(
+                                    currentHour = currentHour,
+                                    weatherDetails = it,
+                                    vm = homevm
+                                )
+                            }
                         } else {
                             if (currentWeatherDetails != null) {
-                                WeatherCardsNextSixDays(currentHour, next6DaysWeatherState = next6DaysWeatherState, vm = homevm)
+                                WeatherCardsNextSixDays(
+                                    currentHour,
+                                    next6DaysWeatherState = next6DaysWeatherState,
+                                    vm = homevm
+                                )
                             }
 
 
@@ -372,6 +392,7 @@ fun HomeScreen(
                 NavBar(navController)
             }
         }
+    }
 }
 
 
