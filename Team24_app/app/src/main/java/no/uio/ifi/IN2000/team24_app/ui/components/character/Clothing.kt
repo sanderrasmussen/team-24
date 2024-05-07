@@ -76,8 +76,9 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         characterState.update {
             it.copy(temperature = it.findAppropriateTemp())
         }
-        writeEquipedClothesToDisk(characterState.value)
+        writeEquipedClothesToDisk(characterState.value) //Writing equuiped clothes to disk
         showInventory = false // then, close the dialog.
+
     }
 
     Column() {

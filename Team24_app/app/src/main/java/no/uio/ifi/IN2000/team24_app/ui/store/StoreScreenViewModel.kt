@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.descriptors.PrimitiveKind
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.character.Character
 import no.uio.ifi.IN2000.team24_app.data.character.ClothesRepository
@@ -31,46 +33,56 @@ import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
 
-class StoreScreenViewModel: ViewModel() {
+class StoreScreenViewModel(
+    val bankRepository : BankRepository = BankRepository(),
+    val clothesRepository : ClothesRepository= ClothesRepository(),
 
-    val bankRepository = BankRepository()
-    val clothesRepository = ClothesRepository()
+    private val _hodePlagg: MutableStateFlow<List<Head>> = MutableStateFlow(emptyList()),
+    val hodePlagg: StateFlow<List<Head>> = _hodePlagg.asStateFlow(),
 
-    private val _hodePlagg: MutableStateFlow<List<Head>> = MutableStateFlow(emptyList())
-    val hodePlagg: StateFlow<List<Head>> = _hodePlagg.asStateFlow()
+    private val _overdeler: MutableStateFlow<List<Torso>> = MutableStateFlow(emptyList()),
+    val overdeler: StateFlow<List<Torso>> = _overdeler.asStateFlow(),
 
-    private val _overdeler: MutableStateFlow<List<Torso>> = MutableStateFlow(emptyList())
-    val overdeler: StateFlow<List<Torso>> = _overdeler.asStateFlow()
-
-    private val _bukser: MutableStateFlow<List<Legs>> = MutableStateFlow(emptyList())
-    val bukser: StateFlow<List<Legs>> = _bukser.asStateFlow()
+    private val _bukser: MutableStateFlow<List<Legs>> = MutableStateFlow(emptyList()),
+    val bukser: StateFlow<List<Legs>> = _bukser.asStateFlow(),
 
 
-    private val characterStore = getDefaultBackupCharacter()
-    val characterStateStore = MutableStateFlow(characterStore)
 
-    private var _currentSum:MutableStateFlow<Int?> = MutableStateFlow(null)
+
+
+): ViewModel() {
+
+    private var _currentSum:MutableStateFlow<Int?> = MutableStateFlow(loadBalanceFromDisk())
     val currentSum: StateFlow<Int?> =_currentSum.asStateFlow()
 
-
-
-
-
-
-    /* private val _antCoins = mutableStateOf(amountCoins)
-     val antCoins: State<Int> = _antCoins
- */
-
+    val characterState :MutableStateFlow<Character> = MutableStateFlow(loadClothesFromDisk())
+    var character : StateFlow<Character> = characterState.asStateFlow()
 
 
     init {
-        //laod selected clothes from disk
+        //load selected clothes from disk
         viewModelScope.launch {
-            characterStateStore.update { loadSelectedClothes() }
-            getPlagg()
+            characterState.update { loadSelectedClothes() }
+            _currentSum.update { bankRepository.getBankBalance() }
         }
+        getPlagg()
 
     }
+    fun loadClothesFromDisk(): Character {
+        var character = getDefaultBackupCharacter()
+        runBlocking {
+            character = loadSelectedClothes()
+        }
+        return character
+    }
+    fun loadBalanceFromDisk(): Int? {
+        var balance : Int? = null
+        runBlocking {
+            balance = bankRepository.getBankBalance()
+        }
+        return balance
+    }
+
 
     //I assume this is not owned clothes
     private fun getPlagg() {
@@ -87,13 +99,6 @@ class StoreScreenViewModel: ViewModel() {
         }
     }
 
-
-
-
-
-
-
-
     fun subtractMoney(clothingPrice: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -104,29 +109,6 @@ class StoreScreenViewModel: ViewModel() {
             }
         }
     }
-
-
-    suspend fun getCurrentSum() {
-         try {
-            var sum: Int? = null
-            viewModelScope.launch {
-                sum = withContext(Dispatchers.IO) {
-                    bankRepository.getBankBalance()
-                }
-            }.join() // Ensure the coroutine completes before returning the sum
-            _currentSum.update { sum }
-
-        } catch (e: Exception) {
-            // Handle any errors that may occur during the coroutine execution
-            Log.e(TAG, "Error getting bank balance: ${e.message}", e)
-        }
-    }
-
-
-
-
-
-
 
     fun unlockPlagg(plagg: Clothing){
         viewModelScope.launch(Dispatchers.IO) {

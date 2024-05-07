@@ -93,9 +93,10 @@ class HomeScreenViewModel(
     //this is just to render a default character, TODO should call a load from disk()-method on create
     //
 
-    private var character =
-        loadClothesFromDisk() //this is now default value in case of failed load form disk
-    val characterState = MutableStateFlow(character)
+
+         //this is now default value in case of failed load form disk
+    val characterState = MutableStateFlow(loadClothesFromDisk())
+    private var character = characterState.asStateFlow()
 
 
     init {
@@ -103,7 +104,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
         }
-        updateSatisfaction(characterTemp = character.findAppropriateTemp())
+        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         getBalanceFromDb()
 
     }

@@ -121,7 +121,7 @@ import java.time.LocalTime
         val hodeplagg by viewModel.hodePlagg.collectAsState()
         val overDeler by viewModel.overdeler.collectAsState()
         val plaggBukser by viewModel.bukser.collectAsState()
-        val character by viewModel.characterStateStore.collectAsState()
+        val character by viewModel.character.collectAsState()
 
         val currentSum by viewModel.currentSum.collectAsState()
 
@@ -131,9 +131,7 @@ import java.time.LocalTime
         }
 
 
-        LaunchedEffect(viewModel) {
-          viewModel.getCurrentSum()
-        }
+
 
         val allClothingList by remember(viewModel.hodePlagg, viewModel.overdeler, viewModel.bukser) {
             derivedStateOf {
@@ -360,19 +358,19 @@ import java.time.LocalTime
             if(price<= currentSum!!){
             when (clothing) { //first, change the character.
                 is Head -> {
-                    viewModel.characterStateStore.update {
+                    viewModel.characterState.update {
                         it.copy(head = clothing)
                     }
                 }
 
                 is Torso -> {
-                    viewModel.characterStateStore.update {
+                    viewModel.characterState.update {
                         it.copy(torso = clothing)
                     }
                 }
 
                 is Legs -> {
-                    viewModel.characterStateStore.update {
+                    viewModel.characterState.update {
                         it.copy(legs = clothing)
                     }
 
@@ -382,6 +380,9 @@ import java.time.LocalTime
 
             else{
                 Log.d("InventoryStore", "Insufficient funds to purchase ${clothing.name}")
+
+
+
 
             }
 
