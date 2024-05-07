@@ -9,6 +9,7 @@ data class Category(
 
     @PrimaryKey val category: String,
     var lastDateAnswered: Date? = null,
-    var points: Int = 15
+    var points: Int = 15,
+    var shouldStartTimer: Boolean = true
 
 )
