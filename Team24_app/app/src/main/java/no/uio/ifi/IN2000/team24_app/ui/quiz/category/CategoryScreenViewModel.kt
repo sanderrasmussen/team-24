@@ -85,8 +85,8 @@ class CategoryScreenViewModel: ViewModel() {
     }
 
 
-    // funcation to load 3 random category questions to pass to question screen
-    private fun loadQuestionsForCategory(categoryName: String) {
+    // function to load 3 random category questions to pass to question screen
+    fun loadQuestionsForCategory(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
 

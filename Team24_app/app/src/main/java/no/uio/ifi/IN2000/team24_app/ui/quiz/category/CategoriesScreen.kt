@@ -32,7 +32,7 @@ fun CategoriesScreen(
 
 ) {
 
-    //
+    // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
 
     Column(
