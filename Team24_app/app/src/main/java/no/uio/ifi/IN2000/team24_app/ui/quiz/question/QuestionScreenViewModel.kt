@@ -46,7 +46,7 @@ class QuestionScreen: ViewModel() {
     private var initialization = false
 
     @MainThread
-    fun initialize(questionList: List<String>, categoryInfo: String index: Int) {
+    fun initialize(questionList: List<String>, index: Int, categoryName: String) {
 
         if (!initialization) {
 
