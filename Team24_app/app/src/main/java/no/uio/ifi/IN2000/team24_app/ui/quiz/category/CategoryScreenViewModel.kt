@@ -30,7 +30,7 @@ data class QuestionsUiState(
 
 class CategoryScreenViewModel: ViewModel() {
 
-    // category repo to fetch category from
+    // category and question repo to fetch category from
     private val categoryRepository: CategoryRepository = CategoryRepository()
     private val questionRepository: QuestionRepository = QuestionRepository()
 
@@ -67,10 +67,10 @@ class CategoryScreenViewModel: ViewModel() {
 
             try {
 
-                _categoryUiState.update { currentCategoriesUiState ->
+                _categoryUiState.update { currentCategoryUiState ->
 
                     val category = categoryRepository.getCategory(categoryName)
-                    currentCategoriesUiState.copy(category = category)
+                    currentCategoryUiState.copy(category = category)
 
                 }
 
