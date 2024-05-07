@@ -61,7 +61,7 @@ class CategoriesScreenViewModel: ViewModel() {
     }
 
     // function to fetch category locked value
-    private fun loadCategoryLockedValue(category: Category): Boolean {
+    fun loadCategoryLockedValue(category: Category): Boolean {
 
         // check if category is training category
         // and last date answered is null
