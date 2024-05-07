@@ -29,7 +29,7 @@ data class CategoryUiState(
 
 )
 
-class QuestionScreen: ViewModel() {
+class QuestionScreenViewModel: ViewModel() {
 
     // question and category and repo to fetch category and question from
     private val categoryRepository: CategoryRepository = CategoryRepository()
