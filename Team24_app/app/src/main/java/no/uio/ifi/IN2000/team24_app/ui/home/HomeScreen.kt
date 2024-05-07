@@ -87,7 +87,7 @@ fun HomeScreen(
     isNetworkAvailable: Boolean,
     homevm: HomeScreenViewModel = viewModel(),
 
-){
+    ){
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
@@ -472,7 +472,7 @@ fun WeatherCardsToday(currentHour: Int, weatherDetails: List<WeatherDetails>, vm
             .horizontalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
 
-    ) {
+        ) {
         weatherDetails.forEachIndexed { index, weatherDetail ->
             WeatherCard(
                 currentHour = currentHour,
@@ -500,7 +500,7 @@ fun WeatherCard(
     }
     val yellow = Color(android.graphics.Color.parseColor("#FFFAA0"))
     val backgroundColor = cardColour
-   // val height = if (hour == currentHour) 120.dp else 118.dp
+    // val height = if (hour == currentHour) 120.dp else 118.dp
 
     Card(
         modifier = modifier
@@ -605,14 +605,14 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
         onDismissRequest = { vm.updateWeatherDetails(null) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
 
-    ) {
+        ) {
         if(weatherDetailState.weatherDetails != null) {
             val weatherDetails : List<WeatherDetails> = weatherDetailState.weatherDetails!!
             val dayStr = weatherDetailState.dayStr
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    ,
+                ,
                 shape = RoundedCornerShape(16.dp)
 
             ) {
