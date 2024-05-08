@@ -8,8 +8,8 @@ import java.util.Date
 data class Category(
 
     @PrimaryKey val category: String,
-    var lastDateAnswered: Date? = null,
     var points: Int = 15,
-    var shouldStartTimer: Boolean = true
+    var shouldStartTimer: Boolean = true,
+    var lastDateAnswered: Date? = null
 
 )

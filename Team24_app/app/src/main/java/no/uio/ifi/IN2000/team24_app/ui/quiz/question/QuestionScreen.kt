@@ -77,7 +77,7 @@ fun QuestionScreen(
         }
         var answeringTime by remember { mutableIntStateOf(categoryUiState.category!!.points) }
         // set pause timer value by default to opposite value as getTimer
-        // timer should be paused from beginning if
+        // timer should be paused from beginning if category shouldn't start timer
         var pauseTimer = !getTimer
 
         // variable for storing new coins won

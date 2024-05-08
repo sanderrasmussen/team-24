@@ -35,10 +35,24 @@ open class application: Application() {
 
 class AppDatabaseCallback : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
+
         super.onCreate(db)
+
         // Utfør handlinger når databasen blir opprettet for første gang
         CoroutineScope(Dispatchers.IO).launch {
-            MyDatabase.getInstance().bankDao().insertAll(Bank(1000))
+
+            MyDatabase.getInstance().bankDao().insertAll(Bank(50))
+
+            // quiz tables:
+
+            // categories:
+            val omVaeret = Category("Om været")
+            val farevarsler = Category("Farevarsler")
+            val oeving = Category("Farevarsler", 10, false)
+            MyDatabase.getInstance().categoryDao().insertAll(omVaeret)
+            MyDatabase.getInstance().categoryDao().insertAll(farevarsler)
+            MyDatabase.getInstance().categoryDao().insertAll(oeving)
+
         }
     }
 }
