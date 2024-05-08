@@ -57,6 +57,87 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
 
             // questions:
 
+            // weather questions:
+            val vaerSpoersmaal1 = Question(
+
+                "Hva er den kaldeste temperaturen som noensinne har blitt registrert?",
+                "Om været",
+                listOf("-89.2°C", "-61.8°C", "-100°C", "-78.9°C"),
+                0
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal1)
+
+            val vaerSpoersmaal2 = Question(
+
+                "Hvilken landsdel får mest regn i løpet av ett år?",
+                "Om været",
+                listOf("Nord-Norge", "Østlandet", "Vestlandet", "Sørlandet"),
+                2
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal2)
+
+            val vaerSpoersmaal3 = Question(
+
+                "Hva heter skalaen som norske meteorologer bruker for å bestemme vindstyrke?",
+                "Om været",
+                listOf("Fahrenheit-skalaen", "Richterskalaen", "Beaufortskalaen", "Saffir-Simpson-skalaen"),
+                2
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal3)
+
+            val vaerSpoersmaal4 = Question(
+
+                "Hva er den høyeste vindstyrken på vindskalaen?",
+                "Om været",
+                listOf("Storm", "Tornado", "Kuling", "Orkan"),
+                3
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal4)
+
+            val vaerSpoersmaal5 = Question(
+
+                "Hvilket vær forbindes ofte med høytrykk?",
+                "Om været",
+                listOf("Stille", "Storm", "Regn", "Orkan"),
+                0
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal5)
+
+            val vaerSpoersmaal6 = Question(
+
+                "Hvor mange grader Celsius tilsvarer 0 grader Fahrenheit?",
+                "Om været",
+                listOf("32°C", "27.4°C", "-17.8°C", "-24°C"),
+                2
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal6)
+
+            val vaerSpoersmaal7 = Question(
+
+                "Hvor mange grader Fahrenheit tilsvarer 0 grader Celsius?",
+                "Om været",
+                listOf("32°C", "27.4°C", "-17.8°C", "-24°C"),
+                0
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal7)
+
+            val vaerSpoersmaal8 = Question(
+
+                "Hva er den vanligste typen skyer i Norge?",
+                "Om været",
+                listOf("Cumulonimbus-skyer", "Cirrus-skyer", "Altostratus-skyer", "Stratus-skyer"),
+                3
+
+            )
+            MyDatabase.getInstance().questionDao().insertAll(vaerSpoersmaal8)
+
             // farevarsel questions:
             val roedtFarevarselSpoersmaal1 = Question(
 
