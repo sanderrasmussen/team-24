@@ -64,7 +64,7 @@ class StoreScreenViewModel: ViewModel() {
 
 
     init {
-        //laod selected clothes from disk
+        //load selected clothes from disk
         viewModelScope.launch {
             characterStateStore.update { loadSelectedClothes() }
             getPlagg()
