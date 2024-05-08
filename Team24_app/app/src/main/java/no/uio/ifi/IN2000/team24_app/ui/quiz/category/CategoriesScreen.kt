@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.data.database.Category
 
 @Composable
 fun CategoriesScreen(
@@ -35,6 +37,12 @@ fun CategoriesScreen(
 
     // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
+
+    LaunchedEffect(categoriesScreenViewModel) {
+
+        categoriesScreenViewModel.initialize()
+
+    }
 
     Column(
 
@@ -58,7 +66,6 @@ fun CategoriesScreen(
         // spacer between title and category alternatives
         Spacer(modifier = Modifier.height(32.dp))
 
-        // lazy column containing category alternatives
         LazyColumn(
 
             modifier = Modifier.heightIn(220.dp, 440.dp),
@@ -71,7 +78,8 @@ fun CategoriesScreen(
             items(categoriesUiState.categories.size) { optionIndex ->
 
                 val currentCategory = categoriesUiState.categories[optionIndex]
-                val locked = categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
+                val locked =
+                    categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
 
                 // start button navigating to question screen
                 Button(

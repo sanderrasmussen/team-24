@@ -2,6 +2,7 @@ package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import java.util.Calendar
@@ -30,9 +32,21 @@ class CategoriesScreenViewModel: ViewModel() {
     private val _categoriesUiState = MutableStateFlow(CategoriesUiState())
     val categoriesUiState: StateFlow<CategoriesUiState> = _categoriesUiState.asStateFlow()
 
-    init {
+    private var initialization = false
 
-        loadCategories()
+    @MainThread
+    fun initialize() {
+
+        if (!initialization) {
+
+            initialization = true
+            viewModelScope.launch {
+
+                loadCategories()
+
+            }
+
+        }
 
     }
 

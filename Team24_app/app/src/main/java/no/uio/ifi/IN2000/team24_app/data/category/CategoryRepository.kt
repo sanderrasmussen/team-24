@@ -1,6 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.data.category
 
 import androidx.room.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import java.util.Calendar
@@ -16,14 +18,22 @@ class CategoryRepository {
     // function to get all categories
     suspend fun getAllCategories(): List<Category> {
 
-        return categoryDao.getAllCategories()
+        return withContext(Dispatchers.IO) withContex@{
+
+            return@withContex categoryDao.getAllCategories()
+
+        }
 
     }
 
     // function to get category from name
     suspend fun getCategory(categoryName: String): Category {
 
-        return categoryDao.getCategory(categoryName)
+        return withContext(Dispatchers.IO) withContex@{
+
+            return@withContex categoryDao.getCategory(categoryName)
+
+        }
 
     }
 
@@ -43,6 +53,13 @@ class CategoryRepository {
 
     }
 
+    // HELP METHODS TO FETCH CATEGORIES
+
+    fun convertToCategory(categories: Category) {
+
+
+
+    }
 
 
 }

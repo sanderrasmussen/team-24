@@ -1,7 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.data.question
 
-import androidx.room.Query
-import no.uio.ifi.IN2000.team24_app.data.database.Category
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import no.uio.ifi.IN2000.team24_app.data.database.Question
 
@@ -15,28 +15,43 @@ class QuestionRepository {
     // function to get all questions
     suspend fun getAllQuestions(): List<String> {
 
-        return questionDao.getAllQuestions()
+        return withContext(Dispatchers.IO) withContex@{
 
+            return@withContex questionDao.getAllQuestions()
+
+        }
     }
 
     // function to get questions for a normal category
     suspend fun getUnansweredCategoryQuestions(categoryName: String): List<String> {
 
-        return questionDao.getUnansweredCategoryQuestions(categoryName)
+        return withContext(Dispatchers.IO) withContex@{
+
+            return@withContex questionDao.getUnansweredCategoryQuestions(categoryName)
+
+        }
 
     }
 
     // function to get questions for a normal category when all questions are answered
     suspend fun getAllCategoryQuestions(categoryName: String): List<String> {
 
-        return questionDao.getCategoryQuestions(categoryName)
+        return withContext(Dispatchers.IO) withContex@{
+
+            return@withContex questionDao.getCategoryQuestions(categoryName)
+
+        }
 
     }
 
     // function to get training category questions
     suspend fun getTrainingCategoryQuestions(): List<String> {
 
-        return questionDao.getTrainingCategoryQuestions()
+        return withContext(Dispatchers.IO) withContex@{
+
+            return@withContex questionDao.getTrainingCategoryQuestions()
+
+        }
 
     }
 
