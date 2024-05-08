@@ -55,11 +55,18 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
         clothingRepo.getEquipedTorso(),
         clothingRepo.getEquipedLegs()
     )
+    val playerTemperature = character.findAppropriateTemp()
     val lastDate = clothingRepo.getLastDate()
+
+    givePoints(lastDate = lastDate,playerTemperature =  playerTemperature)
+    return@withContext character
+}
+
+fun givePoints(lastDate:Date, playerTemperature:Double){
     val today = Date()
-    if(lastDate != today) {
+
+    if(lastDate.before(today)) {
         val lastTemperature = clothingRepo.getTemperatureAtLastLogin()
-        val playerTemperature = character.findAppropriateTemp()
         val delta = playerTemperature - lastTemperature
         Log.d("loadSelectedClothes", "Delta: $delta")
         val points = maxOf(0.0, 10-abs(delta))
@@ -70,12 +77,12 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
             CoroutineScope(Dispatchers.IO).launch {
                 bank.deposit(points.toInt())
             }
-            //TODO find a way to pass this to the ui
+            //TODO find a way to pass this to the ui, this is just a reminder to write a message to user
             Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
         }
     }
-    return@withContext character
 }
+
 fun getDefaultBackupCharacter(): Character {
 
     return Character(
