@@ -1,6 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.annotation.MainThread
@@ -20,12 +19,6 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 data class QuestionUiState(
 
     val question: Question? = null
-
-)
-
-data class CategoryUiState(
-
-    val category: no.uio.ifi.IN2000.team24_app.data.database.Category? = null
 
 )
 

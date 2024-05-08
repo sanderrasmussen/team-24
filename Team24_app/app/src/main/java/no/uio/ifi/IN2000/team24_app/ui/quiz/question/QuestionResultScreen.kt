@@ -56,7 +56,7 @@ fun QuestionResultScreen(
 
     ) {
 
-        if (categoryUiState != null) {
+        if (categoryUiState.category != null) {
 
             val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
 
@@ -93,45 +93,41 @@ fun QuestionResultScreen(
 
         }
 
-        if (balanceUiState != null) {
+        // spacer between point score text and total coins text
+        Spacer(modifier = Modifier.height(32.dp))
 
-            // spacer between point score text and total coins text
-            Spacer(modifier = Modifier.height(32.dp))
+        Row() {
 
-            Row() {
+            Text(
 
-                Text(
+                text = "Totale poeng: ",
+                fontWeight = FontWeight.Bold
 
-                    text = "Totale poeng: ",
-                    fontWeight = FontWeight.Bold
+            )
 
-                )
+            // text displaying point score
+            Text(
 
-                // text displaying point score
-                Text(
+                text = "${balanceUiState.balance}"
 
-                    text = "${balanceUiState.balance}"
+            )
 
-                )
+        }
 
-            }
+        // spacer between total coins text and back button
+        Spacer(modifier = Modifier.height(32.dp))
 
-            // spacer between total coins text and back button
-            Spacer(modifier = Modifier.height(32.dp))
+        // button for going back to categories screen
+        Button(
 
-            // button for going back to categories screen
-            Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
 
-                onClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+        ) {
 
-            ) {
-
-                Text("Tilbake")
-
-            }
+            Text("Tilbake")
 
         }
 

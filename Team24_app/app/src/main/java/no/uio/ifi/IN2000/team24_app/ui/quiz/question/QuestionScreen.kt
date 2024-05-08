@@ -47,8 +47,8 @@ fun QuestionScreen(
     index: Int = 0,
     coinsWon: Int = 0,
     questionScreenViewModel: QuestionScreenViewModel = viewModel(),
-    onNavigateToNextQuestionScreen: (Unit, Int?, Int?) -> Unit,
-    onNavigateToResultQuestionScreen: (Unit, Int?, Int?) -> Unit
+    onNavigateToNextQuestionScreen: (String, String, Int?, Int?) -> Unit,
+    onNavigateToResultQuestionScreen: (String, String, Int?) -> Unit
 
 ) {
 
@@ -144,13 +144,20 @@ fun QuestionScreen(
                     }
                 }
 
-                // spacer between title and functionality
+                // spacer between header and functionality
                 Spacer(modifier = Modifier.height(16.dp))
 
                 QuestionScreenBody(
 
                     questionUiState,
-                    onAnswerSelected
+                    onAnswerSelected,
+                    categoryName,
+                    questions,
+                    questionList,
+                    index,
+                    coinsWon,
+                    onNavigateToNextQuestionScreen,
+                    onNavigateToResultQuestionScreen
 
                 )
 
@@ -188,12 +195,16 @@ fun QuestionScreenHeader(
 
             // progress indicator
             LinearProgressIndicator(
+
+                progress = {
+                    currentProgress
+                },
                 modifier = Modifier
                     .height(16.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 color = Color.Green,
-                trackColor = ProgressIndicatorDefaults.linearTrackColor,
-                progress = currentProgress
+                trackColor = ProgressIndicatorDefaults.linearTrackColor
+
             )
 
             if (getTimer) {
@@ -234,7 +245,14 @@ fun QuestionScreenHeader(
 fun QuestionScreenBody(
 
     questionUiState: QuestionUiState,
-    onAnswerSelected: (String) -> Unit
+    onAnswerSelected: (String) -> Unit,
+    categoryName: String,
+    questions: String,
+    questionList: List<String>,
+    index: Int,
+    coinsWon: Int,
+    onNavigateToNextQuestionScreen: (String, String, Int?, Int?) -> Unit,
+    onNavigateToResultQuestionScreen: (String, String, Int?) -> Unit
 
 ) {
 
@@ -263,8 +281,8 @@ fun QuestionScreenBody(
         items(questionUiState.question!!.options.size) { optionIndex ->
 
             // variables for each option
-            val answerOption: String = questionUiState.question!!.options[optionIndex]
-            val correctOption: String = questionUiState.question!!.options[questionUiState.question!!.correctOptionIndex]
+            val answerOption: String = questionUiState.question.options[optionIndex]
+            val correctOption: String = questionUiState.question.options[questionUiState.question.correctOptionIndex]
 
             // answer option displaying button for each option based on feedback
             AnswerOption(
@@ -294,7 +312,8 @@ fun QuestionScreenBody(
     // continue button
     Button(
 
-        onClick = {},
+        onClick = { if (index >= questionList.size) onNavigateToResultQuestionScreen(categoryName, questions, coinsWon)
+            else onNavigateToNextQuestionScreen(categoryName, questions, index + 1, coinsWon) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)

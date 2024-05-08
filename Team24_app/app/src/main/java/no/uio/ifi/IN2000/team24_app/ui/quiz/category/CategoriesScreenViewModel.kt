@@ -72,9 +72,19 @@ class CategoriesScreenViewModel: ViewModel() {
 
         }
 
+        // check if category is normal category
+        // and last date answered is null
+        else if (category.lastDateAnswered == null) {
+
+            // return false, since normal category should not be locked
+            // when its last date answered is null
+            return false
+
+        }
+
         // get today and last date answered of category as calendar objects
         val today = Calendar.getInstance().apply { time = Date() }
-        val lastDateAnswered = Calendar.getInstance().apply { time = category.lastDateAnswered }
+        val lastDateAnswered = Calendar.getInstance().apply { time = category.lastDateAnswered!! }
 
         // return check of equal value of objects years, months and day of months
         return today.get(Calendar.YEAR) == lastDateAnswered.get(Calendar.YEAR) &&

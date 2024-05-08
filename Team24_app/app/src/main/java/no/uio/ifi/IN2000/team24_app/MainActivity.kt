@@ -95,16 +95,17 @@ class MainActivity : ComponentActivity() {
 
             composable(
 
-                route = "QuestionScreen/{questions}/{index}/{coinsWon}",
-                arguments = listOf(navArgument("questions") { NavType.StringType },
-                    navArgument("index") {NavType.IntType},
-                    navArgument("coinsWon") {NavType.IntType})
+                route = "QuestionScreen/{categoryName}/{questions}/{index}/{coinsWon}",
+                arguments = listOf(navArgument("categoryName") { NavType.StringType },
+                    navArgument("questions") { NavType.StringType },
+                    navArgument("index") { NavType.IntType },
+                    navArgument("coinsWon") { NavType.IntType })
 
             ) {
 
                 backStackEntry ->
 
-                val categoryName = backStackEntry.arguments?.getString("category").orEmpty()
+                val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
                 val index = backStackEntry.arguments?.getInt("index") ?: 0
                 val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
@@ -114,11 +115,11 @@ class MainActivity : ComponentActivity() {
                     questions = questions,
                     index = index,
                     coinsWon = coinsWon,
-                    onNavigateToNextQuestionScreen = { questions, index, coinsWon ->
-                        navController.navigate("QuestionScreen/$questions/$index/$coinsWon")
+                    onNavigateToNextQuestionScreen = { categoryName, questions, index, coinsWon ->
+                        navController.navigate("QuestionScreen/$categoryName/$questions/$index/$coinsWon")
                     },
-                    onNavigateToResultQuestionScreen = { questions, index, coinsWon ->
-                        navController.navigate("QuestionScreen/$questions/$index/$coinsWon")
+                    onNavigateToResultQuestionScreen = { categoryName, questions, coinsWon ->
+                        navController.navigate("QuestionResultScreen/$categoryName/$questions/$coinsWon")
                     }
 
                 )
@@ -130,7 +131,7 @@ class MainActivity : ComponentActivity() {
                 route = "QuestionResultScreen/{categoryName}/{questions}/{coinsWon}",
                 arguments = listOf(navArgument("categoryName") { NavType.StringType },
                     navArgument("questions") { NavType.StringType },
-                    navArgument("coinsWon") {NavType.IntType})
+                    navArgument("coinsWon") { NavType.IntType })
 
             ) {
 

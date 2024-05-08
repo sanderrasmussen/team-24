@@ -1,6 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.annotation.MainThread
@@ -53,6 +52,7 @@ class CategoryScreenViewModel: ViewModel() {
             viewModelScope.launch {
 
                 loadCategoryInfo(categoryName)
+                loadQuestionsForCategory(categoryName)
 
             }
 

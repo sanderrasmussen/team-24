@@ -1,6 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.annotation.MainThread
@@ -14,8 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
-import no.uio.ifi.IN2000.team24_app.data.database.Category
-import no.uio.ifi.IN2000.team24_app.data.database.Question
 import no.uio.ifi.IN2000.team24_app.data.question.QuestionRepository
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
@@ -32,10 +29,6 @@ class QuestionResultScreenViewModel: ViewModel() {
     private val questionRepository: QuestionRepository = QuestionRepository()
     // bank repo to add coins to
     val bankRepository: BankRepository = BankRepository()
-
-    // ui state values for fetching question
-    private val _questionUiState = MutableStateFlow(QuestionUiState())
-    val questionUiState: StateFlow<QuestionUiState> = _questionUiState.asStateFlow()
 
     // ui state values for fetching category
     private val _categoryUiState = MutableStateFlow(CategoryUiState())

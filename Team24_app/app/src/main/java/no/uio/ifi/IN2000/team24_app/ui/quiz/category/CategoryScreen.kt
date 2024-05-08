@@ -30,7 +30,7 @@ fun CategoryScreen(
 
     categoryName: String,
     categoryScreenViewModel: CategoryScreenViewModel = viewModel(),
-    onNavigateToQuestionScreen: (Unit) -> Unit
+    onNavigateToQuestionScreen: (String?) -> Unit
 
     ) {
 
@@ -41,8 +41,9 @@ fun CategoryScreen(
 
     }
 
-    // get categories ui state from view model
+    // get categories and questions ui state from view model
     val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
+    val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
 
     Column(
 
@@ -86,7 +87,7 @@ fun CategoryScreen(
         Button(
 
             // navigate to question screen by loading 3 random questions
-            onClick = { onNavigateToQuestionScreen(categoryScreenViewModel.loadQuestionsForCategory(categoryName)) },
+            onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
