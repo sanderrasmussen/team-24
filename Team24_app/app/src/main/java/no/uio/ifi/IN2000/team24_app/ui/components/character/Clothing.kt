@@ -78,6 +78,7 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         }
         writeEquippedClothesToDisk(characterState.value)
         showInventory = false // then, close the dialog.
+
     }
 
     Column() {

@@ -71,7 +71,7 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
                 bank.deposit(points.toInt())
             }
             //TODO find a way to pass this to the ui
-            Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
+            //Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
         }
     }
     return@withContext character

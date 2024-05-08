@@ -62,344 +62,292 @@ import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import java.time.LocalTime
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun StoreScreen(navController: NavController) {
-        val viewModel = StoreScreenViewModel()
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun StoreScreen(navController: NavController) {
+    val viewModel = StoreScreenViewModel()
 
-        val backgroundImage = BackgroundImage()
+    val backgroundImage = BackgroundImage()
 
-        Box(
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = backgroundImage),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize(),
+        )
+
+        Column (
             modifier = Modifier.fillMaxSize()
-        ) {
-            Image(
-                painter = painterResource(id = backgroundImage),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize(),
-            )
 
-            Column (
-                modifier = Modifier.fillMaxSize()
-
-            ){
-                    Box(modifier = Modifier.weight(1f)) {
-                        GridView(viewModel = viewModel)
-                    }
-                    NavBar(navController)
-            }
-
-        }
-    }
-
-
-
-
-
-    /*
-
-    fun StoreScreenPreview() {
-        val viewModel = StoreScreenViewModel()
-        Column {
+        ){
             Box(modifier = Modifier.weight(1f)) {
                 GridView(viewModel = viewModel)
             }
-            NavBar()
+            NavBar(navController)
         }
+
+    }
+}
+
+@SuppressLint("NotConstructor")
+@Composable
+@RequiresApi(Build.VERSION_CODES.O)
+fun GridView(viewModel: StoreScreenViewModel) {
+    val hodeplagg by viewModel.hodePlagg.collectAsState()
+    val overDeler by viewModel.overdeler.collectAsState()
+    val plaggBukser by viewModel.bukser.collectAsState()
+    val character by viewModel.character.collectAsState()
+
+    val currentSum by viewModel.currentSum.collectAsState()
+
+    val textColour = when (LocalTime.now().hour) {
+        in 6 until 22 -> Color.Black
+        else -> Color.White
     }
 
-     */
-
-
-
-
-    @SuppressLint("NotConstructor")
-    @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun GridView(viewModel: StoreScreenViewModel) {
-        val hodeplagg by viewModel.hodePlagg.collectAsState()
-        val overDeler by viewModel.overdeler.collectAsState()
-        val plaggBukser by viewModel.bukser.collectAsState()
-        val character by viewModel.characterStateStore.collectAsState()
-
-        val currentSum by viewModel.currentSum.collectAsState()
-
-        val textColour = when (LocalTime.now().hour) {
-            in 6 until 22 -> Color.Black
-            else -> Color.White
-        }
-
-
-        LaunchedEffect(viewModel) {
-          viewModel.getCurrentSum()
-        }
-
-        val allClothingList by remember(viewModel.hodePlagg, viewModel.overdeler, viewModel.bukser) {
-            derivedStateOf {
-                hodeplagg + overDeler + plaggBukser
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                    //.background(blue)
-                .padding(16.dp)
-        ) {
-
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.coin),
-                        contentDescription = "currency",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = "${currentSum}",
-                        color = textColour,
-                        fontSize = 30.sp
-                    )
-                }
-            }
-
-
-            item {
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .size(400.dp)
-                ) {
-                    Player(character = character, modifier = Modifier.fillMaxSize())
-                }
-
-            }
-
-
-            // Display all clothing items
-            item {
-                Spacer(modifier = Modifier.height(35.dp))
-                /*Text(
-                    "MOTEARTIKLER",
-                    horizontalArrangement = Arrangement.Center,
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold
-                )*/
-                HentInfoPlagg(viewModel, allClothingList, currentSum)
-            }
+    val allClothingList by remember(viewModel.hodePlagg, viewModel.overdeler, viewModel.bukser) {
+        derivedStateOf {
+            hodeplagg + overDeler + plaggBukser
         }
     }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            //.background(blue)
+            .padding(16.dp)
+    ) {
 
-
-    @Composable
-    fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
-    currentSum: Int?) {
-        val scrollState = rememberScrollState()
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp)
-        ) {
-            items(allClothingList) { plagg ->
-                Card(
+        item {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.coin),
+                    contentDescription = "currency",
+                    modifier = Modifier.size(40.dp)
+                )
+                Text(
+                    text = "${currentSum}",
+                    color = textColour,
+                    fontSize = 30.sp
+                )
+            }
+        }
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(400.dp)
+            ) {
+                Player(character = character, modifier = Modifier.fillMaxSize())
+            }
+        }
+        // Display all clothing items
+        item {
+            Spacer(modifier = Modifier.height(35.dp))
+            /*Text(
+                "MOTEARTIKLER",
+                horizontalArrangement = Arrangement.Center,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold
+            )*/
+            HentInfoPlagg(viewModel, allClothingList, currentSum)
+        }
+    }
+}
+@Composable
+fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
+                  currentSum: Int?) {
+    val scrollState = rememberScrollState()
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp)
+    ) {
+        items(allClothingList) { plagg ->
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        selectedClothingStore(plagg, viewModel, currentSum)
+                    }
+            ) {
+                Column(
                     modifier = Modifier
-                        .padding(8.dp)
-
-                        .clickable {
-                            selectedClothingStore(plagg, viewModel, currentSum)
-                        }
+                        .padding(3.dp)
+                        .background(Color(android.graphics.Color.parseColor("#FFFFFF"))),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(3.dp)
-                            .background(Color(android.graphics.Color.parseColor("#FFFFFF"))),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Box(modifier = Modifier.size(150.dp)) {
-                            AsyncImage(
-                                plagg.altAsset,
-                                contentScale = ContentScale.Crop,
+                    Box(modifier = Modifier.size(150.dp)) {
+                        AsyncImage(
+                            plagg.altAsset,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                            //.wrapContentHeight()
+                            //.height(100.dp)
+
+
+                        )
+                        if (!plagg.unlocked) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.lock_outline_filled),
                                 contentDescription = null,
+                                tint = Color.Black,
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                //.wrapContentHeight()
-                                //.height(100.dp)
-
-
+                                    .align(Alignment.Center)
+                                    .size(30.dp)
                             )
-                            if (!plagg.unlocked) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.lock_outline_filled),
-                                    contentDescription = null,
-                                    tint = Color.Black,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(30.dp)
-                                )
-                            }
                         }
-                        Spacer(modifier = Modifier.height(9.dp))
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            // Inneholdet av kortet (teksten)
+                    }
+                    Spacer(modifier = Modifier.height(9.dp))
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Inneholdet av kortet (teksten)
 
-                            val showAlertMessage = remember { mutableStateOf(false) }
+                        val showAlertMessage = remember { mutableStateOf(false) }
 
-                            if (showAlertMessage.value) {
-                                SimpleAlertDialog(plagg, viewModel, onDismissRequest = {
-                                    showAlertMessage.value = false }, currentSum)
-                            }
+                        if (showAlertMessage.value) {
+                            SimpleAlertDialog(plagg, viewModel, onDismissRequest = {
+                                showAlertMessage.value = false }, currentSum)
+                        }
 
-                            // Knappen nederst i kortet
-                            Button(
-                                onClick = {
-                                    showAlertMessage.value = true
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(android.graphics.Color.parseColor("#47C947"))
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                                shape = RoundedCornerShape(0.dp)
+                        // Knappen nederst i kortet
+                        Button(
+                            onClick = {
+                                showAlertMessage.value = true
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(android.graphics.Color.parseColor("#47C947"))
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(0.dp)
 
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.coin),
-                                    contentDescription = "currency",
-                                    modifier = Modifier.size(40.dp)
-                                )
-                                Text(
-                                    text = "${plagg.price}",
-                                    fontSize = 26.sp,
-                                    modifier = Modifier.padding(4.dp),
-                                    color = Color.Black
-                                )
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.coin),
+                                contentDescription = "currency",
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Text(
+                                text = "${plagg.price}",
+                                fontSize = 26.sp,
+                                modifier = Modifier.padding(4.dp),
+                                color = Color.Black
+                            )
 
-                            }
                         }
                     }
                 }
             }
         }
     }
+}
+@Composable
+fun SimpleAlertDialog(
+    plagg: Clothing,
+    viewModel: StoreScreenViewModel,
+    onDismissRequest: () -> Unit,
+    currentSum: Int?
+) {
+    val showAlertMessage = remember { mutableStateOf(true) }
 
-
-    @Composable
-    fun SimpleAlertDialog(
-        plagg: Clothing,
-        viewModel: StoreScreenViewModel,
-        onDismissRequest: () -> Unit,
-        currentSum: Int?
-    ) {
-        val showAlertMessage = remember { mutableStateOf(true) }
-
-        if (showAlertMessage.value) {
-            AlertDialog(
-                onDismissRequest = { onDismissRequest() }, // Call onDismissRequest when dismiss button is clicked
-                confirmButton = {
-                    ConfirmButton(
-                        plagg = plagg,
-                        viewModel = viewModel,
-                        currentSum = currentSum,
-                        onDismissRequest = onDismissRequest
-                    )
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        //Kaller paa onDismissRequest naar cancel knappen er trykket paa
-                        onDismissRequest()
-                    }) {
-                        Text(text = "Cancel")
-                    }
-                },
-                title = { Text(text = "Vennligst bekreft") },
-                text = { Text(text = "Ønsker du å kjøpe plagget: ${plagg.name}?") }
-            )
-        }
-    }
-
-
-    @Composable
-    private fun ConfirmButton(
-        plagg: Clothing,
-        viewModel: StoreScreenViewModel,
-        currentSum: Int?,
-        onDismissRequest: () -> Unit
-    ) {
-        val coroutineScope = rememberCoroutineScope()
-
-        TextButton(onClick = {
-            // Perform action when confirm button is clicked
-            if (plagg.price <= currentSum!!) {
-                coroutineScope.launch {
-                    viewModel.subtractMoney(plagg.price)
-                    viewModel.unlockPlagg(plagg)
+    if (showAlertMessage.value) {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() }, // Call onDismissRequest when dismiss button is clicked
+            confirmButton = {
+                ConfirmButton(
+                    plagg = plagg,
+                    viewModel = viewModel,
+                    currentSum = currentSum,
+                    onDismissRequest = onDismissRequest
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    //Kaller paa onDismissRequest naar cancel knappen er trykket paa
                     onDismissRequest()
+                }) {
+                    Text(text = "Cancel")
+                }
+            },
+            title = { Text(text = "Vennligst bekreft") },
+            text = { Text(text = "Ønsker du å kjøpe plagget: ${plagg.name}?") }
+        )
+    }
+}
+@Composable
+private fun ConfirmButton(
+    plagg: Clothing,
+    viewModel: StoreScreenViewModel,
+    currentSum: Int?,
+    onDismissRequest: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    TextButton(onClick = {
+        // Perform action when confirm button is clicked
+        if (plagg.price <= currentSum!!) {
+            coroutineScope.launch {
+                viewModel.subtractMoney(plagg.price)
+                viewModel.unlockPlagg(plagg)
+                onDismissRequest()
+            }
+        }
+        onDismissRequest()
+    }) {
+        Text(text = "OK")
+    }
+}
+fun selectedClothingStore(clothing: Clothing, viewModel:StoreScreenViewModel, currentSum: Int?) {
+    val price = clothing.price
+
+    if(price<= currentSum!!){
+        when (clothing) { //first, change the character.
+            is Head -> {
+                viewModel.characterState.update {
+                    it.copy(head = clothing)
                 }
             }
-            onDismissRequest()
-        }) {
-            Text(text = "OK")
+            is Torso -> {
+                viewModel.characterState.update {
+                    it.copy(torso = clothing)
+                }
+            }
+            is Legs -> {
+                viewModel.characterState.update {
+                    it.copy(legs = clothing)
+                }
+            }
         }
     }
 
-
-
-
-        fun selectedClothingStore(clothing: Clothing, viewModel:StoreScreenViewModel, currentSum: Int?) {
-            val price = clothing.price
-
-            if(price<= currentSum!!){
-            when (clothing) { //first, change the character.
-                is Head -> {
-                    viewModel.characterStateStore.update {
-                        it.copy(head = clothing)
-                    }
-                }
-
-                is Torso -> {
-                    viewModel.characterStateStore.update {
-                        it.copy(torso = clothing)
-                    }
-                }
-
-                is Legs -> {
-                    viewModel.characterStateStore.update {
-                        it.copy(legs = clothing)
-                    }
-
-                }
-            }
-           }
-
-            else{
-                Log.d("InventoryStore", "Insufficient funds to purchase ${clothing.name}")
-
-            }
-
-
-
-        }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TopBar() {
-        TopAppBar(title = {
-            Text(
-                text = "Butikk",
-                fontSize = 25.sp,
-                textAlign = TextAlign.Center
-            )
-        })
-
+    else{
+        Log.d("InventoryStore", "Insufficient funds to purchase ${clothing.name}")
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar() {
+    TopAppBar(title = {
+        Text(
+            text = "Butikk",
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center
+        )
+    })
+}
 
 

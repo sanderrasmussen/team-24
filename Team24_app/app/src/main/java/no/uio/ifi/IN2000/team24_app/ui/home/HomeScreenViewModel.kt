@@ -90,9 +90,9 @@ class HomeScreenViewModel(
     val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
 
-    private var character =
-        loadClothesFromDisk() //this is now default value in case of failed load form disk
-    val characterState = MutableStateFlow(character)
+         //this is now default value in case of failed load form disk
+    val characterState = MutableStateFlow(loadClothesFromDisk())
+    private var character = characterState.asStateFlow()
 
 
     init {
@@ -100,7 +100,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
         }
-        updateSatisfaction(characterTemp = character.findAppropriateTemp())
+        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         getBalanceFromDb()
 
     }
