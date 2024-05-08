@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val isNetworkAvailable = isNetworkAvailable(context)
 
-        NavHost(navController = navController, startDestination = "HomeScreen") {
+        NavHost(navController = navController, startDestination = "CategoriesScreen") {
             composable("HomeScreen") {
                 HomeScreen(
                 )

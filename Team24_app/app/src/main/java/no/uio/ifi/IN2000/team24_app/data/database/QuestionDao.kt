@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.TypeConverter
 
 @Dao
 interface QuestionDao {
@@ -12,7 +13,7 @@ interface QuestionDao {
     fun insertAll(vararg question: Question)
 
     @Delete
-    fun delete(question : Question)
+    fun delete(question: Question)
 
     @Query("SELECT question FROM Question")
     fun getAllQuestions(): List<String>
@@ -33,3 +34,24 @@ interface QuestionDao {
     fun updateQuestionAnswered(questionName: String)
 
 }
+
+// string list converter for converting option list into string
+// because room database cannot store lists of strings
+class StringListConverter {
+    @TypeConverter
+    fun fromStringList(value: String?): List<String>? {
+
+        // split the comma separated string into a list of string
+        return value?.split(", ")
+
+    }
+
+    @TypeConverter
+    fun toStringList(list: List<String>?): String? {
+
+        // join list of strings into a single comma-separated string
+        return list?.joinToString(", ")
+
+    }
+}
+
