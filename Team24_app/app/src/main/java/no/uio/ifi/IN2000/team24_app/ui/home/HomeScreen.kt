@@ -91,6 +91,7 @@ fun HomeScreen(
 
     ){
     val TAG = "HomeScreen"
+    Log.d(TAG, "HomeScreen Composable")
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
     val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
@@ -101,7 +102,6 @@ fun HomeScreen(
     val balance by homevm.balance.collectAsState()
 
 
-    Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
     val showAlerts = remember {mutableStateOf(
         //alertsUiState.value.alerts.isNotEmpty()
         false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates

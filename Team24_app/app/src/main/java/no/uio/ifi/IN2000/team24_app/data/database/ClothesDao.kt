@@ -57,11 +57,11 @@ interface ClothesDao{
     @Query("UPDATE EquipedClothes SET equipedLegs= :clothingId")
     fun writeEquipedLegs(clothingId: Int)
 
-    @Query("SELECT lastLoginDate FROM EquipedClothes WHERE id=0")
-    fun getLastDate(): Date
+    @Query("SELECT lastLoginDate FROM EquipedClothes")
+    fun getLastDate(): Long
 
-    @Query("UPDATE EquipedClothes SET lastLoginDate=strftime('%Y-%m-%d', 'now') WHERE id=0")
-    fun updateDate()
+    @Query("UPDATE EquipedClothes SET lastLoginDate= :timestamp") //i still don't get the WHERE-part
+    fun updateDate(timestamp: Long = System.currentTimeMillis())
 
     //TODO: check with Sander that these are right
     @Query("SELECT temperatureAtLastLogin FROM EquipedClothes") //WHERE id=0??

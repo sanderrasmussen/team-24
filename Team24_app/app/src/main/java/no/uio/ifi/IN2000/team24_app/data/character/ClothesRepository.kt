@@ -1,5 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,6 +12,9 @@ import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 
 class ClothesRepository {
@@ -100,10 +106,12 @@ class ClothesRepository {
     }
 
     fun updateDate(){
-        clothesDao.updateDate()
+        clothesDao.updateDate(timestamp = System.currentTimeMillis())
     }
-    fun getLastDate() : Date {
-        return clothesDao.getLastDate()
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getLastDate() : LocalDate {
+        //this is ugly, but allows me to get the DATE in a non-deprecated format (looking at you, java.util.Date), to compare with current date later
+        return Instant.ofEpochMilli(clothesDao.getLastDate()).atZone(ZoneId.systemDefault()).toLocalDate()
     }
     fun backupHead(): Head{
         val short_hair : Clothes = Clothes(R.drawable.head_short_hair,"Short Hair", 25,  30, R.drawable.alt_head_short_hair,"head",true)

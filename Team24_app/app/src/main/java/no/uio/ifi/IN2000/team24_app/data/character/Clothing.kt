@@ -1,8 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -10,6 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
+import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 import kotlin.math.abs
 
@@ -48,6 +52,7 @@ fun writeEquippedClothesToDisk(character: Character) {
 
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
     //this code checks the value of the clothes yesterday and the actual temperature, and
     val character  = Character(
@@ -55,21 +60,27 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
         clothingRepo.getEquipedTorso(),
         clothingRepo.getEquipedLegs()
     )
+    //if you log in and don't change clothes, you still need to update the date
+
     val playerTemperature = character.findAppropriateTemp()
     val lastDate = clothingRepo.getLastDate()
 
     givePoints(lastDate = lastDate,playerTemperature =  playerTemperature)
+
+    clothingRepo.updateDate()
     return@withContext character
 }
 
-fun givePoints(lastDate:Date, playerTemperature:Double){
-    val today = Date()
+@RequiresApi(Build.VERSION_CODES.O)
+fun givePoints(lastDate:LocalDate, playerTemperature:Double){
+    val today= LocalDate.now()
 
-    if(lastDate.before(today)) {
+    Log.d("loadSelectedClothes", "${lastDate.toString()}, ${today.toString()}")
+    if(lastDate.isBefore(today)) {
         val lastTemperature = clothingRepo.getTemperatureAtLastLogin()
-        val delta = playerTemperature - lastTemperature
+        val delta = abs(playerTemperature - lastTemperature)
         Log.d("loadSelectedClothes", "Delta: $delta")
-        val points = maxOf(0.0, 10-abs(delta))
+        val points = maxOf(0.0, 10-delta)
         Log.d("loadSelectedClothes", "Points: $points")
         if(points>0.0){ //this means the players clothes were within 10 degrees of the actual temperature
             Log.d("loadSelectedClothes", "writing {$points} to bank")
@@ -81,7 +92,7 @@ fun givePoints(lastDate:Date, playerTemperature:Double){
             //TODO find a way to pass this to the ui
             //Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
         }
-    }
+    }else{Log.d("loadSelectedClothes", "date was not before today, no points given")}
 }
 
 fun getDefaultBackupCharacter(): Character {
