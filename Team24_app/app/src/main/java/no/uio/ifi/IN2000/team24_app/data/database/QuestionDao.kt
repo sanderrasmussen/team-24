@@ -29,12 +29,6 @@ interface QuestionDao {
     @Query("SELECT * FROM Question WHERE question = :questionName")
     fun getQuestion(questionName: String): Question
 
-    @Query("SELECT options FROM Question WHERE question = :questionName")
-    fun getQuestionOptions(questionName: String): Question
-
-    @Query("SELECT correctOptionIndex FROM Question WHERE question = :questionName")
-    fun getCorrectOptionIndex(questionName: String): Question
-
     @Query("UPDATE Question SET answered = true WHERE question = :questionName")
     fun updateQuestionAnswered(questionName: String)
 
