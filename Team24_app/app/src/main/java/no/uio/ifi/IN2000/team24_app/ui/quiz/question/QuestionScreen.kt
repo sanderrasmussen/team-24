@@ -43,19 +43,22 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 fun QuestionScreen(
 
     categoryName: String,
-    questions: List<String>,
+    questions: String,
     index: Int = 0,
     coinsWon: Int = 0,
     questionScreenViewModel: QuestionScreenViewModel = viewModel(),
     onNavigateToNextQuestionScreen: (Unit, Int?, Int?) -> Unit,
-    onNavigateToResultQuestionScreen: (Unit, Int?, Int?, Int?) -> Unit
+    onNavigateToResultQuestionScreen: (Unit, Int?, Int?) -> Unit
 
 ) {
+
+    // convert question list string to actual list of strings
+    val questionList = questions.split(", ")
 
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
 
-        questionScreenViewModel.initialize(questions, index, categoryName)
+        questionScreenViewModel.initialize(questionList, index, categoryName)
 
     }
 
@@ -64,7 +67,7 @@ fun QuestionScreen(
     val categoryUiState: CategoryUiState by questionScreenViewModel.categoryUiState.collectAsState()
 
     // progress value for progress indicator
-    val currentProgress = ((index + 1).toFloat() / questions.size)
+    val currentProgress = ((index + 1).toFloat() / questionList.size)
 
     if (questionUiState.question != null && categoryUiState.category != null) {
 

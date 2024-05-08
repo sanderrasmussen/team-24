@@ -24,7 +24,7 @@ data class CategoryUiState(
 
 data class QuestionsUiState(
 
-    val questions: List<String> = emptyList()
+    val questions: String? = null
 
 )
 
@@ -94,9 +94,10 @@ class CategoryScreenViewModel: ViewModel() {
 
                 _questionsUiState.update { currentQuestionsUiState ->
 
-                    val questions = questionRepository.getCategoryQuestions(categoryName)
-                    val shuffledQuestions = questions.shuffled().take(3)
-                    currentQuestionsUiState.copy(questions = shuffledQuestions)
+                    val questionList = questionRepository.getCategoryQuestions(categoryName)
+                    val shuffledQuestionList = questionList.shuffled().take(3)
+                    val questions = shuffledQuestionList.joinToString(",")
+                    currentQuestionsUiState.copy(questions = questions)
 
                 }
 

@@ -104,19 +104,21 @@ class MainActivity : ComponentActivity() {
 
                 backStackEntry ->
 
+                val categoryName = backStackEntry.arguments?.getString("category").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
                 val index = backStackEntry.arguments?.getInt("index") ?: 0
                 val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
                 QuestionScreen(
 
+                    categoryName = categoryName,
                     questions = questions,
                     index = index,
                     coinsWon = coinsWon,
                     onNavigateToNextQuestionScreen = { questions, index, coinsWon ->
                         navController.navigate("QuestionScreen/$questions/$index/$coinsWon")
                     },
-                    onNavigateToResultQuestionScreen = { categoryName, questions, index, coinsWon ->
-                        navController.navigate("QuestionResultScreen/$categoryName/$questions/$index/$coinsWon")
+                    onNavigateToResultQuestionScreen = { questions, index, coinsWon ->
+                        navController.navigate("QuestionScreen/$questions/$index/$coinsWon")
                     }
 
                 )
@@ -125,7 +127,7 @@ class MainActivity : ComponentActivity() {
 
             composable(
 
-                route = "QuestionResultScreen/{categoryName}/{questions}/{index}/{coinsWon}",
+                route = "QuestionResultScreen/{categoryName}/{questions}/{coinsWon}",
                 arguments = listOf(navArgument("categoryName") { NavType.StringType },
                     navArgument("questions") { NavType.StringType },
                     navArgument("coinsWon") {NavType.IntType})

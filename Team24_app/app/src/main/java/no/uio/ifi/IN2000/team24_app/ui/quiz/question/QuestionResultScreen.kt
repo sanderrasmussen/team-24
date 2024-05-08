@@ -26,16 +26,19 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 fun QuestionResultScreen(
 
     categoryName: String,
-    questions: List<String>,
+    questions: String,
     coinsWon: Int,
     questionResultScreenViewModel: QuestionResultScreenViewModel = viewModel()
 
 ) {
 
+    // convert question list string to actual list of strings
+    val questionList = questions.split(", ")
+
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionResultScreenViewModel) {
 
-        questionResultScreenViewModel.initialize(questions, categoryName, coinsWon)
+        questionResultScreenViewModel.initialize(questionList, categoryName, coinsWon)
 
     }
 
@@ -55,7 +58,7 @@ fun QuestionResultScreen(
 
         if (categoryUiState != null) {
 
-            val maxCoins = (questions.size - 1) * categoryUiState.category!!.points
+            val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
 
             // text displaying completion of category
             Text(
