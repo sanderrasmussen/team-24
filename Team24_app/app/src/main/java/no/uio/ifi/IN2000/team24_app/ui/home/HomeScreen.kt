@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
 
+
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
