@@ -48,16 +48,18 @@ class QuestionResultScreenViewModel: ViewModel() {
     private var initialization = false
 
     @MainThread
-    fun initialize(questionList: List<String>, index: Int, categoryName: String) {
+    fun initialize(questionList: List<String>, categoryName: String, coinsWon: Int) {
 
         if (!initialization) {
 
             initialization = true
             viewModelScope.launch {
 
-                loadCategoryInfo(categoryName)
                 updateAnsweredQuestionValue(questionList)
                 updateLastDateAnsweredCategoryValue(categoryName)
+                updateBalance(coinsWon)
+                loadCategoryInfo(categoryName)
+                loadBalanceInfo()
 
             }
 
@@ -132,7 +134,7 @@ class QuestionResultScreenViewModel: ViewModel() {
     }
 
     // function to fetch balance from bank
-    private fun loadBalanceInfo(categoryName: String) {
+    private fun loadBalanceInfo() {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -142,9 +144,10 @@ class QuestionResultScreenViewModel: ViewModel() {
 
                 if (balance != null) {
 
-                    _balanceUiState.update { currentbalanceUiState ->
+                    _balanceUiState.update { currentBalanceUiState ->
 
-                        currentbalanceUiState.copy(balance = balance)
+                        currentBalanceUiState.copy(balance = balance)
+
                     }
 
                 }
