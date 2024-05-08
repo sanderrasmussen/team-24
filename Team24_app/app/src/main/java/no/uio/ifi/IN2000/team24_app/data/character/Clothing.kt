@@ -77,8 +77,9 @@ fun givePoints(lastDate:Date, playerTemperature:Double){
             CoroutineScope(Dispatchers.IO).launch {
                 bank.deposit(points.toInt())
             }
-            //TODO find a way to pass this to the ui, this is just a reminder to write a message to user
-            Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
+
+            //TODO find a way to pass this to the ui
+            //Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
         }
     }
 }
