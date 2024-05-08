@@ -42,6 +42,17 @@ fun CategoryScreen(
 
 ) {
 
+    // initialize viewmodel with category name parameter
+    LaunchedEffect(categoryScreenViewModel) {
+
+        categoryScreenViewModel.initialize(categoryName)
+
+    }
+
+    // get categories and questions ui state from view model
+    val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
+    val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
+
     // top app bar with back button to navigate back to categories screen
     Scaffold(
 
@@ -86,17 +97,6 @@ fun CategoryScreen(
 
         ) {
 
-            // initialize viewmodel with category name parameter
-            LaunchedEffect(categoryScreenViewModel) {
-
-                categoryScreenViewModel.initialize(categoryName)
-
-            }
-
-            // get categories and questions ui state from view model
-            val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
-            val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
-
             Column(
 
                 modifier = Modifier
@@ -118,17 +118,14 @@ fun CategoryScreen(
 
                     )
 
-                    // display category info if category is found
-                    if (categoryUiState.category != null) {
+                    Text(
 
-                        Text(
+                        // display category info if category is found
+                        text = if (categoryUiState.category != null) categoryUiState.category!!.category
+                            else "Klarte ikke å hente kategori",
+                        style = MaterialTheme.typography.titleLarge
 
-                            text = categoryUiState.category!!.category,
-                            style = MaterialTheme.typography.titleLarge
-
-                        )
-
-                    }
+                    )
 
                 }
 

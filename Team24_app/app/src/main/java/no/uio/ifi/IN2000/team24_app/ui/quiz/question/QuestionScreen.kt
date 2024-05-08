@@ -229,6 +229,12 @@ fun QuestionScreen(
 
     }
 
+    else {
+
+        Text("Klarte ikke å hente data for kategori/spørsmål")
+
+    }
+
 }
 
 @Composable

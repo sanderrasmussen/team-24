@@ -147,6 +147,13 @@ fun QuestionResultScreen(
 
                 }
 
+                else {
+
+                    // display error message on failure
+                    Text("Klarte ikke å hente kategori")
+
+                }
+
                 // spacer between point score text and total coins text
                 Spacer(modifier = Modifier.height(32.dp))
 
