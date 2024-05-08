@@ -4,27 +4,25 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Surface
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
+import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoriesScreen
+import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryScreen
+import no.uio.ifi.IN2000.team24_app.ui.quiz.question.QuestionResultScreen
+import no.uio.ifi.IN2000.team24_app.ui.quiz.question.QuestionScreen
 import no.uio.ifi.IN2000.team24_app.ui.theme.Team24_appTheme
 
 
@@ -59,6 +57,96 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(
                 )
             }
+
+            composable("CategoriesScreen") {
+
+                CategoriesScreen(
+
+                    onNavigateToCategoryScreen = { categoryName ->
+                        navController.navigate("CategoryScreen/$categoryName")
+
+                    }
+
+                )
+
+            }
+
+            composable(
+
+                route = "CategoryScreen/{categoryName}",
+                arguments = listOf(navArgument("categoryName") { NavType.StringType })
+
+            ) {
+
+                backStackEntry ->
+
+                val categoryName = backStackEntry.arguments?.getString("category").orEmpty()
+                CategoryScreen(
+
+                    categoryName = categoryName,
+                    onNavigateToQuestionScreen = { questions ->
+                        navController.navigate("QuestionScreen/$questions")
+
+                    }
+
+                )
+
+            }
+
+            composable(
+
+                route = "QuestionScreen/{questions}/{index}/{coinsWon}",
+                arguments = listOf(navArgument("questions") { NavType.StringType },
+                    navArgument("index") {NavType.IntType},
+                    navArgument("coinsWon") {NavType.IntType})
+
+            ) {
+
+                backStackEntry ->
+
+                val questions = backStackEntry.arguments?.getString("questions").orEmpty()
+                val index = backStackEntry.arguments?.getInt("index") ?: 0
+                val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
+                QuestionScreen(
+
+                    questions = questions,
+                    index = index,
+                    coinsWon = coinsWon,
+                    onNavigateToNextQuestionScreen = { questions, index, coinsWon ->
+                        navController.navigate("QuestionScreen/$questions/$index/$coinsWon")
+                    },
+                    onNavigateToResultQuestionScreen = { categoryName, questions, index, coinsWon ->
+                        navController.navigate("QuestionResultScreen/$categoryName/$questions/$index/$coinsWon")
+                    }
+
+                )
+
+            }
+
+            composable(
+
+                route = "QuestionResultScreen/{categoryName}/{questions}/{index}/{coinsWon}",
+                arguments = listOf(navArgument("categoryName") { NavType.StringType },
+                    navArgument("questions") { NavType.StringType },
+                    navArgument("coinsWon") {NavType.IntType})
+
+            ) {
+
+                    backStackEntry ->
+
+                val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
+                val questions = backStackEntry.arguments?.getString("questions").orEmpty()
+                val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
+                QuestionResultScreen(
+
+                    categoryName = categoryName,
+                    questions = questions,
+                    coinsWon = coinsWon
+
+                )
+
+            }
+
         }
 
     }

@@ -47,7 +47,8 @@ fun QuestionScreen(
     index: Int = 0,
     coinsWon: Int = 0,
     questionScreenViewModel: QuestionScreenViewModel = viewModel(),
-    onNavigateToNextQuestionScreen: (Unit) -> Unit
+    onNavigateToNextQuestionScreen: (Unit, Int?, Int?) -> Unit,
+    onNavigateToResultQuestionScreen: (Unit, Int?, Int?, Int?) -> Unit
 
 ) {
 
