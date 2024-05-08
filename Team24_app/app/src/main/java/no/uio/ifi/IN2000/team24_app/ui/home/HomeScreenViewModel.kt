@@ -90,10 +90,6 @@ class HomeScreenViewModel(
     val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
     val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
 
-    //this is just to render a default character, TODO should call a load from disk()-method on create
-    //
-
-
          //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(loadClothesFromDisk())
     private var character = characterState.asStateFlow()
