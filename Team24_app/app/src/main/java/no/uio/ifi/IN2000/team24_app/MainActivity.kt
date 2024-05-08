@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
+            // navigation logic for categories screen
             composable("CategoriesScreen") {
 
                 CategoriesScreen(
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() {
 
             }
 
+            // navigation logic for category screen
             composable(
 
                 route = "CategoryScreen/{categoryName}",
@@ -95,6 +97,7 @@ class MainActivity : ComponentActivity() {
 
             }
 
+            // navigation logic for question screen
             composable(
 
                 route = "QuestionScreen/{categoryName}/{questions}/{index}/{coinsWon}",
@@ -129,6 +132,7 @@ class MainActivity : ComponentActivity() {
 
             }
 
+            // navigation logic for question result screen
             composable(
 
                 route = "QuestionResultScreen/{categoryName}/{questions}/{coinsWon}",
