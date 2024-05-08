@@ -10,3 +10,4 @@ data class Bank (
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 }
+

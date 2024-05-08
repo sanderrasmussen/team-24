@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
 
+
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -88,7 +89,7 @@ fun HomeScreen(
     isNetworkAvailable: Boolean,
     homevm: HomeScreenViewModel = viewModel(),
 
-){
+    ){
     val TAG = "HomeScreen"
     homevm.getCurrentWeather(LocalContext.current) //this line needs to be here!
     homevm.getRelevantAlerts(LocalContext.current)
@@ -595,7 +596,7 @@ fun WeatherDetailCard(weatherDetailState :   WeatherDetailsUiState, vm: HomeScre
         onDismissRequest = { vm.updateWeatherDetails(null) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
 
-    ) {
+        ) {
         if(weatherDetailState.weatherDetails != null) {
             val weatherDetails : List<WeatherDetails> = weatherDetailState.weatherDetails!!
             val dayStr = weatherDetailState.dayStr
