@@ -76,20 +76,6 @@ class QuestionRepository {
 
     }
 
-    // function to retrieve options for a question name
-    suspend fun getQuestionOptions(questionName: String): Question {
-
-        return questionDao.getQuestionOptions(questionName)
-
-    }
-
-    // function to retrieve correct option index for a question name
-    suspend fun getCorrectOptionIndex(questionName: String): Question {
-
-        return questionDao.getCorrectOptionIndex(questionName)
-
-    }
-
     // FUNCTION TO CHANGE ANSWERED STATUS FOR QUESTION
 
     suspend fun updateQuestionAnsweredValue(questionName: String) {
