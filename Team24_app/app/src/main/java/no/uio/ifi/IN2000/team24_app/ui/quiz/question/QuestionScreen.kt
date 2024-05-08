@@ -2,6 +2,7 @@ package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,13 +14,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,9 +49,11 @@ import kotlinx.coroutines.delay
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
 // quiz question screen with question
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
 
+    onBackPressed: () -> Unit,
     categoryName: String,
     questions: String,
     index: Int = 0,
@@ -110,56 +122,108 @@ fun QuestionScreen(
 
         }
 
-        Column(
+        // checks if readingtime is 0
+        if (readingTime == 0) {
 
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            // starts answering timer
+            LaunchedEffect(Unit) {
+                while (answeringTime > 0 && !pauseTimer) {
 
-        ) {
+                    delay(1000L)
+                    answeringTime--
 
-            // question screen header with
-            QuestionScreenHeader(
+                }
+            }
 
-                currentProgress,
-                readingTime,
-                answeringTime,
-                getTimer,
-                questionUiState
+        }
 
-            )
+        // top app bar with back button to navigate back to categories screen
+        Scaffold(
 
-            // checks if readingtime is 0
-            if (readingTime == 0) {
+            topBar = {
 
-                // starts answering timer
-                LaunchedEffect(Unit) {
-                    while (answeringTime > 0 && !pauseTimer) {
+                TopAppBar(
 
-                        delay(1000L)
-                        answeringTime--
+                    title = {
+
+                        Text(text = "Spørsmål")
+
+                    },
+
+                    navigationIcon = {
+
+                        // icon button that goes back to categories screen
+                        IconButton(onClick = onBackPressed) {
+
+                            // back arrow icon
+                            Icon(
+
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Tilbakeknapp"
+
+                            )
+
+                        }
 
                     }
-                }
-
-                // spacer between header and functionality
-                Spacer(modifier = Modifier.height(16.dp))
-
-                QuestionScreenBody(
-
-                    questionUiState,
-                    onAnswerSelected,
-                    categoryName,
-                    questions,
-                    questionList,
-                    index,
-                    coinsWon,
-                    onNavigateToNextQuestionScreen,
-                    onNavigateToResultQuestionScreen
 
                 )
+
+            }
+
+        ) { innerPadding ->
+
+            Box(
+
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+
+            ) {
+
+                Column(
+
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+
+                    // question screen header with
+                    QuestionScreenHeader(
+
+                        currentProgress,
+                        readingTime,
+                        answeringTime,
+                        getTimer,
+                        questionUiState
+
+                    )
+
+                    if (readingTime == 0) {
+
+                        // spacer between header and functionality
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        QuestionScreenBody(
+
+                            questionUiState,
+                            onAnswerSelected,
+                            categoryName,
+                            questions,
+                            questionList,
+                            index,
+                            coinsWon,
+                            onNavigateToNextQuestionScreen,
+                            onNavigateToResultQuestionScreen
+
+                        )
+
+                    }
+
+                }
 
             }
 

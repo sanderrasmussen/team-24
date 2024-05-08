@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun CategoriesScreen(
 
+    onBackPressed: () -> Unit,
     categoriesScreenViewModel: CategoriesScreenViewModel = viewModel(),
     onNavigateToCategoryScreen: (String) -> Unit
 

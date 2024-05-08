@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
 
                 CategoriesScreen(
 
+                    onBackPressed = { navController.popBackStack("HomeScreen", inclusive = true) },
                     onNavigateToCategoryScreen = { categoryName ->
                         navController.navigate("CategoryScreen/$categoryName")
 
@@ -83,6 +84,7 @@ class MainActivity : ComponentActivity() {
                 val categoryName = backStackEntry.arguments?.getString("category").orEmpty()
                 CategoryScreen(
 
+                    onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
                     categoryName = categoryName,
                     onNavigateToQuestionScreen = { questions ->
                         navController.navigate("QuestionScreen/$questions")
@@ -111,6 +113,7 @@ class MainActivity : ComponentActivity() {
                 val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
                 QuestionScreen(
 
+                    onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
                     categoryName = categoryName,
                     questions = questions,
                     index = index,
@@ -142,6 +145,7 @@ class MainActivity : ComponentActivity() {
                 val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
                 QuestionResultScreen(
 
+                    onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
                     categoryName = categoryName,
                     questions = questions,
                     coinsWon = coinsWon

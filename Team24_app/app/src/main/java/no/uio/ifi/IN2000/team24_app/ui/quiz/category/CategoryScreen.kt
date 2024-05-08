@@ -1,6 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,11 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,89 +31,139 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
 
+    onBackPressed: () -> Unit,
     categoryName: String,
     categoryScreenViewModel: CategoryScreenViewModel = viewModel(),
     onNavigateToQuestionScreen: (String?) -> Unit
 
-    ) {
+) {
 
-    // initialize viewmodel with category name parameter
-    LaunchedEffect(categoryScreenViewModel) {
+    // top app bar with back button to navigate back to categories screen
+    Scaffold(
 
-        categoryScreenViewModel.initialize(categoryName)
+        topBar = {
 
-    }
+            TopAppBar(
 
-    // get categories and questions ui state from view model
-    val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
-    val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
+                title = {
 
-    Column(
+                    Text(text = "Kategori")
 
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+                },
 
-    ) {
+                navigationIcon = {
 
-        Row() {
+                    // icon button that goes back to categories screen
+                    IconButton(onClick = onBackPressed) {
 
-            // text displaying category
-            Text(
+                        // back arrow icon
+                        Icon(
 
-                text = "Kategori: ",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Tilbakeknapp"
+
+                        )
+
+                    }
+
+                }
 
             )
-
-            // display category info if category is found
-            if (categoryUiState.category != null) {
-
-                Text(
-
-                    text = categoryUiState.category!!.category,
-                    style = MaterialTheme.typography.titleLarge
-
-                )
-
-            }
 
         }
 
-        // spacer between category text and start button
-        Spacer(modifier = Modifier.height(32.dp))
+    ) { innerPadding ->
 
-        // start button navigating to question screen
-        Button(
+        Box(
 
-            // navigate to question screen by loading 3 random questions
-            onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(innerPadding)
+                .fillMaxSize()
 
         ) {
 
-            // start text
-            Text(
+            // initialize viewmodel with category name parameter
+            LaunchedEffect(categoryScreenViewModel) {
 
-                text = "Start quiz"
+                categoryScreenViewModel.initialize(categoryName)
 
-            )
+            }
 
-            // forward arrow icon
-            Icon(
+            // get categories and questions ui state from view model
+            val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
+            val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
 
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Pil fram"
+            Column(
 
-            )
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+
+                Row() {
+
+                    // text displaying category
+                    Text(
+
+                        text = "Kategori: ",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+
+                    )
+
+                    // display category info if category is found
+                    if (categoryUiState.category != null) {
+
+                        Text(
+
+                            text = categoryUiState.category!!.category,
+                            style = MaterialTheme.typography.titleLarge
+
+                        )
+
+                    }
+
+                }
+
+                // spacer between category text and start button
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // start button navigating to question screen
+                Button(
+
+                    // navigate to question screen by loading 3 random questions
+                    onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+
+                ) {
+
+                    // start text
+                    Text(
+
+                        text = "Start quiz"
+
+                    )
+
+                    // forward arrow icon
+                    Icon(
+
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Pil fram"
+
+                    )
+
+                }
+
+            }
 
         }
 
