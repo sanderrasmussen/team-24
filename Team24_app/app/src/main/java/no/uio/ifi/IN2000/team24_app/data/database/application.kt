@@ -51,7 +51,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             //heads:
             val short_hair = Clothes(R.drawable.head_short_hair,"Short Hair", 25,  30, R.drawable.alt_head_short_hair,"head",true)
             val paint_head = Clothes(R.drawable.paint_head, "Paint", 0, 1000, R.drawable.paint_head_alt,"head",false)
-            val hat = Clothes(R.drawable.alt_head_short_hair_hat, "Hat", 0, 30, R.drawable.alt_head_short_hair_hat, "head", false)
+            val hat = Clothes(R.drawable.head_short_hair_hat, "Hat", 0, 30, R.drawable.alt_head_short_hair_hat, "head", false)
             MyDatabase.getInstance().clothesDao().insertAll(short_hair)
             MyDatabase.getInstance().clothesDao().insertAll(paint_head)
             MyDatabase.getInstance().clothesDao().insertAll(hat)
