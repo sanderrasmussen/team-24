@@ -61,6 +61,7 @@ data class SatisfactionUiState(
     )
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),

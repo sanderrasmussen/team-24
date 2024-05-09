@@ -80,7 +80,7 @@ fun givePoints(lastDate:LocalDate, playerTemperature:Double){
         val lastTemperature = clothingRepo.getTemperatureAtLastLogin()
         val delta = abs(playerTemperature - lastTemperature)
         Log.d("loadSelectedClothes", "Delta: $delta")
-        val points = maxOf(0.0, 10-delta)
+        val points = maxOf(0.0, 10.0-delta)
         Log.d("loadSelectedClothes", "Points: $points")
         if(points>0.0){ //this means the players clothes were within 10 degrees of the actual temperature
             Log.d("loadSelectedClothes", "writing {$points} to bank")
@@ -89,10 +89,10 @@ fun givePoints(lastDate:LocalDate, playerTemperature:Double){
                 bank.deposit(points.toInt())
             }
 
-            //TODO find a way to pass this to the ui
-            //Toast.makeText(null, "Du fikk $points mynter for å velge gode klær!", Toast.LENGTH_LONG).show()
+            //TODO find a way to pass a toast/snackbar to the ui. realistically, we don't have time to implement that.
         }
-    }else{Log.d("loadSelectedClothes", "date was not before today, no points given")}
+    }else{
+        Log.d("loadSelectedClothes", "date was not before today, no points given")}
 }
 
 fun getDefaultBackupCharacter(): Character {
