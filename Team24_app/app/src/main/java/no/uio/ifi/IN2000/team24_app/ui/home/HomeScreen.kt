@@ -552,7 +552,7 @@ fun LocationPermissionCard(){
 
     if(showCard.value){
         AlertDialog(
-            title= { Text(text = "Requires location permission") },
+            title= { Text(text = "Appen trenger din posisjon") },
             icon = {Icons.Default.LocationOn},
             onDismissRequest = { permissionDenied() },
             confirmButton = {
@@ -560,12 +560,12 @@ fun LocationPermissionCard(){
                     locationPermissionState.launchPermissionRequest()
                     showCard.value=false
                 }) {
-                    Text(text = "Grant location permission")
+                    Text(text = "Gi tillatelse")
                 }
             },
             dismissButton = {
                 Button(onClick = { permissionDenied()}) {
-                    Text(text = "Refuse location permissions")
+                    Text(text = "Nekt tillatelse")
                 }
             }
         )
