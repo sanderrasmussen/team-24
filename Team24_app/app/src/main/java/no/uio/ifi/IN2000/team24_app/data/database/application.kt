@@ -77,7 +77,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
                 short_hair.imageAsset,
                 long_sleeve.imageAsset,
                 pants.imageAsset,
-                Date() ,
+                System.currentTimeMillis(),
                 15 //initial value of 15 at first login
             )
             MyDatabase.getInstance().clothesDao().insertEquipedClothesTable(equipedClothes)

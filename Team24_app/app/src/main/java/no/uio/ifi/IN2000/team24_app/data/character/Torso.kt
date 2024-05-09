@@ -9,7 +9,6 @@ data class Torso (
 ):Clothing(name, heatValue, imageAsset, price, altAsset){
 
 }
-//TODO add alt assets for all paint clothing
 private val clothesRepo = ClothesRepository()
 val paintTorso = Torso("Paint", 0, R.drawable.paint_torso, 10000, R.drawable.paint_torso_alt)
 //todo reimport change id from sleeves to sleeve
