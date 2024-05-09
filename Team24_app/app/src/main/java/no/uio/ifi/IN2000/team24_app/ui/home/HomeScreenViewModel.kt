@@ -7,6 +7,7 @@ import android.graphics.drawable.Icon
 import android.location.Location
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -203,32 +204,49 @@ class HomeScreenViewModel(
     }
 
      fun makeRequests(context: Context) {
+         val backupLocation = Location("")  //TODO check this works
+            backupLocation.latitude = 59.913868
+            backupLocation.longitude = 10.752245
          viewModelScope.launch(Dispatchers.IO) {
             if (_userLocation.value == null) {
                 val tracker = LocationTracker(context)
                 tracker.getLocation().addOnSuccessListener { location ->
                     Log.d(TAG, "In onSuccessListener w/ location: $location")
-                    _userLocation.update { location }
+                    if(location !=null) {
+
+
+                        getCurrentWeather(location)
+                        getRelevantAlerts(location)
+                    }
+                    else{
+                        Log.e(TAG, "Location in success is null")
+                        Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
+                        getCurrentWeather(backupLocation)
+                        getRelevantAlerts(backupLocation)
+
+                    }
                 }.addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to get location: ${e.message}")
+                    Log.e(TAG, "Failed to get location: ${e.message}.(failureListener")
+                    Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
+                    getCurrentWeather(backupLocation)
+                    getRelevantAlerts(backupLocation)
                 }
             }
          }
-        getCurrentWeather()
-        getRelevantAlerts()
+
 
     }
 
-    fun getCurrentWeather() {
+
+    fun getCurrentWeather(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            //!position broke, todo look into LocationTracker
             Log.d(
                 TAG,
-                "Position in getCurrentWeather: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}"
+                "Position in getCurrentWeather: ${location.latitude}, ${location.longitude}"
             )
             locationForecastRepo.fetchLocationForecast(
-                _userLocation.value?.latitude ?: 59.913868,
-                _userLocation.value?.longitude ?: 10.752245
+                location.latitude ?: 59.913868,
+                location.longitude ?: 10.752245
             )
 
             _currentWeatherState.update {
@@ -241,17 +259,14 @@ class HomeScreenViewModel(
     }
 
 
-    fun getRelevantAlerts() {
+    fun getRelevantAlerts(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            //!position broke, todo look into LocationTracker
-            Log.d(
-                TAG,
-                "Position in getCurrentWeather: ${_userLocation.value?.latitude}, ${_userLocation.value?.longitude}"
+            Log.d(TAG,
+                "Position in getRelevantAlerts: ${location.latitude}, ${location.longitude}"
             )
             val cards = metAlertsRepo.henteVarselKort(
-                    _userLocation.value?.latitude ?: 59.913868,
-                    _userLocation.value?.longitude ?: 10.752245
-
+                    latitude = location.latitude,
+                    longitude = location.longitude
             )
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)

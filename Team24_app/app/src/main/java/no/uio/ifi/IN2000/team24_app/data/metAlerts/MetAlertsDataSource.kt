@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -16,9 +17,15 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-class MetAlertsDataSource {
+class MetAlertsDataSource(
+    private val TAG: String = "MetAlertsDataSource",
+    private var metAlerts: MetAlerts? = null
+) {
 
     suspend fun getMetAlertData(latitude: Double, Longitude: Double): MetAlerts?{
+        if(metAlerts != null){
+            return metAlerts        //added caching to avoid recalling on the recompose bug
+        }
         val client = HttpClient(Android) {
             install(ContentNegotiation) {
                 json(
@@ -48,6 +55,7 @@ class MetAlertsDataSource {
         try {
             //! THIS URL IS ONLY HERE TO TEST THE MULTIPOLYGON-PROBLEM
             //val TESTURL = "https://api.met.no/weatherapi/metalerts/2.0/test.json"
+            Log.d(TAG, "Getting metalerts data")
             val response: HttpResponse =
                 client.get("weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude")
             println(response.status)
