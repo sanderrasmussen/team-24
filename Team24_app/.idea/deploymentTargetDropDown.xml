@@ -5,11 +5,21 @@
       <entry key="MainActivity">
         <State />
       </entry>
-      <entry key="SettingScreenPreview">
-        <State />
-      </entry>
       <entry key="app">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\halvo\.android\avd\Pixel_3a_XL_API_33.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-04-30T13:24:33.021596400Z" />
+        </State>
       </entry>
     </value>
   </component>

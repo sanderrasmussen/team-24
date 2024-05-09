@@ -52,11 +52,16 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.material3:material3:1.2.1")
+    implementation ("androidx.compose.ui:ui:1.6.5")
+    implementation ("androidx.compose.foundation:foundation:1.6.5")
+
+
 
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.test:core-ktx:1.5.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("androidx.media3:media3-test-utils:1.3.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-android:2.8.0-rc01")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -18,7 +18,7 @@ import kotlinx.serialization.modules.subclass
 
 class MetAlertsDataSource {
 
-    suspend fun getMetAlertData(): MetAlerts?{
+    suspend fun getMetAlertData(latitude: Double, Longitude: Double): MetAlerts?{
         val client = HttpClient(Android) {
             install(ContentNegotiation) {
                 json(
@@ -49,15 +49,12 @@ class MetAlertsDataSource {
             //! THIS URL IS ONLY HERE TO TEST THE MULTIPOLYGON-PROBLEM
             //val TESTURL = "https://api.met.no/weatherapi/metalerts/2.0/test.json"
             val response: HttpResponse =
-                client.get("weatherapi/metalerts/2.0/current.json")
+                client.get("weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude")
             println(response.status)
             if (response.status.isSuccess()) {
                 val content: MetAlerts = response.body();
                 alert = content;
-
-
             }
-
         }
         catch(e: Exception){
             e.printStackTrace()
@@ -74,8 +71,3 @@ class MetAlertsDataSource {
 
 }
 
-fun main ()= runBlocking {
-    val alert:MetAlertsDataSource= MetAlertsDataSource()
-    print(alert.getMetAlertData())
-
-}

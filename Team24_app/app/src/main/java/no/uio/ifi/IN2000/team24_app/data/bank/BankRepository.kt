@@ -1,10 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.data.bank
 
 import android.app.Application
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,10 @@ class BankRepository()  {
     private val bankDao = db.bankDao()
 
     suspend fun withdraw( sum : Int) {
-        bankDao.withdraw(sum)
+        var balance = getBankBalance()
+        if (balance-sum >= 0 ){
+            bankDao.withdraw(sum)
+        }
     }
 
     suspend fun deposit( sum : Int)  {
@@ -30,10 +33,17 @@ class BankRepository()  {
     }
 
     //this method has to be called within a corutine
-    suspend fun getBankBalance(): Int? {
-        return withContext(Dispatchers.IO) {
-            return@withContext bankDao.get().get(0).balance
+    suspend fun getBankBalance(): Int {
+        try {
+            return withContext(Dispatchers.IO) {
+                return@withContext bankDao.get().get(0).balance
+            }
         }
+        catch (e : Exception){
+            Log.e(TAG, "An error occurred while getting bank balance: ${e.message}", e)
+            return -1
+        }
+
     }
 
 }
