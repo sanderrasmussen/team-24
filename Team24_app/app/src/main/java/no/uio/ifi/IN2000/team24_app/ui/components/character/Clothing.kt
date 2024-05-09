@@ -42,7 +42,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.Torso
 import no.uio.ifi.IN2000.team24_app.data.character.heads
 import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
-import no.uio.ifi.IN2000.team24_app.data.character.writeEquipedClothesToDisk
+import no.uio.ifi.IN2000.team24_app.data.character.writeEquippedClothesToDisk
 
 @Composable
 fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = Modifier){
@@ -76,7 +76,7 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         characterState.update {
             it.copy(temperature = it.findAppropriateTemp())
         }
-        writeEquipedClothesToDisk(characterState.value) //Writing equuiped clothes to disk
+        writeEquippedClothesToDisk(characterState.value)
         showInventory = false // then, close the dialog.
 
     }
