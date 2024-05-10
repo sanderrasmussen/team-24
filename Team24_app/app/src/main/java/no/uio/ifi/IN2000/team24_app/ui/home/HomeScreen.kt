@@ -18,14 +18,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,8 +58,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
@@ -78,6 +73,8 @@ import no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
 import no.uio.ifi.IN2000.team24_app.ui.components.character.SatisfactionBar
 import no.uio.ifi.IN2000.team24_app.ui.date
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
+import no.uio.ifi.IN2000.team24_app.ui.components.permission.LocationPermission
+import no.uio.ifi.IN2000.team24_app.ui.components.permission.PermissionAction
 import no.uio.ifi.IN2000.team24_app.ui.day
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
@@ -88,10 +85,26 @@ fun HomeScreen(
     navController: NavController,
     isNetworkAvailable: Boolean,
     homevm: HomeScreenViewModel = viewModel(),
-
+    TAG: String = "HomeScreen"
     ){
-    val TAG = "HomeScreen"
-    homevm.makeRequests(LocalContext.current)
+    val snackbarHostState = remember{SnackbarHostState()}
+    val context = LocalContext.current
+    LocationPermission(
+        LocalContext.current,
+        snackbarHostState)
+    { permissionAction ->
+        when(permissionAction){
+            is PermissionAction.OnPermissionGranted -> {
+                Log.d(TAG, "Location permission granted")
+                homevm.makeRequests(context)
+            }
+            is PermissionAction.OnPermissionDenied -> {
+                Log.d(TAG, "Location permission denied")
+                Toast.makeText(context, "Uten din posisjon brukes standard-posisjon: Oslo.", Toast.LENGTH_LONG).show()
+                homevm.makeRequestsWithoutLocation()
+            }
+        }
+    }
 
     Log.d(TAG, "HomeScreen Composable")
 
@@ -100,7 +113,6 @@ fun HomeScreen(
 
     val weatherDetailState by homevm.weatherDetails.collectAsState()
     val alertsUiState = homevm.alerts.collectAsState()
-    val balance by homevm.balance.collectAsState()
 
 
     val showAlerts = remember {mutableStateOf(
@@ -118,7 +130,6 @@ fun HomeScreen(
 
     Log.d(TAG, "next6DaysWeatherState: $next6DaysWeatherState")
 
-    LocationPermissionCard()
 
     val white = Color.White
     val gray = Color(android.graphics.Color.parseColor("#cfd0d2"))
@@ -171,7 +182,6 @@ fun HomeScreen(
     }
 
     val scope= rememberCoroutineScope()
-    val snackbarHostState = remember{SnackbarHostState()}
 
 
     if(!isNetworkAvailable){
@@ -265,25 +275,6 @@ fun HomeScreen(
 
                 SatisfactionBar(satisfaction) // change to progress = satisfaction
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.coin),
-                        contentDescription = "currency",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = "${balance}",
-                        color = textColour,
-                        fontSize = 30.sp
-                    )
-                }
-
 
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -296,7 +287,6 @@ fun HomeScreen(
                         horizontalAlignment = End,
 
                         ) {//the column with the inventory and the alert button
-                        val context = LocalContext.current
                         Button(
                             onClick = {
                                 if (alertsUiState.value.alerts.isNotEmpty()) {
@@ -540,38 +530,7 @@ fun WeatherCard(
     Spacer(modifier = Modifier.padding(10.dp))
 }
 
-
 @OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun LocationPermissionCard(){
-    val locationPermissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_COARSE_LOCATION)
-    val showCard = remember{ mutableStateOf(!locationPermissionState.status.isGranted)}
-
-    fun permissionDenied() {
-        showCard.value=false
-    }
-
-    if(showCard.value){
-        AlertDialog(
-            title= { Text(text = "Appen trenger din posisjon") },
-            icon = {Icons.Default.LocationOn},
-            onDismissRequest = { permissionDenied() },
-            confirmButton = {
-                Button(onClick = {
-                    locationPermissionState.launchPermissionRequest()
-                    showCard.value=false
-                }) {
-                    Text(text = "Gi tillatelse")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { permissionDenied()}) {
-                    Text(text = "Nekt tillatelse")
-                }
-            }
-        )
-    }
-}
 
 
 private fun windDirection(degrees: Double?): String {

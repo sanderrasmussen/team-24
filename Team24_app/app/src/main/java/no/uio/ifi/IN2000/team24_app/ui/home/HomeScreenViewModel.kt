@@ -221,22 +221,25 @@ class HomeScreenViewModel(
                     else{
                         Log.e(TAG, "Location in success is null")
                         Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
-                        getCurrentWeather(backupLocation)
-                        getRelevantAlerts(backupLocation)
+                        makeRequestsWithoutLocation()
 
                     }
                 }.addOnFailureListener { e ->
                     Log.e(TAG, "Failed to get location: ${e.message}.(failureListener")
-                    Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
-                    getCurrentWeather(backupLocation)
-                    getRelevantAlerts(backupLocation)
+                    makeRequestsWithoutLocation()
                 }
             }
          }
-
-
     }
-
+    fun makeRequestsWithoutLocation(){
+        val backupLocation = Location("")  //TODO check this works
+        backupLocation.latitude = 59.913868
+        backupLocation.longitude = 10.752245
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentWeather(backupLocation)
+            getRelevantAlerts(backupLocation)
+        }
+    }
 
     fun getCurrentWeather(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
