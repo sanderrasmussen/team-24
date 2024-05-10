@@ -1,7 +1,9 @@
 package no.uio.ifi.IN2000.team24_app.ui.store
 
 import android.content.ContentValues.TAG
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 
+@RequiresApi(Build.VERSION_CODES.O)
 class StoreScreenViewModel(): ViewModel() {
 
     val bankRepository: BankRepository = BankRepository()
@@ -62,6 +65,7 @@ class StoreScreenViewModel(): ViewModel() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun loadClothesFromDisk(): Character {
         var character = getDefaultBackupCharacter()
         runBlocking {
