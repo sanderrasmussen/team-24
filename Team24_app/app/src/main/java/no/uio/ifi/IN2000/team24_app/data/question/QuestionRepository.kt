@@ -86,7 +86,8 @@ class QuestionRepository {
 
     // function to get question for a question name
     suspend fun getQuestion(questionName: String): Question {
-
+        val QUESTION= questionDao.getQuestion(questionName)
+        println("QUESTIONDAO.GETQUESTION $QUESTION)")
         return questionDao.getQuestion(questionName)
 
     }

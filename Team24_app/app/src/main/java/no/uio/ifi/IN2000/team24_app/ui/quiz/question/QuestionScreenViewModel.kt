@@ -66,8 +66,10 @@ class QuestionScreenViewModel: ViewModel() {
                 _questionUiState.update { currentQuestionUiState ->
 
                     val questionName = questionList[index]
-
+                    println("questionName:  $questionName")
                     val question = questionRepository.getQuestion(questionName)
+                    println("QUESTION= QUESTIONREPOSITORY.GETQUESTION i loadQuestionInfo:  $question")
+
                     currentQuestionUiState.copy(question = question)
 
                 }
