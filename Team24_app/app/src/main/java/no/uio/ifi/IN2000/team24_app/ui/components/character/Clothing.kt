@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,7 +46,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.character.writeEquippedClothesToDisk
 
 @Composable
-fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = Modifier){
+fun Inventory(characterState: MutableStateFlow<Character>,temperature: Double, modifier: Modifier = Modifier){
     var showInventory by remember { mutableStateOf(false) }
     val character = characterState.collectAsState()
     //this function has to be declared at this level so it can close the Dialog
@@ -76,7 +77,7 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         characterState.update {
             it.copy(temperature = it.findAppropriateTemp())
         }
-        writeEquippedClothesToDisk(characterState.value)
+        writeEquippedClothesToDisk(characterState.value,temperature)
         showInventory = false // then, close the dialog.
 
     }
@@ -85,8 +86,8 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         if (showInventory) {
             ClothingMenuCard(
                 character = character,
-                closeFunction = ::selectedClothing,
-                modifier = Modifier    //thats right, we doing function invocation in the parameter list
+                closeFunction = ::selectedClothing, //thats right, we doing function invocation in the parameter list
+                modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .fillMaxHeight(0.6f)
                     .padding(5.dp)
@@ -127,28 +128,31 @@ fun ClothingMenu(closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier
             .padding(10.dp)
 
     ) {
-        Text(text = "Heads:")
         LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+            item { Text(text = "Hoder:") }
+            item{ Spacer(modifier = Modifier) }
+
             items(heads()) { head ->
                 ClothingCard(clothing = head, closeFunction = closeFunction)
-
             }
-        }
-        Text(text = "Tops:")
-        LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+            if(heads().size % 2 == 1) item { Spacer(modifier = Modifier) }
+
+            item { Text(text = "Overdel:") }
+            item{ Spacer(modifier = Modifier) }
             items(torsos()) { torso ->
                 ClothingCard(clothing = torso, closeFunction = closeFunction)
             }
-        }
-        Text(text = "Bottoms:")
+            if(torsos().size % 2 == 1) item { Spacer(modifier = Modifier) }
 
-        LazyVerticalGrid(columns = GridCells.Fixed(2),) {
+            item { Text(text = "Underdel:") }
+            item{ Spacer(modifier = Modifier) }
             items(legs()) { leg ->
                 ClothingCard(clothing = leg, closeFunction = closeFunction)
             }
+            if(legs().size % 2 == 1) item { Spacer(modifier = Modifier) }
         }
     }
-    }
+}
 
 @Composable
 fun ClothingCard(
@@ -172,10 +176,4 @@ fun ClothingCard(
                 .padding(5.dp)
         )
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun InventoryPreview() {
-    Inventory(MutableStateFlow(Character(heads().first(), torsos().first(), legs().first())))
 }

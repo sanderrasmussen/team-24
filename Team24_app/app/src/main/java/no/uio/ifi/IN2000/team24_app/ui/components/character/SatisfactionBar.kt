@@ -9,16 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import no.uio.ifi.IN2000.team24_app.R
+import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
 import no.uio.ifi.IN2000.team24_app.ui.home.SatisfactionUiState
 
 @Composable
-fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
+fun SatisfactionBar(vm: HomeScreenViewModel){
+    val satisfaction by vm.satisfaction.collectAsState()
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -28,15 +33,15 @@ fun SatisfactionBar(satisfactionUiState: SatisfactionUiState){
     ) {
         Image(
             modifier = Modifier.padding(horizontal = 4.dp),
-            painter = painterResource(id = satisfactionUiState.unsatisfiedIcon),
+            painter = painterResource(id = satisfaction.unsatisfiedIcon),
             contentDescription = "unsatisfied"
         )
         LinearProgressIndicator(
-            progress = { satisfactionUiState.fillPercent },
+            progress = { satisfaction.fillPercent },
             modifier = Modifier
                 .height(15.dp)
                 .clip(CircleShape),
-            color = satisfactionUiState.color
+            color = satisfaction.color
         )
         Image(
             modifier = Modifier.padding(horizontal = 4.dp),
