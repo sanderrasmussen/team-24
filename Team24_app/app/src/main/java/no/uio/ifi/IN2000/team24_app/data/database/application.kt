@@ -44,7 +44,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
         // Utfør handlinger når databasen blir opprettet for første gang
         CoroutineScope(Dispatchers.IO).launch {
             //bank table:
-            MyDatabase.getInstance().bankDao().insertAll(Bank(1000))
+            MyDatabase.getInstance().bankDao().insertAll(Bank(50))
 
             //clothing tables:
 
