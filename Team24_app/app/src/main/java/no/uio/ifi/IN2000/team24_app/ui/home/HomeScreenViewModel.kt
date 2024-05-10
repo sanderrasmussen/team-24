@@ -141,7 +141,6 @@ class HomeScreenViewModel(
             character = loadSelectedClothes()
 
         }
-        Log.d("AAAAAAAAAAAAAAAAAAA", "calling updateSatisfaction from load")
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
 
         return character
