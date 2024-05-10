@@ -81,9 +81,6 @@ class HomeScreenViewModel(
     private var _balance: MutableStateFlow<Int?> = MutableStateFlow(0),
     val balance: StateFlow<Int?> = _balance.asStateFlow(),
 
-    private val _sevenDaysDetailedForecast: MutableStateFlow<List<List<WeatherDetails>?>> = MutableStateFlow(emptyList()),
-    val sevenDaysDetailedForecast: StateFlow<List<List<WeatherDetails>?>> = _sevenDaysDetailedForecast.asStateFlow(),
-
 
     private val _weatherDetails : MutableStateFlow<WeatherDetailsUiState> = MutableStateFlow(WeatherDetailsUiState()),
     val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow()
@@ -106,8 +103,8 @@ class HomeScreenViewModel(
         //I will now laod selected clothes from disk
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
+            updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         }
-        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         getBalanceFromDb()
 
     }
@@ -133,6 +130,7 @@ class HomeScreenViewModel(
                 return@update WeatherDetailsUiState(hours, dayStr)
             }
         }
+        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())      //if the weather forecast changes, the satisfaction is updated
     }
 
 
@@ -141,6 +139,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             character = loadSelectedClothes()
         }
+        updateSatisfaction(characterTemp = character.findAppropriateTemp())
         return character
     }
 
@@ -204,7 +203,7 @@ class HomeScreenViewModel(
     }
 
      fun makeRequests(context: Context) {
-         val backupLocation = Location("")  //TODO check this works
+         val backupLocation = Location("")
             backupLocation.latitude = 59.913868
             backupLocation.longitude = 10.752245
          viewModelScope.launch(Dispatchers.IO) {
