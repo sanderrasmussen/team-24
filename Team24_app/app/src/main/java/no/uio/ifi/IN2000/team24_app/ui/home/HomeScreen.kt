@@ -315,7 +315,7 @@ fun HomeScreen(
                                 24
                             )
                         }
-                        Inventory(homevm.characterState)
+                        Inventory(homevm.characterState, currentWeatherDetails?.air_temperature?:0.0)
                     }
 
                 }

@@ -37,7 +37,7 @@ abstract class Clothing(
  )
 
 private val clothingRepo = ClothesRepository()
-fun writeEquippedClothesToDisk(character: Character) {
+fun writeEquippedClothesToDisk(character: Character, temperature: Double) {
     CoroutineScope(Dispatchers.IO).launch {
         clothingRepo.writeEquipedHead(character.head.imageAsset)
         clothingRepo.writeEquipedTorso(character.torso.imageAsset)
@@ -46,9 +46,8 @@ fun writeEquippedClothesToDisk(character: Character) {
         clothingRepo.updateDate()
         //todo: any better way to do this? maybe pass the temp as a parameter to this function?
         //TODO: yeah i think i'll do that, but this works for testing. I'll ask Sander, he knows this part better than me
-        val locForecast = LocationForecastRepository()
-        val temp = locForecast.getWeatherNow()?.air_temperature?:0.0
-        clothingRepo.setTemperatureAtLastLogin(temp.toInt())
+
+        clothingRepo.setTemperatureAtLastLogin(temperature.toInt())
 
     }
 }

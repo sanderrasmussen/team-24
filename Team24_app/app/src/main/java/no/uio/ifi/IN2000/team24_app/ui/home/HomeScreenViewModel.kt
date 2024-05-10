@@ -245,8 +245,8 @@ class HomeScreenViewModel(
                 "Position in getCurrentWeather: ${location.latitude}, ${location.longitude}"
             )
             locationForecastRepo.fetchLocationForecast(
-                location.latitude ?: 59.913868,
-                location.longitude ?: 10.752245
+                location.latitude,
+                location.longitude
             )
 
             _currentWeatherState.update {

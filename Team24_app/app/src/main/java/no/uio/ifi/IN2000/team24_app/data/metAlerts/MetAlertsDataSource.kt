@@ -73,9 +73,5 @@ class MetAlertsDataSource(
         }
         return alert
     }
-
-
-
-
 }
 

@@ -46,7 +46,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.character.writeEquippedClothesToDisk
 
 @Composable
-fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = Modifier){
+fun Inventory(characterState: MutableStateFlow<Character>,temperature: Double, modifier: Modifier = Modifier){
     var showInventory by remember { mutableStateOf(false) }
     val character = characterState.collectAsState()
     //this function has to be declared at this level so it can close the Dialog
@@ -77,7 +77,7 @@ fun Inventory(characterState: MutableStateFlow<Character>, modifier: Modifier = 
         characterState.update {
             it.copy(temperature = it.findAppropriateTemp())
         }
-        writeEquippedClothesToDisk(characterState.value)
+        writeEquippedClothesToDisk(characterState.value,temperature)
         showInventory = false // then, close the dialog.
 
     }
@@ -176,10 +176,4 @@ fun ClothingCard(
                 .padding(5.dp)
         )
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun InventoryPreview() {
-    Inventory(MutableStateFlow(Character(heads().first(), torsos().first(), legs().first())))
 }
