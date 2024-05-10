@@ -115,6 +115,7 @@ fun HomeScreen(
     val alertsUiState = homevm.alerts.collectAsState()
 
 
+
     val showAlerts = remember {mutableStateOf(
         //alertsUiState.value.alerts.isNotEmpty()
         false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
@@ -144,13 +145,12 @@ fun HomeScreen(
 
     val character by homevm.characterState.collectAsState()
 
-    //TODO remove?
-    /*
     //when character is updated, the satisfaction should also update.
     LaunchedEffect(character) {
         homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
     }
 
+    /*TODO remove?
     //this one is mostly to accommodate the late load of temp, but also to update the satisfaction when the temp changes (every hour in theory)
     LaunchedEffect(currentWeatherState) {
         homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())

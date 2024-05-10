@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -26,9 +27,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
 
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
@@ -83,16 +87,16 @@ class HomeScreenViewModel(
 
 
     private val _weatherDetails : MutableStateFlow<WeatherDetailsUiState> = MutableStateFlow(WeatherDetailsUiState()),
-    val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow()
-
+    val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow(),
+    private val _currentWeatherState: MutableStateFlow<ArrayList<WeatherDetails>> = MutableStateFlow(ArrayList()),
+    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState.asStateFlow(),
+    private val _next6DaysState :MutableStateFlow<ArrayList<WeatherDetails?>?> = MutableStateFlow(ArrayList()),
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState.asStateFlow()
 
 ): ViewModel() {
 
-    private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
-    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails?>?>(ArrayList())
 
-    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
+
 
          //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(loadClothesFromDisk())
@@ -103,10 +107,8 @@ class HomeScreenViewModel(
         //I will now laod selected clothes from disk
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
-            updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         }
         getBalanceFromDb()
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -130,7 +132,6 @@ class HomeScreenViewModel(
                 return@update WeatherDetailsUiState(hours, dayStr)
             }
         }
-        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())      //if the weather forecast changes, the satisfaction is updated
     }
 
 
@@ -138,8 +139,11 @@ class HomeScreenViewModel(
         var character = getDefaultBackupCharacter()
         viewModelScope.launch {
             character = loadSelectedClothes()
+
         }
+        Log.d("AAAAAAAAAAAAAAAAAAA", "calling updateSatisfaction from load")
         updateSatisfaction(characterTemp = character.findAppropriateTemp())
+
         return character
     }
 
@@ -154,26 +158,24 @@ class HomeScreenViewModel(
     }
 
 
-    fun updateSatisfaction(characterTemp: Double) {
+     fun updateSatisfaction(characterTemp: Double, actualTemp: Double = (_currentWeatherState.value.firstOrNull()?.air_temperature ?:0.0)) {
+
         var newFillPercent = 0.0f
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value.firstOrNull()?.air_temperature
-            ?: 0.0//Sander endret denne for å unngå NoSuchElementException om listen skulle være tom.
 
-        Log.d(TAG, "Temp: $temp")
-        Log.d(TAG, "CharacterTemp: $characterTemp")
-        val delta = temp - characterTemp
-        Log.d(TAG, "Delta: $delta")
+        Log.d("updateSatisfaction", "Actual Temp: $actualTemp, Character Temp: $characterTemp")
+        val delta = abs(actualTemp - characterTemp)
+        Log.d("updateSatisfaction", "Delta: $delta")
 
         //FILL%
-        newFillPercent = maxOf((1 - (abs(delta) / 10)).toFloat(), 0.01f)
-        Log.d(TAG, "Satisfaction%: $newFillPercent")
+        newFillPercent = maxOf((1 - (delta / 10)).toFloat(), 0.01f)
+        Log.d("updateSatisfaction", "Satisfaction%: $newFillPercent")
 
         //ICON
         newIcon = if (delta > 0) {
-            Log.d(TAG, "Too hot")
+            Log.d("updateSatisfaction", "Too hot")
             R.drawable.too_hot
         } else {
             Log.d(TAG, "Too cold")
@@ -252,8 +254,11 @@ class HomeScreenViewModel(
             )
 
             _currentWeatherState.update {
+                Log.d("getCurrentWeather", "Updating current weather: ${locationForecastRepo.getTodayWeather()}")
                 locationForecastRepo.getTodayWeather()
             }
+            Log.d("AAAAAAAAAAAAAAAAAAA", "calling updateSatisfaction from getCurrentWeather")
+            updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
             _next6DaysState.update {
                 locationForecastRepo.getNext6daysForecast()
             }
