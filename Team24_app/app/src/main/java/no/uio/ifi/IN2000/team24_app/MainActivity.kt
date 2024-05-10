@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val isNetworkAvailable = isNetworkAvailable(context)
 
-        NavHost(navController = navController, startDestination = "CategoryScreen{") {
+        NavHost(navController = navController, startDestination = "HomeScreen") {
             composable("HomeScreen") {
                 HomeScreen(navController, isNetworkAvailable)
             }
@@ -78,26 +78,26 @@ class MainActivity : ComponentActivity() {
 
             // navigation logic for category screen
             composable(
-
                 route = "CategoryScreen/{categoryName}",
                 arguments = listOf(navArgument("categoryName") { NavType.StringType })
-
-            ) {
-
-                backStackEntry ->
-
-                val categoryName = backStackEntry.arguments?.getString("category").orEmpty()
+            ) { backStackEntry ->
+                val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 CategoryScreen(
-
                     onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
                     categoryName = categoryName,
                     onNavigateToQuestionScreen = { questions ->
-                        navController.navigate("QuestionScreen/$questions")
 
+                        if (questions != null) {
+                            if (questions.isNotBlank()) {
+                                val index = 0
+                                val coinsWon = 0
+                                navController.navigate("QuestionScreen/$categoryName/$questions/$index/$coinsWon")
+                            } else {
+                                println("Error: Questions is empty!")
+                            }
+                        }
                     }
-
                 )
-
             }
 
             // navigation logic for question screen
@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
 
             ) {
 
-                backStackEntry ->
+                    backStackEntry ->
 
                 val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
@@ -173,7 +173,5 @@ class MainActivity : ComponentActivity() {
         return networkInfo != null && networkInfo.isConnectedOrConnecting
 
     }
-
 }
-
 

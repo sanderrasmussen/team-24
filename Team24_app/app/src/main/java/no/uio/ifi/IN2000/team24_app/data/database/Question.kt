@@ -5,11 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Question(
-
-    @PrimaryKey val question: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val question: String,
     val categoryName: String,
     val options: List<String>,
     val correctOptionIndex: Int,
     val answered: Boolean = false
-
 )

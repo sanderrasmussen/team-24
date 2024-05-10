@@ -64,6 +64,7 @@ fun QuestionScreen(
 
     // convert question list string to actual list of strings
     val questionList = questions.split(", ")
+    println("QUESTIONLIST VM: $questionList")
 
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
@@ -75,11 +76,14 @@ fun QuestionScreen(
     // get question and category ui state from view model
     val questionUiState: QuestionUiState by questionScreenViewModel.questionUiState.collectAsState()
     val categoryUiState: CategoryUiState by questionScreenViewModel.categoryUiState.collectAsState()
-
+    println("QUESTIONUISTATE SIN QUESTION: $questionUiState.question")
+    println("CategoryState SIN : $categoryUiState.category")
     // progress value for progress indicator
     val currentProgress = ((index + 1).toFloat() / questionList.size)
 
     if (questionUiState.question != null && categoryUiState.category != null) {
+        println("QUESTIONUISTATE SIN QUESTION: $questionUiState.question")
+
 
         // set timer values
         val getTimer: Boolean = categoryUiState.category!!.shouldStartTimer

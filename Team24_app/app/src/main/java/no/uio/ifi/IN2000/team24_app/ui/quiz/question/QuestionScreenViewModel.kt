@@ -40,6 +40,7 @@ class QuestionScreenViewModel: ViewModel() {
 
     @MainThread
     fun initialize(questionList: List<String>, index: Int, categoryName: String) {
+        println("QUESIONLIST:  $questionList")
 
         if (!initialization) {
 
@@ -57,7 +58,7 @@ class QuestionScreenViewModel: ViewModel() {
 
     // function to fetch question
     private fun loadQuestionInfo(questionList: List<String>, index: Int) {
-
+        println("QUESIONLIST i loadQuestionInfo:  $questionList")
         viewModelScope.launch(Dispatchers.IO) {
 
             try {

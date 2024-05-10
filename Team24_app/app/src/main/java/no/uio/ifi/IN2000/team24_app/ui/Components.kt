@@ -147,8 +147,11 @@ import java.util.Locale
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier
-                .clickable { isClicked = true }
-                .padding(8.dp)
+                .clickable {
+                    if (currentRoute != "CategoriesScreen") { //navigates to Categoriesscreen if not already on it
+                        navController.navigate("CategoriesScreen")
+                    }}
+
             ) {
                 Icon("quiz", 40)}
 
