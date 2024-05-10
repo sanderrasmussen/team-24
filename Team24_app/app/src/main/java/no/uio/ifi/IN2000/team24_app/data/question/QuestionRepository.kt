@@ -84,11 +84,24 @@ class QuestionRepository {
 
     }
 
+
     // function to get question for a question name
     suspend fun getQuestion(questionName: String): Question {
-        val QUESTION= questionDao.getQuestion(questionName)
-        println("QUESTIONDAO.GETQUESTION $QUESTION)")
+        val whoa= "Hvilken av disse gir indikasjon på gult farevarsel?"
+        val QUESTION= questionDao.getQuestion(whoa)
+        val id= questionDao.getId(whoa)
+        println("questionName in getQuestion: $questionName")
+        println("ID $id")
+        println("QUESTIONDAO.GETQUESTION $QUESTION")
         return questionDao.getQuestion(questionName)
+
+    }
+
+    suspend fun getAllQuestions1(): List<String> {
+        val QUESTION= questionDao.getAllQuestions()
+
+        println("QUESTIONDAO.GETQUESTION $QUESTION")
+        return QUESTION
 
     }
 

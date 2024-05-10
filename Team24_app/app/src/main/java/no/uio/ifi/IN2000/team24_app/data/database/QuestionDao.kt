@@ -18,6 +18,7 @@ interface QuestionDao {
     @Query("SELECT question FROM Question")
     fun getAllQuestions(): List<String>
 
+
     @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName")
     fun getCategoryQuestions(categoryName: String): List<String>
 
@@ -29,6 +30,9 @@ interface QuestionDao {
 
     @Query("SELECT * FROM Question WHERE question = :questionName")
     fun getQuestion(questionName: String): Question
+
+    @Query ("SELECT question FROM Question WHERE question = :questionName")
+    fun getId(questionName: String) : String
 
     @Query("UPDATE Question SET answered = true WHERE question = :questionName")
     fun updateQuestionAnswered(questionName: String)

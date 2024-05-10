@@ -56,8 +56,12 @@ class QuestionScreenViewModel: ViewModel() {
 
     }
 
+
     // function to fetch question
     private fun loadQuestionInfo(questionList: List<String>, index: Int) {
+        val questionNames= questionList[0].split(",")
+
+        //println("QUESIONLIST22 i loadQuestionInfo:  $question1")
         println("QUESIONLIST i loadQuestionInfo:  $questionList")
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -65,9 +69,11 @@ class QuestionScreenViewModel: ViewModel() {
 
                 _questionUiState.update { currentQuestionUiState ->
 
-                    val questionName = questionList[index]
-                    println("questionName:  $questionName")
+                    val questionName= questionNames[index]
+                    println("questionName loadQuestionInfo:  $questionName")
                     val question = questionRepository.getQuestion(questionName)
+                    val questions= questionRepository.getAllQuestions1()
+                    print("All questions: $questions")
                     println("QUESTION= QUESTIONREPOSITORY.GETQUESTION i loadQuestionInfo:  $question")
 
                     currentQuestionUiState.copy(question = question)
