@@ -6,6 +6,9 @@ Modellering og systemdesign
 
 [UseCase.pdf](https://github.uio.no/IN2000-V24/team-24/files/366/UseCase.pdf)
 
+[Sekvens.pdf](https://github.uio.no/IN2000-V24/team-24/files/368/Sekvens.pdf)
+
+
 
 **Use case: Sjekk været** \
 Primæraktør: Bruker \
