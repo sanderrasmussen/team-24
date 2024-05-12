@@ -3,6 +3,7 @@ package no.uio.ifi.IN2000.team24_app
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
+import androidx.compose.runtime.getValue
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -18,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import kotlinx.coroutines.flow.MutableStateFlow
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
 import no.uio.ifi.IN2000.team24_app.ui.store.StoreScreen
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoriesScreen
@@ -44,7 +50,6 @@ class MainActivity : ComponentActivity() {
         }
 
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
@@ -102,38 +107,47 @@ class MainActivity : ComponentActivity() {
 
             // navigation logic for question screen
             composable(
-
                 route = "QuestionScreen/{categoryName}/{questions}/{index}/{coinsWon}",
-                arguments = listOf(navArgument("categoryName") { NavType.StringType },
+                arguments = listOf(
+                    navArgument("categoryName") { NavType.StringType },
                     navArgument("questions") { NavType.StringType },
                     navArgument("index") { NavType.IntType },
-                    navArgument("coinsWon") { NavType.IntType })
-
-            ) {
-
-                    backStackEntry ->
+                    navArgument("coinsWon") { NavType.IntType }
+                )
+            ) { backStackEntry ->
 
                 val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
-                val index = backStackEntry.arguments?.getInt("index") ?: 0
-                val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
-                QuestionScreen(
+                val indexState = remember { mutableStateOf(backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0) }
+                val coinsWonState = remember { mutableStateOf(backStackEntry.arguments?.getString("coinsWon")?.toIntOrNull() ?: 0) }
 
+                // Oppdater index fra indexState
+                val index = indexState.value
+                val coinsWon= coinsWonState.value
+                println("Index State Value: $index")
+
+                QuestionScreen(
                     onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
                     categoryName = categoryName,
                     questions = questions,
                     index = index,
                     coinsWon = coinsWon,
-                    onNavigateToNextQuestionScreen = { categoryName, questions, index, coinsWon ->
-                        navController.navigate("QuestionScreen/$categoryName/$questions/$index/$coinsWon")
+                    onNavigateToNextQuestionScreen = { nextIndex, newCoinsWon ->
+                        // Oppdater indexState med nextIndex
+                        indexState.value = nextIndex
+                        if (newCoinsWon != null) {
+                            coinsWonState.value = newCoinsWon
+                        }
+                        println("Navigating to next question with index: $nextIndex and coinsWon: $newCoinsWon")
+                        navController.navigate("QuestionScreen/$categoryName/$questions/$nextIndex/$newCoinsWon")
                     },
-                    onNavigateToResultQuestionScreen = { categoryName, questions, coinsWon ->
-                        navController.navigate("QuestionResultScreen/$categoryName/$questions/$coinsWon")
+                    onNavigateToResultQuestionScreen = { newCoinsWon ->
+                        println("Navigating to resultscreen with coinsWon: $newCoinsWon")
+                        navController.navigate("QuestionResultScreen/$categoryName/$questions/$newCoinsWon")
                     }
-
                 )
-
             }
+
 
             // navigation logic for question result screen
             composable(
@@ -149,7 +163,7 @@ class MainActivity : ComponentActivity() {
 
                 val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
-                val coinsWon = backStackEntry.arguments?.getInt("coinsWon") ?: 0
+                val coinsWon = backStackEntry.arguments?.getString("coinsWon")?.toIntOrNull() ?: 0
                 QuestionResultScreen(
 
                     onBackPressed = { navController.popBackStack("CategoriesScreen", inclusive = true) },
@@ -174,4 +188,3 @@ class MainActivity : ComponentActivity() {
 
     }
 }
-

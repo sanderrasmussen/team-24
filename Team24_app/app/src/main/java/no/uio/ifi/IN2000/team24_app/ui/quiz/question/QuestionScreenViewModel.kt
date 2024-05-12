@@ -59,7 +59,8 @@ class QuestionScreenViewModel: ViewModel() {
 
     // function to fetch question
     private fun loadQuestionInfo(questionList: List<String>, index: Int) {
-        val questionNames= questionList[0].split(",")
+        val questionNames= questionList
+        println("QuestionNames: $questionNames")
 
         //println("QUESIONLIST22 i loadQuestionInfo:  $question1")
         println("QUESIONLIST i loadQuestionInfo:  $questionList")

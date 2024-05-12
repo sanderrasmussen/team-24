@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -50,21 +51,22 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
-
     onBackPressed: () -> Unit,
     categoryName: String,
     questions: String,
-    index: Int = 0,
-    coinsWon: Int = 0,
+    index: Int,
+    coinsWon: Int,
     questionScreenViewModel: QuestionScreenViewModel = viewModel(),
-    onNavigateToNextQuestionScreen: (String, String, Int?, Int?) -> Unit,
-    onNavigateToResultQuestionScreen: (String, String, Int?) -> Unit
-
+    onNavigateToNextQuestionScreen: (Int, Int?) -> Unit,
+    onNavigateToResultQuestionScreen: (Int?) -> Unit
 ) {
+    //println("INDEX : $index")
 
     // convert question list string to actual list of strings
-    val questionList = questions.split(", ")
-    println("QUESTIONLIST VM: $questionList")
+    val questionList = questions.split(",")
+
+    val size = questionList.size
+    println("QUESTIONLIST SIZE VM: $size")
 
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
@@ -76,14 +78,11 @@ fun QuestionScreen(
     // get question and category ui state from view model
     val questionUiState: QuestionUiState by questionScreenViewModel.questionUiState.collectAsState()
     val categoryUiState: CategoryUiState by questionScreenViewModel.categoryUiState.collectAsState()
-    println("QUESTIONUISTATE SIN QUESTION: $questionUiState.question")
-    println("CategoryState SIN : $categoryUiState.category")
+
     // progress value for progress indicator
     val currentProgress = ((index + 1).toFloat() / questionList.size)
 
     if (questionUiState.question != null && categoryUiState.category != null) {
-        println("QUESTIONUISTATE SIN QUESTION: $questionUiState.question")
-
 
         // set timer values
         val getTimer: Boolean = categoryUiState.category!!.shouldStartTimer
@@ -104,7 +103,10 @@ fun QuestionScreen(
         val onAnswerSelected: (String) -> Unit = { selectedOption ->
 
             // check if the selected option is correct
-            val isCorrect = selectedOption == questionUiState.question!!.options[questionUiState.question!!.correctOptionIndex]
+            val options = questionUiState.question!!.options
+            val correctOptionIndex = questionUiState.question!!.correctOptionIndex
+            val isCorrect =
+                selectedOption == options[correctOptionIndex]
             // update points based on correctness of the answer
             newCoinsWon += if (isCorrect) answeringTime else 0
             // stop the timer
@@ -112,7 +114,7 @@ fun QuestionScreen(
 
         }
 
-        // start timer until paused
+        // start reading timer
         LaunchedEffect(key1 = readingTime) {
 
             while (readingTime > 0) {
@@ -124,10 +126,10 @@ fun QuestionScreen(
 
         }
 
-        // checks if readingtime is 0
+        // check if readingtime is 0
         if (readingTime == 0) {
 
-            // starts answering timer
+            // start answering timer
             LaunchedEffect(Unit) {
                 while (answeringTime > 0 && !pauseTimer) {
 
@@ -193,35 +195,97 @@ fun QuestionScreen(
 
                 ) {
 
-                    // question screen header with
-                    QuestionScreenHeader(
+                    // row for displaying progress and time left to answer
+                    // NOTE: should probably be stored in a header function for cleaner code
+                    Row() {
 
-                        currentProgress,
-                        readingTime,
-                        answeringTime,
-                        getTimer,
-                        questionUiState
+                        // progress indicator
+                        LinearProgressIndicator(
+
+                            progress = {
+                                currentProgress
+                            },
+                            modifier = Modifier
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            color = Color.Green,
+                            trackColor = ProgressIndicatorDefaults.linearTrackColor
+
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        // check if getTimer is true
+                        if (getTimer) {
+
+                            // value that displays time if the timer should be started
+                            val displayTime = if (readingTime > 0) readingTime else answeringTime
+                            Text(
+
+                                text = "$displayTime",
+                                style = MaterialTheme.typography.titleSmall
+
+                            )
+
+                        }
+
+                    }
+
+                    // spacer between progress bar and title
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // question text
+                    Text(
+
+                        text = questionUiState.question!!.question,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
 
                     )
 
+                    // displays rest of information after reading timer is done
+                    // NOTE: should be stored in a separate function for cleaner code
                     if (readingTime == 0) {
 
-                        // spacer between header and functionality
+                        // spacer between title and functionality
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        QuestionScreenBody(
+                        // displaying text options for the question
+                        TextOptions(
 
-                            questionUiState,
-                            onAnswerSelected,
-                            categoryName,
-                            questions,
-                            questionList,
-                            index,
-                            coinsWon,
-                            onNavigateToNextQuestionScreen,
-                            onNavigateToResultQuestionScreen
+                            questionUiState = questionUiState,
+                            onAnswerSelected = onAnswerSelected
 
                         )
+
+                        // spacer between option buttons and continue button
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // continue button
+                        Button(
+
+                            onClick = {
+
+                                // check if index is smaller than questions to show
+                                var nextIndex = index + 1
+                                if (nextIndex < questionList.size) {
+                                    //onNavigateToResultQuestionScreen(newCoinsWon)
+                                    // Hvis det er flere spørsmål, naviger til neste spørsmål
+                                    onNavigateToNextQuestionScreen(nextIndex, newCoinsWon)
+                                    // index= nextIndex
+                                } else {
+                                    // Hvis du har nådd slutten av spørsmålene, naviger til resultatet
+                                    onNavigateToResultQuestionScreen(newCoinsWon)
+                                }},
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+
+                        ) {
+
+                            Text("Fortsett")
+
+                        }
 
                     }
 
@@ -233,102 +297,16 @@ fun QuestionScreen(
 
     }
 
-    else {
-
-        Text("Klarte ikke å hente data for kategori/spørsmål")
-
-    }
-
 }
 
 @Composable
-fun QuestionScreenHeader(
-
-    currentProgress: Float,
-    readingTime: Int,
-    answeringTime: Int,
-    getTimer: Boolean,
-    questionUiState: QuestionUiState
-
-) {
-
-    Column(
-
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-
-    ) {
-
-        // row for displaying progress and time left to answer
-        Row() {
-
-            // progress indicator
-            LinearProgressIndicator(
-
-                progress = {
-                    currentProgress
-                },
-                modifier = Modifier
-                    .height(16.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                color = Color.Green,
-                trackColor = ProgressIndicatorDefaults.linearTrackColor
-
-            )
-
-            if (getTimer) {
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // value that displays time
-                val displayTime = if (readingTime > 0) readingTime else answeringTime
-
-                Text(
-
-                    text = "$displayTime",
-                    style = MaterialTheme.typography.titleSmall
-
-                )
-
-            }
-
-        }
-
-        // spacer between progress bar and title
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // question text
-        Text(
-
-            text = questionUiState.question!!.question,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-
-        )
-
-    }
-
-}
-
-@Composable
-fun QuestionScreenBody(
+fun TextOptions(
 
     questionUiState: QuestionUiState,
-    onAnswerSelected: (String) -> Unit,
-    categoryName: String,
-    questions: String,
-    questionList: List<String>,
-    index: Int,
-    coinsWon: Int,
-    onNavigateToNextQuestionScreen: (String, String, Int?, Int?) -> Unit,
-    onNavigateToResultQuestionScreen: (String, String, Int?) -> Unit
+    onAnswerSelected: (String) -> Unit
 
 ) {
 
-    // displaying text options for the question
     // selected option variable
     var selectedOption by remember { mutableStateOf<String?>(null) }
 
@@ -354,7 +332,8 @@ fun QuestionScreenBody(
 
             // variables for each option
             val answerOption: String = questionUiState.question.options[optionIndex]
-            val correctOption: String = questionUiState.question.options[questionUiState.question.correctOptionIndex]
+            val correctIndex: Int = questionUiState.question.correctOptionIndex
+            val correctOption: String = questionUiState.question.options[correctIndex]
 
             // answer option displaying button for each option based on feedback
             AnswerOption(
@@ -375,24 +354,6 @@ fun QuestionScreenBody(
             )
 
         }
-
-    }
-
-    // spacer between option buttons and continue button
-    Spacer(modifier = Modifier.height(32.dp))
-
-    // continue button
-    Button(
-
-        onClick = { if (index >= questionList.size) onNavigateToResultQuestionScreen(categoryName, questions, coinsWon)
-            else onNavigateToNextQuestionScreen(categoryName, questions, index + 1, coinsWon) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-
-    ) {
-
-        Text("Fortsett")
 
     }
 
@@ -498,7 +459,6 @@ fun mutedColor(color: Color, intensity: Float): Color {
     return Color(red = mutedRed, green = mutedGreen, blue = mutedBlue)
 
 }
-
 
 
 

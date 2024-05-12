@@ -42,8 +42,10 @@ fun QuestionResultScreen(
 
 ) {
 
+    println("Coins won result: $coinsWon")
+
     // convert question list string to actual list of strings
-    val questionList = questions.split(", ")
+    val questionList = questions.split(",")
 
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionResultScreenViewModel) {

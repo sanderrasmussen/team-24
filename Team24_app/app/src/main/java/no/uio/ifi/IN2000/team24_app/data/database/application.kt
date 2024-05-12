@@ -98,8 +98,6 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             // questions:
 
             // weather questions:
-            val question= Question(199, "hei", "Om været", listOf("he", "hel", "hello"), 3)
-            questionDao.insertAll(question)
             val weatherQuestions = listOf(
                 Question(0,
                     "Hva er den kaldeste temperaturen som noensinne har blitt registrert?",
