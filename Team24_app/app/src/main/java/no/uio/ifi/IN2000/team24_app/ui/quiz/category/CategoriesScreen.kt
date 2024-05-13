@@ -1,6 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +25,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.data.database.Category
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.GradientImage
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CategoriesScreen(
 
@@ -37,6 +46,7 @@ fun CategoriesScreen(
 
     // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
+    val imageName = GradientImage()
 
     LaunchedEffect(categoriesScreenViewModel) {
 
@@ -44,75 +54,93 @@ fun CategoriesScreen(
 
     }
 
-    Column(
+    Box(
 
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize()
 
     ) {
 
-        // text displaying title of screen (categories)
-        Text(
 
-            text = "Kategorier:",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+        Image(
+
+            painter = (painterResource(id = imageName)),
+            contentDescription = "Background Image based on time of the day",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
 
         )
 
-        // spacer between title and category alternatives
-        Spacer(modifier = Modifier.height(32.dp))
+        Column(
 
-        LazyColumn(
-
-            modifier = Modifier.heightIn(220.dp, 440.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
 
-            // puts all category option items in lazy column format
-            items(categoriesUiState.categories.size) { optionIndex ->
+            // text displaying title of screen (categories)
+            Text(
 
-                val currentCategory = categoriesUiState.categories[optionIndex]
-                val locked =
-                    categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
+                text = "Kategorier:",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
 
-                // start button navigating to question screen
-                Button(
+            )
 
-                    onClick = if (!locked) {
+            // spacer between title and category alternatives
+            Spacer(modifier = Modifier.height(32.dp))
 
-                        { onNavigateToCategoryScreen(currentCategory.category) }
+            LazyColumn(
 
-                    } else {
+                modifier = Modifier.heightIn(220.dp, 440.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                        { /* do nothing */ }
-                    },
+            ) {
 
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                // puts all category option items in lazy column format
+                items(categoriesUiState.categories.size) { optionIndex ->
 
-                ) {
+                    val currentCategory = categoriesUiState.categories[optionIndex]
+                    val locked =
+                        categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
 
-                    Text(
+                    // start button navigating to question screen
+                    Button(
 
-                        text = currentCategory.category
+                        onClick = if (!locked) {
 
-                    )
+                            { onNavigateToCategoryScreen(currentCategory.category) }
 
-                    if (locked) {
+                        } else {
 
-                        Icon(
+                            { /* do nothing */ }
+                        },
 
-                            imageVector = Icons.Filled.Lock,
-                            contentDescription = "Låst"
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+
+                    ) {
+
+                        Text(
+
+                            text = currentCategory.category
 
                         )
+
+                        if (locked) {
+
+                            Icon(
+
+                                imageVector = Icons.Filled.Lock,
+                                contentDescription = "Låst"
+
+                            )
+
+                        }
 
                     }
 

@@ -83,6 +83,22 @@ import java.util.Locale
 
     }
 
+    // This function returns the resource ID of the gradient background image
+    // determined by the time of the day
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun GradientImage(): Int {
+
+        return when (LocalTime.now().hour) {
+
+        in 6 until 12 -> R.drawable.morning_gradient// 6am to 12 pm
+        in 12 until 18 -> R.drawable.day_gradient // 12 pm to 6 pm
+        in 18 until 22 -> R.drawable.noon_gradient // 6pm to 10pm
+        else -> R.drawable.night_gradient// 10pm to 6 am
+
+        }
+
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun backgroundColour(): Color {
         return when (LocalTime.now().hour)  {
