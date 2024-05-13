@@ -113,7 +113,7 @@ fun QuestionScreen(
         var pauseTimer = !getTimer
 
         // variable for storing new coins won
-        var newCoinsWon = coinsWon
+        var newCoinsWon = 0
 
         val onAnswerSelected: (String) -> Unit = { selectedOption ->
 
@@ -122,8 +122,15 @@ fun QuestionScreen(
             val correctOptionIndex = questionUiState.question!!.correctOptionIndex
             val isCorrect =
                 selectedOption == options[correctOptionIndex]
-            // update points based on correctness of the answer
-            newCoinsWon += if (isCorrect) answeringTime else 0
+
+            // check correctness of the answer
+            if (isCorrect) {
+
+                // update points
+                newCoinsWon = answeringTime
+
+            }
+
             // stop the timer
             pauseTimer = true
 
@@ -300,12 +307,12 @@ fun QuestionScreen(
                                 if (nextIndex < questionList.size) {
 
                                     // navigate to question screen if there are more questions to show
-                                    onNavigateToNextQuestionScreen(nextIndex, newCoinsWon)
+                                    onNavigateToNextQuestionScreen(nextIndex, coinsWon + newCoinsWon)
 
                                 } else {
 
                                     // navigate to result screen if there are no more questions to show
-                                    onNavigateToResultQuestionScreen(newCoinsWon)
+                                    onNavigateToResultQuestionScreen(coinsWon + newCoinsWon)
                                 }
 
                             },

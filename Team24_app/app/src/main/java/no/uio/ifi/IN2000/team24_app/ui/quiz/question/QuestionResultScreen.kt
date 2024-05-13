@@ -140,7 +140,7 @@ fun QuestionResultScreen(
 
                 if (categoryUiState.category != null) {
 
-                    val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
+                    val maxCoins = (questionList.size) * categoryUiState.category!!.points
 
                     // text displaying completion of category
                     Text(
