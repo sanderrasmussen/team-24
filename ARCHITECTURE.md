@@ -7,7 +7,9 @@ HomeScreen --> HomeScreenViewModel --> LoationForecastRepository --> LocationFor
 ■ Beskrivelse av hvordan viktige objektorienterte prinsipper som lav kobling og høy kohesjon samt design patterns som MVVM
 og UDF er ivaretatt i løsningen burde også være med.
 
-UDF: components mappe, components fil med kode som brukes flere steder \
+UDF: unidirectional dataflow: dataen går kun i én retning gjennom appens komponenter, og endringer i dataene propageres nedover gjennom lagene for å oppdatere grensesnittene. \
+      - brukt mest i homescreen der vi viser informasjonen som hentes fra vm som henter fra repository, som henter fra datasource og som henter fra met.  \
+      \
 MVVM: Viewmodels som separerer brukergrensesnittet fra forretningslogikken og datahåndteringen. Håndterer presentasjonslogikken og separerer den fra visningslogikken. 
       
 
