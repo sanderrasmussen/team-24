@@ -12,14 +12,6 @@ interface QuestionDao {
     @Insert
     fun insertAll(vararg questions: Question)
 
-    @Insert
-    fun insertAllQuestions(questions: List<Question>){
-        print("InsertAll: $questions")
-        questions.forEach { question ->
-            insertAll(question)
-        }
-    }
-
     @Delete
     fun delete(question: Question)
 
@@ -30,10 +22,10 @@ interface QuestionDao {
     @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName")
     fun getCategoryQuestions(categoryName: String): List<String>
 
-    @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName")
+    @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName AND question.answered = 0")
     fun getUnansweredCategoryQuestions(categoryName: String): List<String>
 
-    @Query("SELECT question FROM Question WHERE question.answered = true")
+    @Query("SELECT question FROM Question WHERE question.answered = 1")
     fun getTrainingCategoryQuestions(): List<String>
 
     @Query("SELECT * FROM Question WHERE question = :questionName")

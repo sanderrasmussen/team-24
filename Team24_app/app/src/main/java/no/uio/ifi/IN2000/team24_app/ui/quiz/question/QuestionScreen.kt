@@ -1,6 +1,9 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,13 +44,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
 // quiz question screen with question
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
@@ -68,6 +75,8 @@ fun QuestionScreen(
 
     val size = questionList.size
     println("QUESTIONLIST SIZE VM: $size")
+
+    val imageName = BackgroundImageQuiz()
 
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
@@ -177,6 +186,16 @@ fun QuestionScreen(
             }
 
         ) { innerPadding ->
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                Image(
+                    painter = (painterResource(id = imageName)),
+                    contentDescription = "Background Image based on time of the day",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.matchParentSize()
+                )
 
             Box(
 
@@ -298,6 +317,7 @@ fun QuestionScreen(
 
     }
 
+}
 }
 
 @Composable

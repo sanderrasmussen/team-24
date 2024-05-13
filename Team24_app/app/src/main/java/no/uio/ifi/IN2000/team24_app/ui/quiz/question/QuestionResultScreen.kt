@@ -1,5 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,11 +28,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionResultScreen(
@@ -58,6 +65,7 @@ fun QuestionResultScreen(
     val categoryUiState: CategoryUiState by questionResultScreenViewModel.categoryUiState.collectAsState()
     val balanceUiState: BalanceUiState by questionResultScreenViewModel.balanceUiState.collectAsState()
 
+    val imageName= BackgroundImageQuiz()
     // top app bar with back button to navigate back to categories screen
     Scaffold(
 
@@ -95,45 +103,83 @@ fun QuestionResultScreen(
     ) { innerPadding ->
 
         Box(
-
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-
+            modifier = Modifier.fillMaxSize(),
         ) {
+            Image(
+                painter = (painterResource(id = imageName)),
+                contentDescription = "Background Image based on time of the day",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
 
-            Column(
+            Box(
 
                 modifier = Modifier
+                    .padding(innerPadding)
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
 
-                if (categoryUiState.category != null) {
+                Column(
 
-                    val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-                    // text displaying completion of category
-                    Text(
+                ) {
 
-                        text = "${categoryUiState.category!!.category} fullført!",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                    if (categoryUiState.category != null) {
 
-                    )
+                        val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
 
-                    // spacer between category text and point score text
+                        // text displaying completion of category
+                        Text(
+
+                            text = "${categoryUiState.category!!.category} fullført!",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+
+                        )
+
+                        // spacer between category text and point score text
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // row for displaying point score
+                        Row() {
+
+                            Text(
+
+                                text = "Poengscore: ",
+                                fontWeight = FontWeight.Bold
+
+                            )
+
+                            // text displaying point score
+                            Text(
+
+                                text = "$coinsWon/$maxCoins"
+
+                            )
+
+                        }
+
+                    } else {
+
+                        // display error message on failure
+                        Text("Klarte ikke å hente kategori")
+
+                    }
+
+                    // spacer between point score text and total coins text
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // row for displaying point score
                     Row() {
 
                         Text(
 
-                            text = "Poengscore: ",
+                            text = "Totale poeng: ",
                             fontWeight = FontWeight.Bold
 
                         )
@@ -141,56 +187,28 @@ fun QuestionResultScreen(
                         // text displaying point score
                         Text(
 
-                            text = "$coinsWon/$maxCoins"
+                            text = "${balanceUiState.balance}"
 
                         )
 
                     }
 
-                }
+                    // spacer between total coins text and back button
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                else {
+                    // button for going back to categories screen
+                    Button(
 
-                    // display error message on failure
-                    Text("Klarte ikke å hente kategori")
+                        onClick = onBackPressed,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
 
-                }
+                    ) {
 
-                // spacer between point score text and total coins text
-                Spacer(modifier = Modifier.height(32.dp))
+                        Text("Tilbake")
 
-                Row() {
-
-                    Text(
-
-                        text = "Totale poeng: ",
-                        fontWeight = FontWeight.Bold
-
-                    )
-
-                    // text displaying point score
-                    Text(
-
-                        text = "${balanceUiState.balance}"
-
-                    )
-
-                }
-
-                // spacer between total coins text and back button
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // button for going back to categories screen
-                Button(
-
-                    onClick = onBackPressed,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-
-                ) {
-
-                    Text("Tilbake")
+                    }
 
                 }
 
@@ -199,5 +217,4 @@ fun QuestionResultScreen(
         }
 
     }
-
 }

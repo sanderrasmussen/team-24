@@ -1,5 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,11 +29,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
@@ -53,6 +60,7 @@ fun CategoryScreen(
     val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
     val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
 
+    val imageName = BackgroundImageQuiz()
     // top app bar with back button to navigate back to categories screen
     Scaffold(
 
@@ -88,82 +96,91 @@ fun CategoryScreen(
         }
 
     ) { innerPadding ->
-
         Box(
-
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-
+            modifier = Modifier.fillMaxSize(),
         ) {
+            Image(
+                painter = (painterResource(id = imageName)),
+                contentDescription = "Background Image based on time of the day",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
 
-            Column(
+            Box(
 
                 modifier = Modifier
+                    .padding(innerPadding)
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
 
-                Row() {
+                Column(
 
-                    // text displaying category
-                    Text(
-
-                        text = "Kategori: ",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-
-                    )
-
-                    Text(
-
-                        // display category info if category is found
-                        text = if (categoryUiState.category != null) categoryUiState.category!!.category
-                            else "Klarte ikke å hente kategori",
-                        style = MaterialTheme.typography.titleLarge
-
-                    )
-
-                }
-
-                // spacer between category text and start button
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // start button navigating to question screen
-                Button(
-
-                    // navigate to question screen by loading 3 random questions
-                    onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
 
-                    // start text
-                    Text(
+                    Row() {
 
-                        text = "Start quiz"
+                        // text displaying category
+                        Text(
 
-                    )
+                            text = "Kategori: ",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
 
-                    // forward arrow icon
-                    Icon(
+                        )
 
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Pil fram"
+                        Text(
 
-                    )
+                            // display category info if category is found
+                            text = if (categoryUiState.category != null) categoryUiState.category!!.category
+                            else "Klarte ikke å hente kategori",
+                            style = MaterialTheme.typography.titleLarge
+
+                        )
+
+                    }
+
+                    // spacer between category text and start button
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // start button navigating to question screen
+                    Button(
+
+                        // navigate to question screen by loading 3 random questions
+                        onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+
+                    ) {
+
+                        // start text
+                        Text(
+
+                            text = "Start quiz"
+
+                        )
+
+                        // forward arrow icon
+                        Icon(
+
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Pil fram"
+
+                        )
+
+                    }
 
                 }
 
             }
 
         }
-
     }
-
 }

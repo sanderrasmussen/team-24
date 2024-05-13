@@ -84,6 +84,17 @@ import java.util.Locale
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun BackgroundImageQuiz(): Int {
+        return when (LocalTime.now().hour){
+            in 6 until 12 -> R.drawable.morning// 6am to 12 pm
+            in 12 until 18 -> R.drawable.day //12 pm to 6 pm
+            in 18 until 22 -> R.drawable.noon // 6pm to 10pm
+            else -> R.drawable.night// 10pm to 6 am
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun backgroundColour(): Color {
         return when (LocalTime.now().hour)  {
             in 6 until 12 -> Color(android.graphics.Color.parseColor("#123A44"))

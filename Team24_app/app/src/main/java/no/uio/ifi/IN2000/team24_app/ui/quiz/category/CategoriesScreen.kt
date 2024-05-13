@@ -1,6 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +25,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.data.database.Category
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CategoriesScreen(
 
@@ -37,82 +46,95 @@ fun CategoriesScreen(
 
     // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
-
+    val imageName = BackgroundImageQuiz()
     LaunchedEffect(categoriesScreenViewModel) {
 
         categoriesScreenViewModel.initialize()
 
     }
-
-    Column(
-
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
-
-        // text displaying title of screen (categories)
-        Text(
-
-            text = "Kategorier:",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-
+        Image(
+            painter = (painterResource(id = imageName)),
+            contentDescription = "Background Image based on time of the day",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
         )
 
-        // spacer between title and category alternatives
-        Spacer(modifier = Modifier.height(32.dp))
+            Column(
 
-        LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 
-            modifier = Modifier.heightIn(220.dp, 440.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
 
-        ) {
+                // text displaying title of screen (categories)
+                Text(
 
-            // puts all category option items in lazy column format
-            items(categoriesUiState.categories.size) { optionIndex ->
+                    text = "Kategorier:",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
 
-                val currentCategory = categoriesUiState.categories[optionIndex]
-                val locked =
-                    categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
+                )
 
-                // start button navigating to question screen
-                Button(
+                // spacer between title and category alternatives
+                Spacer(modifier = Modifier.height(32.dp))
 
-                    onClick = if (!locked) {
+                LazyColumn(
 
-                        { onNavigateToCategoryScreen(currentCategory.category) }
-
-                    } else {
-
-                        { /* do nothing */ }
-                    },
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                    modifier = Modifier.heightIn(220.dp, 440.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
 
                 ) {
 
-                    Text(
+                    // puts all category option items in lazy column format
+                    items(categoriesUiState.categories.size) { optionIndex ->
 
-                        text = currentCategory.category
+                        val currentCategory = categoriesUiState.categories[optionIndex]
+                        val locked =
+                            categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
 
-                    )
+                        // start button navigating to question screen
+                        Button(
 
-                    if (locked) {
+                            onClick = if (!locked) {
 
-                        Icon(
+                                { onNavigateToCategoryScreen(currentCategory.category) }
 
-                            imageVector = Icons.Filled.Lock,
-                            contentDescription = "Låst"
+                            } else {
 
-                        )
+                                { /* do nothing */ }
+                            },
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+
+                        ) {
+
+                            Text(
+
+                                text = currentCategory.category
+
+                            )
+
+                            if (locked) {
+
+                                Icon(
+
+                                    imageVector = Icons.Filled.Lock,
+                                    contentDescription = "Låst"
+
+                                )
+
+                            }
+
+                        }
 
                     }
 
@@ -121,7 +143,4 @@ fun CategoriesScreen(
             }
 
         }
-
     }
-
-}
