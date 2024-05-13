@@ -9,7 +9,6 @@ class locationForecastDatasourceKtTest {
      @Test
      fun testForecast(){
          runBlocking {
-
              val forecast = source.getLocationForecastData(59.0, 10.0)
             println(forecast)
          }

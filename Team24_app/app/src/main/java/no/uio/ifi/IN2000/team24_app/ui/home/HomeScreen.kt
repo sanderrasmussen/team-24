@@ -74,7 +74,6 @@ import no.uio.ifi.IN2000.team24_app.ui.day
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,

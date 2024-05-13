@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.media3:media3-test-utils:1.3.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-android:2.8.0-rc01")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     debugImplementation("androidx.compose.ui:ui-tooling")

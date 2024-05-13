@@ -19,7 +19,8 @@ import kotlinx.serialization.modules.subclass
 
 class MetAlertsDataSource(
     private val TAG: String = "MetAlertsDataSource",
-    private var metAlerts: MetAlerts? = null
+    private var metAlerts: MetAlerts? = null,
+    private val testSource:Boolean = false
 ) {
 
     suspend fun getMetAlertData(latitude: Double, Longitude: Double): MetAlerts?{
@@ -30,17 +31,18 @@ class MetAlertsDataSource(
             install(ContentNegotiation) {
                 json(
                     Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    prettyPrint = true
-                    encodeDefaults = true
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        prettyPrint = true
+                        encodeDefaults = true
                         serializersModule = SerializersModule {
-                            polymorphic(Geometry::class){
+                            polymorphic(Geometry::class) {
                                 subclass(Polygon::class, Polygon.serializer())
                                 subclass(MultiPolygon::class, MultiPolygon.serializer())
                             }
                         }
-                })
+                    })
+            }
                 defaultRequest {
                     url("https://gw-uio.intark.uh-it.no/in2000/")
                     headers.appendIfNameAbsent(
@@ -49,16 +51,14 @@ class MetAlertsDataSource(
                     )
                 }
             }
-        }
+
 
         var alert: MetAlerts? = null;
         try {
-            //! THIS URL IS ONLY HERE TO TEST THE MULTIPOLYGON-PROBLEM
-            //val TESTURL = "https://api.met.no/weatherapi/metalerts/2.0/test.json"
-            Log.d(TAG, "Getting metalerts data")
-            val response: HttpResponse =
-                client.get("weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude")
-            println(response.status)
+            //the test-url allows for the use of a test-endpoint, for unit tests
+            val URL = if (!testSource) "weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude" else "weatherapi/metalerts/2.0/test.json"
+            //Log.d(TAG, "Getting metalerts data")
+            val response: HttpResponse = client.get(URL)
             if (response.status.isSuccess()) {
                 val content: MetAlerts = response.body();
                 alert = content;
