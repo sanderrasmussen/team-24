@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.GradientImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,7 +48,9 @@ fun CategoriesScreen(
 
     // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
-    val imageName = GradientImage()
+
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
 
     LaunchedEffect(categoriesScreenViewModel) {
 
@@ -60,7 +64,7 @@ fun CategoriesScreen(
 
     ) {
 
-
+        // background with background image
         Image(
 
             painter = (painterResource(id = imageName)),
@@ -70,6 +74,7 @@ fun CategoriesScreen(
 
         )
 
+        // content in column format
         Column(
 
             modifier = Modifier
@@ -121,7 +126,12 @@ fun CategoriesScreen(
 
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                            .padding(vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+
+                            containerColor = backgroundColour()
+
+                        )
 
                     ) {
 

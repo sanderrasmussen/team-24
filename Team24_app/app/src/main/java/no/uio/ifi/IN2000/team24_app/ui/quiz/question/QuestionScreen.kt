@@ -1,6 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import android.graphics.drawable.Icon
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
@@ -41,13 +47,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
 // quiz question screen with question
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
@@ -66,9 +78,6 @@ fun QuestionScreen(
     val questionList = questions.split(",")
     val longList: List<Long> = questionList.map { it.toLong() }
 
-    val size = questionList.size
-    println("QUESTIONLIST SIZE VM: $size")
-
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
 
@@ -79,6 +88,9 @@ fun QuestionScreen(
     // get question and category ui state from view model
     val questionUiState: QuestionUiState by questionScreenViewModel.questionUiState.collectAsState()
     val categoryUiState: CategoryUiState by questionScreenViewModel.categoryUiState.collectAsState()
+
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
 
     // progress value for progress indicator
     val currentProgress = ((index + 1).toFloat() / questionList.size)
@@ -142,6 +154,7 @@ fun QuestionScreen(
 
         }
 
+
         // top app bar with back button to navigate back to categories screen
         Scaffold(
 
@@ -186,6 +199,16 @@ fun QuestionScreen(
 
             ) {
 
+                // background with background image
+                Image(
+
+                    painter = (painterResource(id = imageName)),
+                    contentDescription = "Background Image based on time of the day",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.matchParentSize()
+
+                )
+
                 Column(
 
                     modifier = Modifier
@@ -220,7 +243,8 @@ fun QuestionScreen(
                         if (getTimer) {
 
                             // value that displays time if the timer should be started
-                            val displayTime = if (readingTime > 0) readingTime else answeringTime
+                            val displayTime =
+                                if (readingTime > 0) readingTime else answeringTime
                             Text(
 
                                 text = "$displayTime",
@@ -267,23 +291,33 @@ fun QuestionScreen(
 
                             onClick = {
 
-                                // check if index is smaller than questions to show
-                                var nextIndex = index + 1
+                                // index for next question
+                                val nextIndex = index + 1
+                                // check if next index is higher than questions to show
                                 if (nextIndex < questionList.size) {
-                                    //onNavigateToResultQuestionScreen(newCoinsWon)
-                                    // Hvis det er flere spørsmål, naviger til neste spørsmål
+
+                                    // navigate to question screen if there are more questions to show
                                     onNavigateToNextQuestionScreen(nextIndex, newCoinsWon)
-                                    // index= nextIndex
+
                                 } else {
-                                    // Hvis du har nådd slutten av spørsmålene, naviger til resultatet
+
+                                    // navigate to result screen if there are no more questions to show
                                     onNavigateToResultQuestionScreen(newCoinsWon)
-                                }},
+                                }
+
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp)
+                                .padding(vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+
+                                containerColor = backgroundColour()
+
+                            )
 
                         ) {
 
+                            // continue button displaying continue text
                             Text("Fortsett")
 
                         }
@@ -300,6 +334,7 @@ fun QuestionScreen(
 
 }
 
+// function for displaying all text options
 @Composable
 fun TextOptions(
 
@@ -360,6 +395,8 @@ fun TextOptions(
 
 }
 
+// function for displaying an answer option
+// with change of button color and display when clicked
 @Composable
 fun AnswerOption(
 
@@ -374,10 +411,10 @@ fun AnswerOption(
     val lightIntensity = 0.75f
 
     // makes background and outline color a muted gray by default
-    var backgroundColor: Color = mutedColor(Color.Blue, lightIntensity)
-    var outlineColor: Color = mutedColor(Color.Blue, lightIntensity)
+    var backgroundColor: Color = mutedColor(Color.Gray, lightIntensity)
+    var outlineColor: Color = mutedColor(Color.Gray, lightIntensity)
     // makes text color gray by default
-    var textColor: Color = Color.Blue
+    var textColor: Color = Color.Gray
 
     // checks if a button is pressed
     if (selectedOption != null) {

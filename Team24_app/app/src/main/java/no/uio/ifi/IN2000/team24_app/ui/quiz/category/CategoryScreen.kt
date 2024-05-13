@@ -1,5 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,11 +30,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
@@ -42,7 +51,7 @@ fun CategoryScreen(
 
 ) {
 
-    // initialize viewmodel with category name parameter
+    // initialize view model with category name parameter
     LaunchedEffect(categoryScreenViewModel) {
 
         categoryScreenViewModel.initialize(categoryName)
@@ -52,6 +61,9 @@ fun CategoryScreen(
     // get categories and questions ui state from view model
     val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
     val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
+
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
 
     // top app bar with back button to navigate back to categories screen
     Scaffold(
@@ -97,6 +109,17 @@ fun CategoryScreen(
 
         ) {
 
+            // background with background image
+            Image(
+
+                painter = (painterResource(id = imageName)),
+                contentDescription = "Background Image based on time of the day",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+
+            )
+
+            // content in column format
             Column(
 
                 modifier = Modifier
@@ -139,7 +162,12 @@ fun CategoryScreen(
                     onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+
+                        containerColor = backgroundColour()
+
+                    )
 
                 ) {
 

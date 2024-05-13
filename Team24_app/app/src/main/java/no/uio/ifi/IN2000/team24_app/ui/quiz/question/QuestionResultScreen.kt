@@ -1,5 +1,8 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,11 +29,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionResultScreen(
@@ -47,7 +56,10 @@ fun QuestionResultScreen(
     // convert question list string to actual list of strings
     val questionList = questions.split(",")
 
-    // initialize viewmodel with question list, index and category name parameter
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
+
+    // initialize view model with question list, index and category name parameter
     LaunchedEffect(questionResultScreenViewModel) {
 
         questionResultScreenViewModel.initialize(questionList, categoryName, coinsWon)
@@ -102,6 +114,16 @@ fun QuestionResultScreen(
 
         ) {
 
+            // background with background image
+            Image(
+
+                painter = (painterResource(id = imageName)),
+                contentDescription = "Background Image based on time of the day",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+
+            )
+
             Column(
 
                 modifier = Modifier
@@ -147,9 +169,7 @@ fun QuestionResultScreen(
 
                     }
 
-                }
-
-                else {
+                } else {
 
                     // display error message on failure
                     Text("Klarte ikke å hente kategori")
@@ -186,7 +206,12 @@ fun QuestionResultScreen(
                     onClick = onBackPressed,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+
+                        containerColor = backgroundColour()
+
+                    )
 
                 ) {
 
