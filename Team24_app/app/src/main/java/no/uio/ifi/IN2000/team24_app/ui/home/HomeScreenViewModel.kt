@@ -1,17 +1,22 @@
 package no.uio.ifi.IN2000.team24_app.ui.home
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
 import android.location.Location
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -22,9 +27,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
 
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
@@ -68,7 +76,8 @@ class HomeScreenViewModel(
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
     private val bankRepo : BankRepository = BankRepository(),
 
-    private var _userLocation : Location? = null,
+    private var _userLocation : MutableStateFlow<Location?> = MutableStateFlow(null),
+    val userLocation : StateFlow<Location?> = _userLocation.asStateFlow(),
     private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
     val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow(),
     private var _satisfaction : MutableStateFlow<SatisfactionUiState> = MutableStateFlow(SatisfactionUiState()),
@@ -76,20 +85,18 @@ class HomeScreenViewModel(
     private var _balance: MutableStateFlow<Int?> = MutableStateFlow(0),
     val balance: StateFlow<Int?> = _balance.asStateFlow(),
 
-    private val _sevenDaysDetailedForecast: MutableStateFlow<List<List<WeatherDetails>?>> = MutableStateFlow(emptyList()),
-    val sevenDaysDetailedForecast: StateFlow<List<List<WeatherDetails>?>> = _sevenDaysDetailedForecast.asStateFlow(),
 
     private val _weatherDetails : MutableStateFlow<WeatherDetailsUiState> = MutableStateFlow(WeatherDetailsUiState()),
-    val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow()
-
+    val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow(),
+    private val _currentWeatherState: MutableStateFlow<ArrayList<WeatherDetails>> = MutableStateFlow(ArrayList()),
+    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState.asStateFlow(),
+    private val _next6DaysState :MutableStateFlow<ArrayList<WeatherDetails?>?> = MutableStateFlow(ArrayList()),
+    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState.asStateFlow()
 
 ): ViewModel() {
 
-    private val _currentWeatherState = MutableStateFlow<ArrayList<WeatherDetails>>(ArrayList())
-    private val _next6DaysState = MutableStateFlow<ArrayList<WeatherDetails?>?>(ArrayList())
 
-    val currentWeatherState: StateFlow<ArrayList<WeatherDetails>> = _currentWeatherState
-    val next6DaysState: StateFlow<ArrayList<WeatherDetails?>?> = _next6DaysState
+
 
          //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(loadClothesFromDisk())
@@ -101,9 +108,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
         }
-        updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
         getBalanceFromDb()
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -134,7 +139,10 @@ class HomeScreenViewModel(
         var character = getDefaultBackupCharacter()
         viewModelScope.launch {
             character = loadSelectedClothes()
+
         }
+        updateSatisfaction(characterTemp = character.findAppropriateTemp())
+
         return character
     }
 
@@ -149,26 +157,24 @@ class HomeScreenViewModel(
     }
 
 
-    fun updateSatisfaction(characterTemp: Double) {
+     fun updateSatisfaction(characterTemp: Double, actualTemp: Double = (_currentWeatherState.value.firstOrNull()?.air_temperature ?:0.0)) {
+
         var newFillPercent = 0.0f
         var newColor = Color.Green
         var newIcon = R.drawable.too_cold
 
-        val temp: Double = currentWeatherState.value.firstOrNull()?.air_temperature
-            ?: 0.0//Sander endret denne for å unngå NoSuchElementException om listen skulle være tom.
 
-        Log.d(TAG, "Temp: $temp")
-        Log.d(TAG, "CharacterTemp: $characterTemp")
-        val delta = temp - characterTemp
-        Log.d(TAG, "Delta: $delta")
+        Log.d("updateSatisfaction", "Actual Temp: $actualTemp, Character Temp: $characterTemp")
+        val delta = abs(actualTemp - characterTemp)
+        Log.d("updateSatisfaction", "Delta: $delta")
 
         //FILL%
-        newFillPercent = maxOf((1 - (abs(delta) / 10)).toFloat(), 0.01f)
-        Log.d(TAG, "Satisfaction%: $newFillPercent")
+        newFillPercent = maxOf((1 - (delta / 10)).toFloat(), 0.01f)
+        Log.d("updateSatisfaction", "Satisfaction%: $newFillPercent")
 
         //ICON
         newIcon = if (delta > 0) {
-            Log.d(TAG, "Too hot")
+            Log.d("updateSatisfaction", "Too hot")
             R.drawable.too_hot
         } else {
             Log.d(TAG, "Too cold")
@@ -197,41 +203,77 @@ class HomeScreenViewModel(
         }
     }
 
-    fun getCurrentWeather(context: Context) {
+     fun makeRequests(context: Context) {
+         val backupLocation = Location("")
+            backupLocation.latitude = 59.913868
+            backupLocation.longitude = 10.752245
+         viewModelScope.launch(Dispatchers.IO) {
+            if (_userLocation.value == null) {
+                val tracker = LocationTracker(context)
+                tracker.getLocation().addOnSuccessListener { location ->
+                    Log.d(TAG, "In onSuccessListener w/ location: $location")
+                    if(location !=null) {
+
+
+                        getCurrentWeather(location)
+                        getRelevantAlerts(location)
+                    }
+                    else{
+                        Log.e(TAG, "Location in success is null")
+                        Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
+                        makeRequestsWithoutLocation()
+
+                    }
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "Failed to get location: ${e.message}.(failureListener")
+                    makeRequestsWithoutLocation()
+                }
+            }
+         }
+    }
+    fun makeRequestsWithoutLocation(){
+        val backupLocation = Location("")  //TODO check this works
+        backupLocation.latitude = 59.913868
+        backupLocation.longitude = 10.752245
         viewModelScope.launch(Dispatchers.IO) {
-            //!position broke, todo look into LocationTracker
-            if (_userLocation == null) {
-
-                _userLocation = LocationTracker(context).getLocation()
-            }
-            Log.d(TAG, "Position: ${_userLocation.toString()}")
-
-            locationForecastRepo.fetchLocationForecast(
-                _userLocation?.latitude ?: 59.913868,
-                _userLocation?.longitude ?: 10.752245
-            )
-            _currentWeatherState.update {
-                locationForecastRepo.getTodayWeather()
-            }
-            _next6DaysState.update {
-                locationForecastRepo.getNext6daysForecast()
-            }
-
-            _userLocation = LocationTracker(context).getLocation()
+            getCurrentWeather(backupLocation)
+            getRelevantAlerts(backupLocation)
         }
     }
 
-    fun getRelevantAlerts(context: Context) {
+    fun getCurrentWeather(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
-            //!position broke, todo look into LocationTracker
-            if (_userLocation == null) {
-                _userLocation = LocationTracker(context).getLocation()
-            }
-            val cards = metAlertsRepo.henteVarselKort(
-                latitude = _userLocation?.latitude ?: 59.913868,
-                longitude = _userLocation?.longitude ?: 10.752245
+            Log.d(
+                TAG,
+                "Position in getCurrentWeather: ${location.latitude}, ${location.longitude}"
+            )
+            locationForecastRepo.fetchLocationForecast(
+                location.latitude,
+                location.longitude
             )
 
+            _currentWeatherState.update {
+                Log.d("getCurrentWeather", "Updating current weather: ${locationForecastRepo.getTodayWeather()}")
+                locationForecastRepo.getTodayWeather()
+            }
+            Log.d("AAAAAAAAAAAAAAAAAAA", "calling updateSatisfaction from getCurrentWeather")
+            updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
+            _next6DaysState.update {
+                locationForecastRepo.getNext6daysForecast()
+            }
+        }
+    }
+
+
+    fun getRelevantAlerts(location : Location) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG,
+                "Position in getRelevantAlerts: ${location.latitude}, ${location.longitude}"
+            )
+            val cards = metAlertsRepo.henteVarselKort(
+                    latitude = location.latitude,
+                    longitude = location.longitude
+            )
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)
             }

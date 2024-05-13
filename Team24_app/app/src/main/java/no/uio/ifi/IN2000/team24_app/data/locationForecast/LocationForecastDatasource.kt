@@ -42,6 +42,7 @@ class LocationForecastDatasource (
         }
         var forecastResponse: LocationForecast? = null;
         try {
+            Log.d(TAG, "Getting location forecast data")
             val response: HttpResponse =
                 client.get("weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}")
             Log.d(TAG, response.status.toString())
