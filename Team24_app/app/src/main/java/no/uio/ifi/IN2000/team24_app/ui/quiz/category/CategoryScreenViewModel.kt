@@ -95,6 +95,7 @@ class CategoryScreenViewModel: ViewModel() {
                 _questionsUiState.update { currentQuestionsUiState ->
 
                     val questionList = questionRepository.getCategoryQuestions(categoryName)
+                    println("QuestionList: $questionList")
                     val shuffledQuestionList = questionList.shuffled().take(3)
                     val questions = shuffledQuestionList.joinToString(",")
                     currentQuestionsUiState.copy(questions = questions)

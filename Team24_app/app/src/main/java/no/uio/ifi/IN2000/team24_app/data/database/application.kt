@@ -89,7 +89,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
 
 
             val weatherCategory = Category("Om været")
-            val warningCategory = Category("Farevarsler") // Assuming "Farevarsler" indicates a warning
+            val warningCategory = Category("Farevarsler")
             categoryDao.insertAll(weatherCategory, warningCategory)
 
             //val oeving = Category("Farevarsler", 5, false)
@@ -140,6 +140,9 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
                     listOf("Cumulonimbus-skyer", "Cirrus-skyer", "Altostratus-skyer", "Stratus-skyer"),
                     3))
 
+            questionDao.insertAll(*weatherQuestions.toTypedArray())
+            println("WeatherQuestions: $weatherQuestions")
+
             val warningQuestions= listOf(
                 Question(8,
                     "Hvilken av disse gir indikasjon på rødt farevarsel?",
@@ -177,7 +180,9 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
                     listOf("Sterke stormsystemer", "Vind fra fjell- eller delstrøk", "Økt solaktivitet", "Tørkeperioder"),
                     0))
 
-            questionDao.insertAll(*weatherQuestions.toTypedArray(), *warningQuestions.toTypedArray())
+                   // questionDao.insertAll(*warningQuestions.toTypedArray())
+                println("Warning: $warningQuestions")
+
         }
 
     }

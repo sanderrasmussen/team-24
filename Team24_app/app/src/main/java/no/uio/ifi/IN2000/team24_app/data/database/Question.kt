@@ -10,5 +10,5 @@ data class Question(
     val categoryName: String,
     val options: List<String>,
     val correctOptionIndex: Int,
-    val answered: Boolean = false
+    var answered: Boolean = false
 )

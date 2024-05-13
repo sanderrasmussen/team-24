@@ -39,7 +39,7 @@ class QuestionScreenViewModel: ViewModel() {
     private var initialization = false
 
     @MainThread
-    fun initialize(questionList: List<String>, index: Int, categoryName: String) {
+    fun initialize(questionList: List<Long>, index: Int, categoryName: String) {
         println("QUESIONLIST:  $questionList")
 
         if (!initialization) {
@@ -58,25 +58,16 @@ class QuestionScreenViewModel: ViewModel() {
 
 
     // function to fetch question
-    private fun loadQuestionInfo(questionList: List<String>, index: Int) {
-        val questionNames= questionList
-        println("QuestionNames: $questionNames")
+    private fun loadQuestionInfo(questionIds: List<Long>, index: Int) {
 
-        //println("QUESIONLIST22 i loadQuestionInfo:  $question1")
-        println("QUESIONLIST i loadQuestionInfo:  $questionList")
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
 
                 _questionUiState.update { currentQuestionUiState ->
 
-                    val questionName= questionNames[index]
-                    println("questionName loadQuestionInfo:  $questionName")
-                    val question = questionRepository.getQuestion(questionName)
-                    val questions= questionRepository.getAllQuestions1()
-                    print("All questions: $questions")
-                    println("QUESTION= QUESTIONREPOSITORY.GETQUESTION i loadQuestionInfo:  $question")
-
+                    val questionId = questionIds[index]
+                    val question = questionRepository.getQuestionById(questionId)
                     currentQuestionUiState.copy(question = question)
 
                 }

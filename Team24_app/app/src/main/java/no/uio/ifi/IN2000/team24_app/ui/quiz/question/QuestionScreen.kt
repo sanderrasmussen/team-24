@@ -64,6 +64,7 @@ fun QuestionScreen(
 
     // convert question list string to actual list of strings
     val questionList = questions.split(",")
+    val longList: List<Long> = questionList.map { it.toLong() }
 
     val size = questionList.size
     println("QUESTIONLIST SIZE VM: $size")
@@ -71,7 +72,7 @@ fun QuestionScreen(
     // initialize viewmodel with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
 
-        questionScreenViewModel.initialize(questionList, index, categoryName)
+        questionScreenViewModel.initialize(longList, index, categoryName)
 
     }
 
