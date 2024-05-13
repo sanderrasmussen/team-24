@@ -1,6 +1,8 @@
 ■ Beskriver arkitekturen som er benyttet i appen.
 
-MVVM 
+
+UI Elements --> State Holders --> Repositories --> DataSources \
+HomeScreen --> HomeScreenViewModel --> LoationForecastRepository --> LocationForecastDataSource
 
 ■ Beskrivelse av hvordan viktige objektorienterte prinsipper som lav kobling og høy kohesjon samt design patterns som MVVM
 og UDF er ivaretatt i løsningen burde også være med.
