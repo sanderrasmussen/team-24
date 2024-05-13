@@ -408,13 +408,18 @@ fun AnswerOption(
 ) {
 
     // intensity variables for intensity of button color
-    val lightIntensity = 0.75f
+    val lightIntensity = 0.5f
 
     // makes background and outline color a muted gray by default
     var backgroundColor: Color = mutedColor(Color.Gray, lightIntensity)
     var outlineColor: Color = mutedColor(Color.Gray, lightIntensity)
     // makes text color gray by default
     var textColor: Color = Color.Gray
+
+    // green color that fits the backgrounds better
+    val greenColor = Color(android.graphics.Color.parseColor("#003312"))
+    // red color that fits the backgrounds better
+    val redColor = Color(android.graphics.Color.parseColor("#990000"))
 
     // checks if a button is pressed
     if (selectedOption != null) {
@@ -423,10 +428,10 @@ fun AnswerOption(
         if (correctOption == answerOption) {
 
             // makes background and outline color a muted green if correct
-            backgroundColor = mutedColor(Color.Green, lightIntensity)
-            outlineColor = mutedColor(Color.Green, lightIntensity)
+            backgroundColor = mutedColor(greenColor, lightIntensity)
+            outlineColor = mutedColor(greenColor, lightIntensity)
             // makes text color a more intense green color if correct
-            textColor = Color.Green
+            textColor = greenColor
 
         }
 
@@ -437,7 +442,7 @@ fun AnswerOption(
             if (correctOption == answerOption) {
 
                 // makes outline color a more intense green color if correct
-                outlineColor = Color.Green
+                outlineColor = greenColor
 
             }
 
@@ -445,10 +450,10 @@ fun AnswerOption(
             else {
 
                 // makes background color a muted red if selected and incorrect
-                backgroundColor = mutedColor(Color.Red, lightIntensity)
+                backgroundColor = mutedColor(redColor, lightIntensity)
                 // makes outline and text color a more intense red if selected and incorrect
-                outlineColor = Color.Red
-                textColor = Color.Red
+                outlineColor = redColor
+                textColor = redColor
 
             }
 
