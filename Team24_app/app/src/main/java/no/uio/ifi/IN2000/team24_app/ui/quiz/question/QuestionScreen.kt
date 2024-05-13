@@ -34,6 +34,8 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -57,6 +59,7 @@ import kotlinx.coroutines.delay
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
+import no.uio.ifi.IN2000.team24_app.ui.skyColour
 
 // quiz question screen with question
 @RequiresApi(Build.VERSION_CODES.O)
@@ -72,13 +75,12 @@ fun QuestionScreen(
     onNavigateToNextQuestionScreen: (Int, Int?) -> Unit,
     onNavigateToResultQuestionScreen: (Int?) -> Unit
 ) {
-    //println("INDEX : $index")
 
     // convert question list string to actual list of strings
     val questionList = questions.split(",")
     val longList: List<Long> = questionList.map { it.toLong() }
 
-    // initialize viewmodel with question list, index and category name parameter
+    // initialize view model with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
 
         questionScreenViewModel.initialize(longList, index, categoryName)
@@ -154,7 +156,6 @@ fun QuestionScreen(
 
         }
 
-
         // top app bar with back button to navigate back to categories screen
         Scaffold(
 
@@ -183,7 +184,9 @@ fun QuestionScreen(
 
                         }
 
-                    }
+                    },
+                    // set color of top app bar to reflect background
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = skyColour())
 
                 )
 
