@@ -5,10 +5,8 @@ Modellering og systemdesign
 ● De viktigste funksjonelle kravene til applikasjonen bør beskrives – bruk gjerne use case diagram, samt sekvensdiagram og tekstlig beskrivelse av de viktigste use-casene.
 
 [UseCase.pdf](https://github.uio.no/IN2000-V24/team-24/files/366/UseCase.pdf)
-
-[Sekvens.pdf](https://github.uio.no/IN2000-V24/team-24/files/368/Sekvens.pdf)
-
-
+[SekvensDiagram.pdf](https://github.uio.no/IN2000-V24/team-24/files/369/SekvensDiagram.pdf)
+[Klassediagram.pdf](https://github.uio.no/IN2000-V24/team-24/files/370/Klassediagram.pdf)
 
 **Use case: Sjekk været** \
 Primæraktør: Bruker \
