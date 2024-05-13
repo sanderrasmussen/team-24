@@ -152,6 +152,7 @@ import java.util.Locale
     }
 
 //Navigation bar which allows users to navigate between three different screens
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController
@@ -163,7 +164,7 @@ import java.util.Locale
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White),
+            .background(skyColour()),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier
