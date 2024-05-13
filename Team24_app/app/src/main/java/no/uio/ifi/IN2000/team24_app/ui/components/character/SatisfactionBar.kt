@@ -45,7 +45,7 @@ fun SatisfactionBar(vm: HomeScreenViewModel){
         )
         Image(
             modifier = Modifier.padding(horizontal = 4.dp),
-            painter = painterResource(id = R.drawable.happy), contentDescription = "satisfied"
-        )   //todo custom icon, can still be hardcoded
+            painter = painterResource(id = R.drawable.happy_emoji), contentDescription = "satisfied"
+        )
     }
 }
