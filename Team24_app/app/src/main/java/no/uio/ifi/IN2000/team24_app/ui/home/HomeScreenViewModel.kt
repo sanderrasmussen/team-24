@@ -44,6 +44,7 @@ import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.ApiAccessException
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
@@ -219,8 +220,6 @@ class HomeScreenViewModel(
                 tracker.getLocation().addOnSuccessListener { location ->
                     Log.d(TAG, "In onSuccessListener w/ location: $location")
                     if(location !=null) {
-
-
                         getCurrentWeather(location)
                         getRelevantAlerts(location)
                     }
@@ -231,7 +230,7 @@ class HomeScreenViewModel(
 
                     }
                 }.addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to get location: ${e.message}.(failureListener")
+                    Log.e(TAG, "Failed to get location: ${e.message}.")
                     makeRequestsWithoutLocation()
                 }
          }
@@ -251,16 +250,21 @@ class HomeScreenViewModel(
         }
     }
 
+    @Throws(ApiAccessException::class)
     fun getCurrentWeather(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(
                 TAG,
                 "Position in getCurrentWeather: ${location.latitude}, ${location.longitude}"
             )
-            locationForecastRepo.fetchLocationForecast(
-                location.latitude,
-                location.longitude
-            )
+            try {
+                locationForecastRepo.fetchLocationForecast(
+                    location.latitude,
+                    location.longitude
+                )
+            }catch(e:ApiAccessException){
+                throw e
+            }
 
             _currentWeatherState.update {
                 Log.d("getCurrentWeather", "Updating current weather: ${locationForecastRepo.getTodayWeather()}")

@@ -44,12 +44,17 @@ class LocationForecastRepository{
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
 
     //re-fetching api every hour is what i have in mind
+    @Throws(ApiAccessException::class)
     suspend fun fetchLocationForecast(lat:Double, lon: Double): LocationForecast? {
         try {
             //get forecast object
             if (locationForecast == null) {
-                locationForecast =
-                    dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
+                try {
+                    locationForecast =
+                        dataSource.getLocationForecastData(lat, lon)//DATA SOURCE IS NULLABLE
+                }catch(e: ApiAccessException){
+                    throw e     //this needs to be thrown to a ui layer, to show a message to the user
+                }
             }
             if (locationForecast!=null){
                 keepFirstIndexUpToDate()

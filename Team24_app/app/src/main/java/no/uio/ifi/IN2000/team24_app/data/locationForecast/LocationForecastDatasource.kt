@@ -19,6 +19,7 @@ class LocationForecastDatasource (
     private var forecast: LocationForecast? = null
 ){
 
+    @Throws(ApiAccessException::class)
     suspend fun getLocationForecastData(lat:Double, lon: Double): LocationForecast?{
         if(forecast != null){
             return forecast
@@ -46,24 +47,31 @@ class LocationForecastDatasource (
             val response: HttpResponse =
                 client.get("weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}")
             Log.d(TAG, response.status.toString())
-                if (response.status.isSuccess()) {
-                   val content: LocationForecast = response.body();
+            if (response.status.isSuccess()) {
+                val content: LocationForecast = response.body();
                 forecastResponse = content;
             }
-
+            else if(response.status.value in 500..599){
+                throw ApiAccessException("Server error")
+            }
+            else{
+                throw Exception("Failed to get location forecast data") //TODO better
+            }
+        }
+        catch(e: ApiAccessException){
+            throw e
         }
         catch(e: Exception){    //TODO better exception handling
-          e.printStackTrace()
+            e.printStackTrace()
         }
-
      finally {
         client.close()
     }
         forecast = forecastResponse
         return forecast
     }
+}
 
-
-
-
+class ApiAccessException(msg:String) : Exception() {
+    override val message: String = msg
 }
