@@ -1,5 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
@@ -31,6 +34,8 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -44,14 +49,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
-import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
+import no.uio.ifi.IN2000.team24_app.ui.skyColour
 
 // quiz question screen with question
 @RequiresApi(Build.VERSION_CODES.O)
@@ -67,18 +75,12 @@ fun QuestionScreen(
     onNavigateToNextQuestionScreen: (Int, Int?) -> Unit,
     onNavigateToResultQuestionScreen: (Int?) -> Unit
 ) {
-    //println("INDEX : $index")
 
     // convert question list string to actual list of strings
     val questionList = questions.split(",")
     val longList: List<Long> = questionList.map { it.toLong() }
 
-    val size = questionList.size
-    println("QUESTIONLIST SIZE VM: $size")
-
-    val imageName = BackgroundImageQuiz()
-
-    // initialize viewmodel with question list, index and category name parameter
+    // initialize view model with question list, index and category name parameter
     LaunchedEffect(questionScreenViewModel) {
 
         questionScreenViewModel.initialize(longList, index, categoryName)
@@ -88,6 +90,9 @@ fun QuestionScreen(
     // get question and category ui state from view model
     val questionUiState: QuestionUiState by questionScreenViewModel.questionUiState.collectAsState()
     val categoryUiState: CategoryUiState by questionScreenViewModel.categoryUiState.collectAsState()
+
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
 
     // progress value for progress indicator
     val currentProgress = ((index + 1).toFloat() / questionList.size)
@@ -108,7 +113,7 @@ fun QuestionScreen(
         var pauseTimer = !getTimer
 
         // variable for storing new coins won
-        var newCoinsWon = coinsWon
+        var newCoinsWon = 0
 
         val onAnswerSelected: (String) -> Unit = { selectedOption ->
 
@@ -117,8 +122,15 @@ fun QuestionScreen(
             val correctOptionIndex = questionUiState.question!!.correctOptionIndex
             val isCorrect =
                 selectedOption == options[correctOptionIndex]
-            // update points based on correctness of the answer
-            newCoinsWon += if (isCorrect) answeringTime else 0
+
+            // check correctness of the answer
+            if (isCorrect) {
+
+                // update points
+                newCoinsWon = answeringTime
+
+            }
+
             // stop the timer
             pauseTimer = true
 
@@ -179,7 +191,9 @@ fun QuestionScreen(
 
                         }
 
-                    }
+                    },
+                    // set color of top app bar to reflect background
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = skyColour())
 
                 )
 
@@ -204,6 +218,16 @@ fun QuestionScreen(
                     .fillMaxSize()
 
             ) {
+
+                // background with background image
+                Image(
+
+                    painter = (painterResource(id = imageName)),
+                    contentDescription = "Background Image based on time of the day",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.matchParentSize()
+
+                )
 
                 Column(
 
@@ -239,7 +263,8 @@ fun QuestionScreen(
                         if (getTimer) {
 
                             // value that displays time if the timer should be started
-                            val displayTime = if (readingTime > 0) readingTime else answeringTime
+                            val displayTime =
+                                if (readingTime > 0) readingTime else answeringTime
                             Text(
 
                                 text = "$displayTime",
@@ -286,23 +311,33 @@ fun QuestionScreen(
 
                             onClick = {
 
-                                // check if index is smaller than questions to show
-                                var nextIndex = index + 1
+                                // index for next question
+                                val nextIndex = index + 1
+                                // check if next index is higher than questions to show
                                 if (nextIndex < questionList.size) {
-                                    //onNavigateToResultQuestionScreen(newCoinsWon)
-                                    // Hvis det er flere spørsmål, naviger til neste spørsmål
-                                    onNavigateToNextQuestionScreen(nextIndex, newCoinsWon)
-                                    // index= nextIndex
+
+                                    // navigate to question screen if there are more questions to show
+                                    onNavigateToNextQuestionScreen(nextIndex, coinsWon + newCoinsWon)
+
                                 } else {
-                                    // Hvis du har nådd slutten av spørsmålene, naviger til resultatet
-                                    onNavigateToResultQuestionScreen(newCoinsWon)
-                                }},
+
+                                    // navigate to result screen if there are no more questions to show
+                                    onNavigateToResultQuestionScreen(coinsWon + newCoinsWon)
+                                }
+
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp)
+                                .padding(vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+
+                                containerColor = backgroundColour()
+
+                            )
 
                         ) {
 
+                            // continue button displaying continue text
                             Text("Fortsett")
 
                         }
@@ -320,6 +355,7 @@ fun QuestionScreen(
 }
 }
 
+// function for displaying all text options
 @Composable
 fun TextOptions(
 
@@ -380,6 +416,8 @@ fun TextOptions(
 
 }
 
+// function for displaying an answer option
+// with change of button color and display when clicked
 @Composable
 fun AnswerOption(
 
@@ -391,13 +429,18 @@ fun AnswerOption(
 ) {
 
     // intensity variables for intensity of button color
-    val lightIntensity = 0.75f
+    val lightIntensity = 0.5f
 
     // makes background and outline color a muted gray by default
-    var backgroundColor: Color = mutedColor(Color.Blue, lightIntensity)
-    var outlineColor: Color = mutedColor(Color.Blue, lightIntensity)
+    var backgroundColor: Color = mutedColor(Color.Gray, lightIntensity)
+    var outlineColor: Color = mutedColor(Color.Gray, lightIntensity)
     // makes text color gray by default
-    var textColor: Color = Color.Blue
+    var textColor: Color = Color.Gray
+
+    // green color that fits the backgrounds better
+    val greenColor = Color(android.graphics.Color.parseColor("#003312"))
+    // red color that fits the backgrounds better
+    val redColor = Color(android.graphics.Color.parseColor("#990000"))
 
     // checks if a button is pressed
     if (selectedOption != null) {
@@ -406,10 +449,10 @@ fun AnswerOption(
         if (correctOption == answerOption) {
 
             // makes background and outline color a muted green if correct
-            backgroundColor = mutedColor(Color.Green, lightIntensity)
-            outlineColor = mutedColor(Color.Green, lightIntensity)
+            backgroundColor = mutedColor(greenColor, lightIntensity)
+            outlineColor = mutedColor(greenColor, lightIntensity)
             // makes text color a more intense green color if correct
-            textColor = Color.Green
+            textColor = greenColor
 
         }
 
@@ -420,7 +463,7 @@ fun AnswerOption(
             if (correctOption == answerOption) {
 
                 // makes outline color a more intense green color if correct
-                outlineColor = Color.Green
+                outlineColor = greenColor
 
             }
 
@@ -428,10 +471,10 @@ fun AnswerOption(
             else {
 
                 // makes background color a muted red if selected and incorrect
-                backgroundColor = mutedColor(Color.Red, lightIntensity)
+                backgroundColor = mutedColor(redColor, lightIntensity)
                 // makes outline and text color a more intense red if selected and incorrect
-                outlineColor = Color.Red
-                textColor = Color.Red
+                outlineColor = redColor
+                textColor = redColor
 
             }
 

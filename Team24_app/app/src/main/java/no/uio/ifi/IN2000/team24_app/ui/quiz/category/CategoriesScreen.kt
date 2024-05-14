@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
-import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
+import no.uio.ifi.IN2000.team24_app.ui.GradientImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,67 +48,89 @@ fun CategoriesScreen(
 
     // categories ui state from view model
     val categoriesUiState: CategoriesUiState by categoriesScreenViewModel.categoriesUiState.collectAsState()
-    val imageName = BackgroundImageQuiz()
+
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
+
     LaunchedEffect(categoriesScreenViewModel) {
 
         categoriesScreenViewModel.initialize()
 
     }
+
     Box(
-        modifier = Modifier.fillMaxSize(),
+
+        modifier = Modifier.fillMaxSize()
+
     ) {
+
+        // background with background image
         Image(
+
             painter = (painterResource(id = imageName)),
             contentDescription = "Background Image based on time of the day",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.matchParentSize()
+
         )
 
-            Column(
+        // content in column format
+        Column(
 
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
                 // text displaying title of screen (categories)
                 Text(
 
-                    text = "Kategorier:",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+            // text displaying title of screen (categories)
+            Text(
 
-                )
+                text = "Kategorier:",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
 
-                // spacer between title and category alternatives
-                Spacer(modifier = Modifier.height(32.dp))
+            )
 
-                LazyColumn(
+            // spacer between title and category alternatives
+            Spacer(modifier = Modifier.height(32.dp))
 
-                    modifier = Modifier.heightIn(220.dp, 440.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            LazyColumn(
 
-                ) {
+                modifier = Modifier.heightIn(220.dp, 440.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                    // puts all category option items in lazy column format
-                    items(categoriesUiState.categories.size) { optionIndex ->
+            ) {
 
-                        val currentCategory = categoriesUiState.categories[optionIndex]
-                        val locked =
-                            categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
+                // puts all category option items in lazy column format
+                items(categoriesUiState.categories.size) { optionIndex ->
 
-                        // start button navigating to question screen
-                        Button(
+                    val currentCategory = categoriesUiState.categories[optionIndex]
+                    val locked =
+                        categoriesScreenViewModel.loadCategoryLockedValue(currentCategory)
 
-                            onClick = if (!locked) {
+                    // start button navigating to question screen
+                    Button(
 
-                                { onNavigateToCategoryScreen(currentCategory.category) }
+                        onClick = if (!locked) {
 
-                            } else {
+                            { onNavigateToCategoryScreen(currentCategory.category) }
+
+                        } else {
+
+                            { /* do nothing */ }
+                        },
+
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+
+                            containerColor = backgroundColour()
 
                                 { /* do nothing */ }
                             },
@@ -133,6 +157,25 @@ fun CategoriesScreen(
                                 )
 
                             }
+
+                        }
+
+                    ) {
+
+                        Text(
+
+                            text = currentCategory.category
+
+                        )
+
+                        if (locked) {
+
+                            Icon(
+
+                                imageVector = Icons.Filled.Lock,
+                                contentDescription = "Låst"
+
+                            )
 
                         }
 

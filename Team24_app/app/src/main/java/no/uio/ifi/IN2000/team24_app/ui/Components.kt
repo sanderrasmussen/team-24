@@ -83,6 +83,18 @@ import java.util.Locale
 
     }
 
+    // This function returns the resource ID of the gradient background image
+    // determined by the time of the day
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun GradientImage(): Int {
+        return when (LocalTime.now().hour) {
+        in 6 until 12 -> R.drawable.morning_gradient// 6am to 12 pm
+        in 12 until 18 -> R.drawable.day_gradient // 12 pm to 6 pm
+        in 18 until 22 -> R.drawable.noon_gradient // 6pm to 10pm
+        else -> R.drawable.night_gradient// 10pm to 6 am
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun BackgroundImageQuiz(): Int {
         return when (LocalTime.now().hour){
@@ -101,6 +113,16 @@ import java.util.Locale
             in 12 until 18 -> Color(android.graphics.Color.parseColor("#24552E"))
             in  18 until 22 -> Color(android.graphics.Color.parseColor("#354779"))
             else -> Color(android.graphics.Color.parseColor("#000d48"))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun skyColour(): Color {
+        return when (LocalTime.now().hour)  {
+            in 6 until 12 -> Color(android.graphics.Color.parseColor("#98C5E2"))
+            in 12 until 18 -> Color(android.graphics.Color.parseColor("#0C91D9"))
+            in  18 until 22 -> Color(android.graphics.Color.parseColor("#5E80CD"))
+            else -> Color(android.graphics.Color.parseColor("#485dd6"))
         }
     }
 
@@ -125,8 +147,6 @@ import java.util.Locale
         }
     }
 
-
-
     //This function returns the resourceID for a given icon name.
     @SuppressLint("DiscouragedApi")
     @Composable
@@ -143,6 +163,7 @@ import java.util.Locale
     }
 
 //Navigation bar which allows users to navigate between three different screens
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController
@@ -154,7 +175,7 @@ import java.util.Locale
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White),
+            .background(skyColour()),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,7 +36,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import no.uio.ifi.IN2000.team24_app.ui.BackgroundImageQuiz
+import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
+import no.uio.ifi.IN2000.team24_app.ui.skyColour
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -49,7 +53,7 @@ fun CategoryScreen(
 
 ) {
 
-    // initialize viewmodel with category name parameter
+    // initialize view model with category name parameter
     LaunchedEffect(categoryScreenViewModel) {
 
         categoryScreenViewModel.initialize(categoryName)
@@ -60,7 +64,9 @@ fun CategoryScreen(
     val categoryUiState: CategoryUiState by categoryScreenViewModel.categoryUiState.collectAsState()
     val questionsUiState: QuestionsUiState by categoryScreenViewModel.questionsUiState.collectAsState()
 
-    val imageName = BackgroundImageQuiz()
+    // image name variable with background image that reflects time of day
+    val imageName = BackgroundImage()
+
     // top app bar with back button to navigate back to categories screen
     Scaffold(
 
@@ -89,7 +95,9 @@ fun CategoryScreen(
 
                     }
 
-                }
+                },
+                // set color of top app bar to reflect background
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = skyColour())
 
             )
 
@@ -99,14 +107,19 @@ fun CategoryScreen(
         Box(
             modifier = Modifier.fillMaxSize(),
         ) {
+            
+            // background with background image
             Image(
+
                 painter = (painterResource(id = imageName)),
                 contentDescription = "Background Image based on time of the day",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.matchParentSize()
+
             )
 
-            Box(
+            // content in column format
+            Column(
 
                 modifier = Modifier
                     .padding(innerPadding)
@@ -117,10 +130,13 @@ fun CategoryScreen(
                 Column(
 
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+
+                        containerColor = backgroundColour()
+
+                    )
 
                 ) {
 
@@ -183,4 +199,5 @@ fun CategoryScreen(
 
         }
     }
+
 }
