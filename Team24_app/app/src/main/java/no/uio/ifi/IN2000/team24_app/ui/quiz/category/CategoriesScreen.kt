@@ -31,16 +31,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.GradientImage
+import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
+import no.uio.ifi.IN2000.team24_app.ui.textColour
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CategoriesScreen(
 
-    onBackPressed: () -> Unit,
+    navController: NavController,
     categoriesScreenViewModel: CategoriesScreenViewModel = viewModel(),
     onNavigateToCategoryScreen: (String) -> Unit
 
@@ -91,7 +94,8 @@ fun CategoriesScreen(
 
                 text = "Kategorier:",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = textColour()
 
             )
 
@@ -186,4 +190,19 @@ fun CategoriesScreen(
             }
 
         }
+
+        // column to make sure navbar is at bottom of screen
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+
+        ) {
+
+            // navbar to navigate to store screen or home screen
+            NavBar(navController)
+
+        }
+
     }
+
+}

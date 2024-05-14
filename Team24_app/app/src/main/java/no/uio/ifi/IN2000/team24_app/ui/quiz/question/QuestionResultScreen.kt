@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
@@ -141,7 +143,7 @@ fun QuestionResultScreen(
 
                 Column(
 
-                    val maxCoins = (questionList.size) * categoryUiState.category!!.points
+                    val maxCoins = (questionList.size) * 10 // categoryUiState.category!!.points
 
                 ) {
 
@@ -221,10 +223,20 @@ fun QuestionResultScreen(
 
                 Row() {
 
+                    // text displaying total coins
                     Text(
 
-                        text = "Totale poeng: ",
+                        text = "Totale penger: ",
                         fontWeight = FontWeight.Bold
+
+                    )
+
+                    // image for weather currency
+                    Image(
+
+                        painter = painterResource(id = R.drawable.coin),
+                        contentDescription = "currency",
+                        modifier = Modifier.size(30.dp)
 
                     )
 
