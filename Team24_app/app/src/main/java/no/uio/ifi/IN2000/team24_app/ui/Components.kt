@@ -152,35 +152,6 @@ import java.util.Locale
 
     @Composable
     @RequiresApi(Build.VERSION_CODES.O)
-    fun quizIcon(size: Int) : Any {
-        return when (LocalTime.now().hour) {
-            in 6 until 22 -> Icon("quiz", size)
-            else -> Icon("quiz_white", size)
-        }
-
-    }
-    @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun homeIcon(size: Int) : Any {
-        return when (LocalTime.now().hour) {
-            in 6 until 22 -> Icon("home", size)
-            else -> Icon("home_white", size)
-        }
-
-    }
-
-    @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun storeIcon(size: Int) : Any {
-        return when (LocalTime.now().hour) {
-            in 6 until 22 -> Icon("clothing_store", size)
-            else -> Icon("clothing_store_white", size)
-        }
-
-    }
-
-    @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
     fun arrow(size: Int) : Any {
         return when (LocalTime.now().hour) {
             in 6 until 22 -> Icon("arrow", size)
@@ -202,7 +173,7 @@ import java.util.Locale
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .background(skyColour()),
+            .background(backgroundColour()),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier
@@ -214,7 +185,7 @@ import java.util.Locale
                 .padding(8.dp)
 
             ) {
-                quizIcon(60)
+                Icon("quiz_white",60)
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -227,7 +198,7 @@ import java.util.Locale
                 }
                 .padding(8.dp)
             ) {
-                homeIcon(60)
+                Icon("home_white",60)
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -241,7 +212,7 @@ import java.util.Locale
                 .padding(8.dp)
 
             ) {
-                storeIcon(60)
+                Icon("clothing_store_white",60)
             }
         }
 

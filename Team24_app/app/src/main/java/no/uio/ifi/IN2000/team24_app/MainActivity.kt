@@ -3,7 +3,6 @@ package no.uio.ifi.IN2000.team24_app
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
-import androidx.compose.runtime.getValue
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,15 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
 import no.uio.ifi.IN2000.team24_app.ui.store.StoreScreen
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoriesScreen
