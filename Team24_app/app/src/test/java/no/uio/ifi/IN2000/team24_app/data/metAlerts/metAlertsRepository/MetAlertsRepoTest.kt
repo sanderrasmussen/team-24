@@ -23,13 +23,8 @@ class MetAlertsRepoTest {
             {assertEquals(icons[3], repo.hentIkonID(ids[3]))}
         )
 
-
-    }
-
-    @Test
-    fun iconExists(){
         assertDoesNotThrow{
-            R.drawable::class.java.getField("${repo.hentIkonID("avalanches")}_yellow")    //asserts that the icon exists - if it didn't a NoSuchFieldException would be thrown
+            R.drawable::class.java.getField("${repo.hentIkonID(ids[0])}_yellow")    //asserts that the icon exists - if it didn't a NoSuchFieldException would be thrown
         }
     }
 

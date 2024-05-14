@@ -21,10 +21,6 @@ class BankRepository()  {
     private val db = MyDatabase.getInstance()
     private val bankDao = db.bankDao()
 
-    /**
-     * Withdraws a sum from the bank account if the balance is sufficient.
-     * @param sum The sum to withdraw.
-     */
     suspend fun withdraw( sum : Int) {
         var balance = getBankBalance()
         if (balance-sum >= 0 ){
@@ -32,19 +28,11 @@ class BankRepository()  {
         }
     }
 
-    /**
-     * Deposits a sum to the bank account.
-     * @param sum The sum to deposit.
-     */
-    fun deposit( sum : Int)  {
+    suspend fun deposit( sum : Int)  {
         bankDao.deposit(sum)
     }
 
     //this method has to be called within a corutine
-    /**
-     * Gets the bank balance.
-     * @return The bank balance.
-     */
     suspend fun getBankBalance(): Int {
         try {
             return withContext(Dispatchers.IO) {

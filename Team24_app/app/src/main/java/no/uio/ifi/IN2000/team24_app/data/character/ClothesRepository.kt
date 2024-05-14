@@ -17,43 +17,29 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 
-/**
- * Repository for the clothes in the game - interacts with the database
- */
 class ClothesRepository {
     private val db = MyDatabase.getInstance()
     private val clothesDao = db.clothesDao()
 
 
-    /**
-     * sets a clothing item, given by ID, to owned in the database.
-     */
-    fun setClothingToOwned(id : Int){
+    suspend fun setClothingToOwned(id : Int){
         clothesDao.setClothingToOwned(id)
     }
 
     //owned clothes:
-    /**
-     * gets all owned heads from the database
-     */
     suspend fun getAllOwnedHeads(): List<Head>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllOwnedHeads()
                 .map { convertToHead(it) } //casting all in list to head
         }
     }
-    /**
-     * gets all owned torsos from the database
-     */
     suspend fun getAllOwnedTorsos(): List<Torso>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllOwnedTorsos()
                 .map { convertToTorso(it) } //casting all in list to head
         }
     }
-    /**
-     * gets all owned legs from the database
-     */
+
     suspend fun getAllOwnedLegs(): List<Legs>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllOwnedLegs().map{convertToLegs(it)}
@@ -61,9 +47,6 @@ class ClothesRepository {
     }
 
     //not owned:
-    /**
-     * gets all not owned heads from the database
-     */
     suspend fun getAllNotOwnedHeads(): List<Head>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllNotOwnedHeads().map{convertToHead(it)} //casting all in list to head
@@ -71,17 +54,12 @@ class ClothesRepository {
 
     }
 
-    /**
-     * gets all not owned torsos from the database
-     */
     suspend fun getAllNotOwnedTorsos(): List<Torso>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllNotOwnedTorsos().map{convertToTorso(it)} //casting all in list to head
         }
     }
-    /**
-     * gets all not owned legs from the database
-     */
+
     suspend fun getAllNotOwnedLegs(): List<Legs>{
         return withContext(Dispatchers.IO) withContex@{
             return@withContex clothesDao.getAllNotOwnedLegs().map{convertToLegs(it)} //casting all in list to head
@@ -91,9 +69,6 @@ class ClothesRepository {
     //Equipped clothes:
     //I had a bug where the first time the app started without any cahce, the app would crash because
     //equiped clothes list was empty, therefore i check if it is empty and if null or empty load a hardcoded backup character
-    /**
-     * gets the equipped head from the database
-     */
     fun getEquipedHead(): Head{
         var head = clothesDao.getEquipedHead()
         if (head.isNullOrEmpty()){
@@ -102,9 +77,6 @@ class ClothesRepository {
         return convertToHead(head.first())
     }
 
-    /**
-     * gets the equipped torso from the database
-     */
     fun getEquipedTorso(): Torso{
         var torso = clothesDao.getEquipedTorso()
         if (torso.isNullOrEmpty()){
@@ -113,52 +85,34 @@ class ClothesRepository {
         return convertToTorso(torso.first())
     }
 
-    /**
-     * gets the equipped legs from the database
-     */
     fun getEquipedLegs(): Legs{
-        val legs = clothesDao.getEquipedLegs()
-        if (legs.isEmpty()){
+        var legs = clothesDao.getEquipedLegs()
+        if (legs.isNullOrEmpty()){
             return backupLegs()
         }
         return convertToLegs(legs.first())
     }
 
-    /**
-     * writes the equipped head to the database - using the unique image asset as an ID
-     */
     fun writeEquipedHead(immageAsset :Int){
         clothesDao.writeEquipedHead(immageAsset)
     }
 
-    /**
-     * writes the equipped torso to the database - using the unique image asset as an ID
-     */
     fun writeEquipedTorso(immageAsset : Int){
         clothesDao.writeEquipedTorso(immageAsset)
     }
-    /**
-     * writes the equipped legs to the database - using the unique image asset as an ID
-     */
+
     fun writeEquipedLegs(immageAsset: Int){
         clothesDao.writeEquipedLegs(immageAsset)
     }
-    /**
-     * updates the date in the database to the current date
-     */
+
     fun updateDate(){
-        clothesDao.updateDate(timestamp = System.currentTimeMillis())   //this is also the default parameter value, but passed here just to be sure
+        clothesDao.updateDate(timestamp = System.currentTimeMillis())
     }
-    /**
-     * gets the last date the user logged in
-     */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getLastDate() : LocalDate {
         //this is ugly, but allows me to get the DATE in a non-deprecated format (looking at you, java.util.Date), to compare with current date later
         return Instant.ofEpochMilli(clothesDao.getLastDate()).atZone(ZoneId.systemDefault()).toLocalDate()
     }
-    /**
-     * the following methods create the backup character in case the user has no equipped clothes or something goes wrong
-     */
     fun backupHead(): Head{
         val short_hair : Clothes = Clothes(R.drawable.head_short_hair,"Short Hair", 25,  30, R.drawable.alt_head_short_hair,"head",true)
         return convertToHead(short_hair)

@@ -73,6 +73,7 @@ import no.uio.ifi.IN2000.team24_app.ui.components.permission.PermissionAction
 import no.uio.ifi.IN2000.team24_app.ui.day
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -436,6 +437,7 @@ fun WeatherCardsToday(vm: HomeScreenViewModel) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherCard(
     weatherDetail: WeatherDetails,

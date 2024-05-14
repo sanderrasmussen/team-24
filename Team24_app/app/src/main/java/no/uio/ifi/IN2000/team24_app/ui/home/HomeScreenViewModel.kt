@@ -219,34 +219,19 @@ class HomeScreenViewModel(
                 val tracker = LocationTracker(context)
                 tracker.getLocation().addOnSuccessListener { location ->
                     Log.d(TAG, "In onSuccessListener w/ location: $location")
-
                     if(location !=null) {
-                        try {
-                            getCurrentWeather(location)
-                            getRelevantAlerts(location)
-                        }catch(e:ApiAccessException){
-                            Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
-                            return@addOnSuccessListener
-                        }
+                        getCurrentWeather(location)
+                        getRelevantAlerts(location)
                     }
                     else{
                         Log.e(TAG, "Location in success is null")
                         Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
-                        try {
-                            makeRequestsWithoutLocation()
-                        }catch(e:ApiAccessException){
-                            Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
-                            return@addOnSuccessListener
-                        }
+                        makeRequestsWithoutLocation()
 
                     }
                 }.addOnFailureListener { e ->
                     Log.e(TAG, "Failed to get location: ${e.message}.")
-                    try {
-                        makeRequestsWithoutLocation()
-                    }catch(e:ApiAccessException){
-                        Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
-                    }
+                    makeRequestsWithoutLocation()
                 }
          }
     }
@@ -255,18 +240,13 @@ class HomeScreenViewModel(
     This function is called when the app fails to get the user's location.
     This can be either due to refused permission, or the user's location services being disabled or unavailable.
      */
-    @Throws(ApiAccessException::class)
     fun makeRequestsWithoutLocation(){
         val backupLocation = Location("")
         backupLocation.latitude = 59.913868
         backupLocation.longitude = 10.752245
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                getCurrentWeather(backupLocation)
-                getRelevantAlerts(backupLocation)
-            }catch(e:ApiAccessException){
-                throw e
-            }
+            getCurrentWeather(backupLocation)
+            getRelevantAlerts(backupLocation)
         }
     }
 
