@@ -113,6 +113,7 @@ fun givePoints(lastDate:LocalDate, playerTemperature:Double){
 
 /**
  * fetches the default backup character from the database, to be used in case of failure
+ * @return the default backup character
  */
 fun getDefaultBackupCharacter(): Character {
 

@@ -20,6 +20,10 @@ import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
 import no.uio.ifi.IN2000.team24_app.ui.home.SatisfactionUiState
 
+/**
+ * This composable displays a satisfaction bar, which shows the user's satisfaction with the weather.
+ * @param vm is the viewmodel for the home screen
+ */
 @Composable
 fun SatisfactionBar(vm: HomeScreenViewModel){
     val satisfaction by vm.satisfaction.collectAsState()
