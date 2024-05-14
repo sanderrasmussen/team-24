@@ -22,10 +22,10 @@ interface QuestionDao {
     @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName")
     fun getCategoryQuestions(categoryName: String): List<String>
 
-    @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName AND question.answered = 0")
+    @Query("SELECT question FROM Question WHERE question.categoryName = :categoryName AND question.answered = false")
     fun getUnansweredCategoryQuestions(categoryName: String): List<String>
 
-    @Query("SELECT question FROM Question WHERE question.answered = 1")
+    @Query("SELECT question FROM Question WHERE question.answered = true")
     fun getTrainingCategoryQuestions(): List<String>
 
     @Query("SELECT * FROM Question WHERE question = :questionName")
