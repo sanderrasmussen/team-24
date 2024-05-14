@@ -83,29 +83,7 @@ import java.util.Locale
 
     }
 
-    // This function returns the resource ID of the gradient background image
-    // determined by the time of the day
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun GradientImage(): Int {
-        return when (LocalTime.now().hour) {
-        in 6 until 12 -> R.drawable.morning_gradient// 6am to 12 pm
-        in 12 until 18 -> R.drawable.day_gradient // 12 pm to 6 pm
-        in 18 until 22 -> R.drawable.noon_gradient // 6pm to 10pm
-        else -> R.drawable.night_gradient// 10pm to 6 am
-        }
-    }
 
-    // function to return a color based on the background for time of day
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun BackgroundImageQuiz(): Int {
-        return when (LocalTime.now().hour){
-            in 6 until 12 -> R.drawable.morning// 6am to 12 pm
-            in 12 until 18 -> R.drawable.day //12 pm to 6 pm
-            in 18 until 22 -> R.drawable.noon // 6pm to 10pm
-            else -> R.drawable.night// 10pm to 6 am
-        }
-
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun backgroundColour(): Color {
@@ -172,6 +150,46 @@ import java.util.Locale
         )
     }
 
+
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun quizIcon(size: Int) : Any {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Icon("quiz", size)
+            else -> Icon("quiz_white", size)
+        }
+
+    }
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun homeIcon(size: Int) : Any {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Icon("home", size)
+            else -> Icon("home_white", size)
+        }
+
+    }
+
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun storeIcon(size: Int) : Any {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Icon("clothing_store", size)
+            else -> Icon("clothing_store_white", size)
+        }
+
+    }
+
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun arrow(size: Int) : Any {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Icon("arrow", size)
+            else -> Icon("arrow_white", size)
+        }
+
+    }
+
     // navigation bar which allows users to navigate between three different screens
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
@@ -197,7 +215,8 @@ import java.util.Locale
                 .padding(8.dp)
 
             ) {
-                Icon("quiz", 40)}
+                quizIcon(60)
+            }
 
             Spacer(modifier = Modifier.padding(8.dp))
 
@@ -209,7 +228,7 @@ import java.util.Locale
                 }
                 .padding(8.dp)
             ) {
-                Icon("home", 40)
+                homeIcon(60)
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -223,7 +242,7 @@ import java.util.Locale
                 .padding(8.dp)
 
             ) {
-                Icon("clothing_store", 40)
+                storeIcon(60)
             }
         }
 

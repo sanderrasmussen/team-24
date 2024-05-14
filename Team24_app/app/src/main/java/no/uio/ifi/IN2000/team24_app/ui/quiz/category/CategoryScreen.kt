@@ -3,6 +3,7 @@ package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,8 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.arrow
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.skyColour
+import no.uio.ifi.IN2000.team24_app.ui.textColour
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -76,23 +79,19 @@ fun CategoryScreen(
 
                 title = {
 
-                    Text(text = "Kategori")
+                    Text(
+                        text = "Kategori",
+                        color = textColour()
+                    )
 
                 },
 
                 navigationIcon = {
 
                     // icon button that goes back to categories screen
-                    IconButton(onClick = onBackPressed) {
-
+                    Box(modifier = Modifier.clickable { onBackPressed() }) {
                         // back arrow icon
-                        Icon(
-
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Tilbakeknapp"
-
-                        )
-
+                        arrow(30)
                     }
 
                 },
@@ -104,10 +103,15 @@ fun CategoryScreen(
         }
 
     ) { innerPadding ->
+
         Box(
-            modifier = Modifier.fillMaxSize(),
+
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+
         ) {
-            
+
             // background with background image
             Image(
 
@@ -122,13 +126,45 @@ fun CategoryScreen(
             Column(
 
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
 
-                Column(
+                Row() {
 
+                    // text displaying category
+                    Text(
+
+                        text = "Kategori: ",
+                        color = textColour(),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+
+                    )
+
+                    Text(
+
+                        // display category info if category is found
+                        text = if (categoryUiState.category != null) categoryUiState.category!!.category
+                        else "Klarte ikke å hente kategori",
+                        color = textColour(),
+                        style = MaterialTheme.typography.titleLarge
+
+                    )
+
+                }
+
+                // spacer between category text and start button
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // start button navigating to question screen
+                Button(
+
+                    // navigate to question screen by loading 3 random questions
+                    onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
@@ -140,64 +176,27 @@ fun CategoryScreen(
 
                 ) {
 
-                    Row() {
+                    // start text
+                    Text(
 
-                        // text displaying category
-                        Text(
+                        text = "Start quiz"
 
-                            text = "Kategori: ",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                    )
 
-                        )
+                    // forward arrow icon
+                    Icon(
 
-                        Text(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Pil fram"
 
-                            // display category info if category is found
-                            text = if (categoryUiState.category != null) categoryUiState.category!!.category
-                            else "Klarte ikke å hente kategori",
-                            style = MaterialTheme.typography.titleLarge
-
-                        )
-
-                    }
-
-                    // spacer between category text and start button
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // start button navigating to question screen
-                    Button(
-
-                        // navigate to question screen by loading 3 random questions
-                        onClick = { onNavigateToQuestionScreen(questionsUiState.questions) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-
-                    ) {
-
-                        // start text
-                        Text(
-
-                            text = "Start quiz"
-
-                        )
-
-                        // forward arrow icon
-                        Icon(
-
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Pil fram"
-
-                        )
-
-                    }
+                    )
 
                 }
 
             }
 
         }
+
     }
 
 }

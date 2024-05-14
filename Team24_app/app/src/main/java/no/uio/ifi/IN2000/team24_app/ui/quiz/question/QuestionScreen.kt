@@ -1,10 +1,11 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
-import android.graphics.drawable.Icon
+import no.uio.ifi.IN2000.team24_app.ui.textColour
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.Icon
+import no.uio.ifi.IN2000.team24_app.ui.arrow
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 import no.uio.ifi.IN2000.team24_app.ui.skyColour
@@ -172,23 +175,16 @@ fun QuestionScreen(
 
                     title = {
 
-                        Text(text = "Spørsmål")
+                        Text(text = "Spørsmål", color = textColour())
 
                     },
 
                     navigationIcon = {
 
                         // icon button that goes back to categories screen
-                        IconButton(onClick = onBackPressed) {
-
+                        Box(modifier = Modifier.clickable { onBackPressed() }) {
                             // back arrow icon
-                            Icon(
-
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Tilbakeknapp"
-
-                            )
-
+                            arrow(30)
                         }
 
                     },
@@ -268,7 +264,8 @@ fun QuestionScreen(
                             Text(
 
                                 text = "$displayTime",
-                                style = MaterialTheme.typography.titleSmall
+                                style = MaterialTheme.typography.titleSmall,
+                                color = textColour()
 
                             )
 
@@ -284,7 +281,8 @@ fun QuestionScreen(
 
                         text = questionUiState.question!!.question,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = textColour()
 
                     )
 

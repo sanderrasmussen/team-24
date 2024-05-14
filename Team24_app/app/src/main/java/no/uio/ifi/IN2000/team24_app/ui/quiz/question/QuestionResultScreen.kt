@@ -3,6 +3,7 @@ package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,9 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
+import no.uio.ifi.IN2000.team24_app.ui.arrow
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 import no.uio.ifi.IN2000.team24_app.ui.skyColour
+import no.uio.ifi.IN2000.team24_app.ui.textColour
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +77,6 @@ fun QuestionResultScreen(
     val categoryUiState: CategoryUiState by questionResultScreenViewModel.categoryUiState.collectAsState()
     val balanceUiState: BalanceUiState by questionResultScreenViewModel.balanceUiState.collectAsState()
 
-    val imageName= BackgroundImageQuiz()
     // top app bar with back button to navigate back to categories screen
     Scaffold(
 
@@ -84,23 +86,17 @@ fun QuestionResultScreen(
 
                 title = {
 
-                    Text(text = "Quizresultater")
+                    Text(text = "Quizresultater",
+                        color = textColour())
 
                 },
 
                 navigationIcon = {
 
                     // icon button that goes back to categories screen
-                    IconButton(onClick = onBackPressed) {
-
+                    Box(modifier = Modifier.clickable { onBackPressed() }) {
                         // back arrow icon
-                        Icon(
-
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Tilbakeknapp"
-
-                        )
-
+                        arrow(30)
                     }
 
                 },
@@ -114,14 +110,12 @@ fun QuestionResultScreen(
     ) { innerPadding ->
 
         Box(
-            modifier = Modifier.fillMaxSize(),
+
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+
         ) {
-            Image(
-                painter = (painterResource(id = imageName)),
-                contentDescription = "Background Image based on time of the day",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
 
             // background with background image
             Image(
@@ -136,75 +130,45 @@ fun QuestionResultScreen(
             Column(
 
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
 
-                Column(
+                if (categoryUiState.category != null) {
 
                     val maxCoins = (questionList.size) * 10 // categoryUiState.category!!.points
 
-                ) {
+                    // text displaying completion of category
+                    Text(
 
-                    if (categoryUiState.category != null) {
+                        text = "${categoryUiState.category!!.category} fullført!",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = textColour()
 
-                        val maxCoins = (questionList.size - 1) * categoryUiState.category!!.points
+                    )
 
-                        // text displaying completion of category
-                        Text(
-
-                            text = "${categoryUiState.category!!.category} fullført!",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-
-                        )
-
-                        // spacer between category text and point score text
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        // row for displaying point score
-                        Row() {
-
-                            Text(
-
-                                text = "Poengscore: ",
-                                fontWeight = FontWeight.Bold
-
-                            )
-
-                            // text displaying point score
-                            Text(
-
-                                text = "$coinsWon/$maxCoins"
-
-                            )
-
-                        }
-
-                    } else {
-
-                        // display error message on failure
-                        Text("Klarte ikke å hente kategori")
-
-                    }
-
-                    // spacer between point score text and total coins text
+                    // spacer between category text and point score text
                     Spacer(modifier = Modifier.height(32.dp))
 
+                    // row for displaying point score
                     Row() {
 
                         Text(
 
-                            text = "Totale poeng: ",
-                            fontWeight = FontWeight.Bold
+                            text = "Poengscore: ",
+                            fontWeight = FontWeight.Bold,
+                            color = textColour()
 
                         )
 
                         // text displaying point score
                         Text(
-
-                            text = "${balanceUiState.balance}"
+                            color = textColour(),
+                            text = "$coinsWon/$maxCoins"
 
                         )
 
@@ -212,14 +176,13 @@ fun QuestionResultScreen(
 
                 } else {
 
-                        onClick = onBackPressed,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                    // display error message on failure
+                    Text("Klarte ikke å hente kategori",)
 
-                    ) {
+                }
 
-                        Text("Tilbake")
+                // spacer between point score text and total coins text
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Row() {
 
@@ -227,7 +190,8 @@ fun QuestionResultScreen(
                     Text(
 
                         text = "Totale penger: ",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = textColour()
 
                     )
 
@@ -243,7 +207,8 @@ fun QuestionResultScreen(
                     // text displaying point score
                     Text(
 
-                        text = "${balanceUiState.balance}"
+                        text = "${balanceUiState.balance}",
+                        color = textColour()
 
                     )
 
@@ -276,4 +241,5 @@ fun QuestionResultScreen(
         }
 
     }
+
 }

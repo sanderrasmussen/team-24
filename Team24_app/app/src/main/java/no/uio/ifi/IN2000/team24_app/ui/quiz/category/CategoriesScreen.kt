@@ -32,9 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
-import no.uio.ifi.IN2000.team24_app.ui.GradientImage
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.textColour
@@ -86,8 +84,7 @@ fun CategoriesScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
 
-                // text displaying title of screen (categories)
-                Text(
+        ) {
 
             // text displaying title of screen (categories)
             Text(
@@ -136,33 +133,7 @@ fun CategoriesScreen(
 
                             containerColor = backgroundColour()
 
-                                { /* do nothing */ }
-                            },
-
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-
-                        ) {
-
-                            Text(
-
-                                text = currentCategory.category
-
-                            )
-
-                            if (locked) {
-
-                                Icon(
-
-                                    imageVector = Icons.Filled.Lock,
-                                    contentDescription = "Låst"
-
-                                )
-
-                            }
-
-                        }
+                        )
 
                     ) {
 
