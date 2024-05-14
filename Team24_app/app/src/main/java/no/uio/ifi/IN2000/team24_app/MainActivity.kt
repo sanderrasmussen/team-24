@@ -30,7 +30,6 @@ import no.uio.ifi.IN2000.team24_app.ui.theme.Team24_appTheme
 
 
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,7 +47,6 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun Controller() {
         val navController = rememberNavController()

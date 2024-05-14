@@ -56,7 +56,7 @@ class MetAlertsDataSource(
         var alert: MetAlerts? = null;
         try {
             //the test-url allows for the use of a test-endpoint, for unit tests
-            val URL = if (!testSource) "weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude" else "weatherapi/metalerts/2.0/test.json"
+            val URL = if (!testSource) "weatherapi/metalerts/2.0//all.json?lat=$latitude&lon=$Longitude" else "weatherapi/metalerts/2.0/example.json"
             //Log.d(TAG, "Getting metalerts data")
             val response: HttpResponse = client.get(URL)
             if (response.status.isSuccess()) {

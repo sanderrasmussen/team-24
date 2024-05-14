@@ -14,9 +14,9 @@ class MetAlertsDataSourceTest {
         this only returns null if the response code is not a success (2xx)*/
         assertNotNull(metAlerts)
         assertNotNull(metAlerts?.features)
-        assertEquals(94, metAlerts?.features?.size) //the test endpoint has 25 features
+        assertEquals(5, metAlerts?.features?.size) //the test endpoint has 25 features
         assertEquals(true, metAlerts?.features?.get(0)?.geometry is Polygon) //the first feature should be a polygon
-        assertEquals("rainFlood", metAlerts?.features?.get(0)?.properties?.event) //the first feature should be a rainFlood-event
+        assertEquals("forestFire", metAlerts?.features?.get(0)?.properties?.event) //the first feature should be a rainFlood-event
 
     }
 }

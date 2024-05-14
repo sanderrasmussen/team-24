@@ -64,9 +64,7 @@ fun WeatherDetailCard(vm: HomeScreenViewModel, modifier: Modifier = Modifier,){
     Dialog(
         onDismissRequest = { vm.updateWeatherDetails(null) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
-
         ) {
-
             val dayStr = weatherDetailState.dayStr
             Card(
                 modifier = modifier

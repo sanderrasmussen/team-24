@@ -236,8 +236,13 @@ class HomeScreenViewModel(
                 }
          }
     }
+
+    /*
+    This function is called when the app fails to get the user's location.
+    This can be either due to refused permission, or the user's location services being disabled or unavailable.
+     */
     fun makeRequestsWithoutLocation(){
-        val backupLocation = Location("")  //TODO check this works
+        val backupLocation = Location("")
         backupLocation.latitude = 59.913868
         backupLocation.longitude = 10.752245
         viewModelScope.launch(Dispatchers.IO) {
@@ -261,7 +266,6 @@ class HomeScreenViewModel(
                 Log.d("getCurrentWeather", "Updating current weather: ${locationForecastRepo.getTodayWeather()}")
                 locationForecastRepo.getTodayWeather()
             }
-            Log.d("AAAAAAAAAAAAAAAAAAA", "calling updateSatisfaction from getCurrentWeather")
             updateSatisfaction(characterTemp = characterState.value.findAppropriateTemp())
             _next6DaysState.update {
                 locationForecastRepo.getNext6daysForecast()

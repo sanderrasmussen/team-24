@@ -34,7 +34,7 @@ class LocationTracker(
     ){
     private val TAG:String ="LocationTracker"
 
-    fun showGPSNotEnabledDialog(context: Context) {
+    private fun showGPSNotEnabledDialog(context: Context) {
         Toast.makeText(
             context,
             "NO GPS PROVIDER ENABLED!",
@@ -46,7 +46,7 @@ class LocationTracker(
     //if this returns null, remember to create a default
     fun getLocation() : Task<Location?> {
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
-
+        //the way control flow is set up, this will always be granted. This method is only called AFTER the permission is granted
         val cancellationToken : CancellationToken = CancellationTokenSource().token
         val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
