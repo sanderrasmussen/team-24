@@ -24,7 +24,11 @@ import kotlin.math.min
 class MetAlertsRepo(
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
 ) {
-
+    /**
+     * this function gets the interval of the feature
+     * @param feature: the feature to get the interval from
+     * @return List<String>: a list of strings containing the start and end time of the interval
+     */
     fun hentInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
