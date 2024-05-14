@@ -70,7 +70,6 @@ fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    //verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(//the row for the close button

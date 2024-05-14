@@ -71,4 +71,10 @@ interface ClothesDao{
     fun setTemperatureAtLastLogin(temperature: Int)
 
 }
+//need this in order to store Date in roomDB
+class DateConverter {
+    @TypeConverter
+    fun toDate(timestamp: Long): Date {
+        return Date(timestamp)
+    }
 

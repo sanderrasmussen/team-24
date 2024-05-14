@@ -18,12 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import kotlinx.coroutines.flow.MutableStateFlow
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreen
 import no.uio.ifi.IN2000.team24_app.ui.store.StoreScreen
 import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoriesScreen

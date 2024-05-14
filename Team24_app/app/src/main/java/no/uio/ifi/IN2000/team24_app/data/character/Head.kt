@@ -2,7 +2,6 @@ package no.uio.ifi.IN2000.team24_app.data.character
 
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
-import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 
 data class Head(
     override val name: String, override val heatValue: Int, override val imageAsset: Int, override val price: Int,
@@ -11,10 +10,10 @@ data class Head(
 
 }
 private val clothesRepo = ClothesRepository()
-val paintHead = Head("Paint", 0, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
+//val paintHead = Head("Paint", 0, R.drawable.paint_head, 10000, R.drawable.paint_head_alt)
 val short_hair = Head("Short Hair", 25, R.drawable.head_short_hair, 30, R.drawable.alt_head_short_hair)
 
-//if someone really has anything against run blocking then they can change the arcitecture themselves. The queries are short and fast and wont be blocking UI for long
+
 fun heads(): List<Head> = runBlocking{
     clothesRepo.getAllOwnedHeads()
 }

@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
@@ -110,15 +110,12 @@ fun HomeScreen(
 
 
     val showAlerts = remember {mutableStateOf(
-        //alertsUiState.value.alerts.isNotEmpty()
         false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
     )}
     if(showAlerts.value){
         AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
     }
     WeatherDetailCard(homevm)
-
-    val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
 
 
     val white = Color.White
@@ -340,17 +337,13 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                            currentWeatherState.let {
-                                WeatherCardsToday(
-                                    //currentHour = currentHour,
-                                    weatherDetails = it,
-                                    vm = homevm
-                                )
-                            }
+                            WeatherCardsToday(
+                                weatherDetails = currentWeatherState,
+                                vm = homevm
+                            )
                         } else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
-                                    //currentHour,
                                     vm = homevm
                                 )
                             }
@@ -378,7 +371,6 @@ fun HomeScreen(
 @Composable
 fun WeatherCardsNextSixDays(vm:HomeScreenViewModel) {
     val next6DaysWeatherState by vm.next6DaysState.collectAsState()
-
     val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()
@@ -538,8 +530,8 @@ fun AlertCardPreview(){
 @Composable
 fun AlertCarouselPreview(){
     val cards = listOf(
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+        WarningCard("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
+        WarningCard("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
     )
     val alertsUi = AlertsUiState(cards)
     Column(
