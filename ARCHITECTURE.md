@@ -27,7 +27,7 @@ Høy kohesjon: objekt som har moderat ansvar og utfører et begrenset antall opp
 
 Backend, Frontend, Database Logcat for logging og feilsøking, 
 Utviklet med Kotlin \
-API nivå 24 \
+Var API nivå 24, men siden mange av funksjonene våre krever høyere API nivå, så endret vi den til å være 26 \
 @RequiresApi(Build.VERSION_CODES.O) : Noen funksjoner som krever API 26 \
 Velge versjon som gir oss de funksjonalitetene vi trenger for appen vår. \ 
 Velge en versjon som gir tilgang til de viktigste funksjonene for brukerne våre. Tenke på brukere, hvilke versjon er de målgruppen vår best kjent med? 
