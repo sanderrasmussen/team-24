@@ -104,7 +104,7 @@ fun QuestionScreen(
         var readingTime by remember {
 
             if (categoryUiState.category!!.category == "Øving") mutableIntStateOf(0)
-            else mutableIntStateOf(5)
+            else mutableIntStateOf(8)
 
         }
         var answeringTime by remember { mutableIntStateOf(categoryUiState.category!!.points) }
@@ -127,7 +127,7 @@ fun QuestionScreen(
             if (isCorrect) {
 
                 // update points
-                newCoinsWon = answeringTime
+                newCoinsWon = answeringTime * 2/3
 
             }
 
@@ -420,14 +420,14 @@ fun AnswerOption(
     // intensity variables for intensity of button color
     val lightIntensity = 0.5f
 
-    // makes background and outline color a muted gray by default
-    var backgroundColor: Color = mutedColor(Color.Gray, lightIntensity)
-    var outlineColor: Color = mutedColor(Color.Gray, lightIntensity)
-    // makes text color gray by default
-    var textColor: Color = Color.Gray
+    // makes background and outline color white by default
+    var backgroundColor: Color = Color.White
+    var outlineColor: Color = Color.White
+    // makes text color a gray by default
+    var textColor: Color = Color.Black
 
     // green color that fits the backgrounds better
-    val greenColor = Color(android.graphics.Color.parseColor("#003312"))
+    val greenColor = Color(android.graphics.Color.parseColor("#00490A"))
     // red color that fits the backgrounds better
     val redColor = Color(android.graphics.Color.parseColor("#990000"))
 

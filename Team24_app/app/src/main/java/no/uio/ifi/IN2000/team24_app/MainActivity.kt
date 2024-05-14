@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
                 CategoriesScreen(
 
-                    onBackPressed = { navController.popBackStack("HomeScreen", inclusive = true) },
+                    navController = navController,
                     onNavigateToCategoryScreen = { categoryName ->
                         navController.navigate("CategoryScreen/$categoryName")
 
@@ -118,12 +118,12 @@ class MainActivity : ComponentActivity() {
 
                 val categoryName = backStackEntry.arguments?.getString("categoryName").orEmpty()
                 val questions = backStackEntry.arguments?.getString("questions").orEmpty()
-                val indexState = remember { mutableStateOf(backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0) }
-                val coinsWonState = remember { mutableStateOf(backStackEntry.arguments?.getString("coinsWon")?.toIntOrNull() ?: 0) }
+                val indexState = remember { mutableIntStateOf(backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0) }
+                val coinsWonState = remember { mutableIntStateOf(backStackEntry.arguments?.getString("coinsWon")?.toIntOrNull() ?: 0) }
 
                 // Oppdater index fra indexState
-                val index = indexState.value
-                val coinsWon= coinsWonState.value
+                val index = indexState.intValue
+                val coinsWon= coinsWonState.intValue
                 println("Index State Value: $index")
 
                 QuestionScreen(

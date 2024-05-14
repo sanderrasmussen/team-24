@@ -95,6 +95,7 @@ import java.util.Locale
         }
     }
 
+    // function to return a color based on the background for time of day
     @RequiresApi(Build.VERSION_CODES.O)
     fun backgroundColour(): Color {
         return when (LocalTime.now().hour)  {
@@ -105,13 +106,22 @@ import java.util.Locale
         }
     }
 
+    // function to return a color based on sky
     @RequiresApi(Build.VERSION_CODES.O)
     fun skyColour(): Color {
-        return when (LocalTime.now().hour)  {
+        return when (LocalTime.now().hour) {
             in 6 until 12 -> Color(android.graphics.Color.parseColor("#98C5E2"))
             in 12 until 18 -> Color(android.graphics.Color.parseColor("#0C91D9"))
             in  18 until 22 -> Color(android.graphics.Color.parseColor("#5E80CD"))
-            else -> Color(android.graphics.Color.parseColor("#485dd6"))
+            else -> Color(android.graphics.Color.parseColor("#0c0a4c"))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun textColour(): Color {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Color.Black
+            else -> Color.White
         }
     }
 
@@ -151,13 +161,13 @@ import java.util.Locale
         )
     }
 
-//Navigation bar which allows users to navigate between three different screens
+    // navigation bar which allows users to navigate between three different screens
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-    //get the route assosiated with the current back stack entry
+        //get the route assosiated with the current back stack entry
         val currentRoute = navBackStackEntry?.destination?.route
 
         var isClicked by remember { mutableStateOf(false) }
@@ -171,7 +181,9 @@ import java.util.Locale
                 .clickable {
                     if (currentRoute != "CategoriesScreen") { //navigates to Categoriesscreen if not already on it
                         navController.navigate("CategoriesScreen")
-                    }}
+                    }
+                }
+                .padding(8.dp)
 
             ) {
                 Icon("quiz", 40)}
