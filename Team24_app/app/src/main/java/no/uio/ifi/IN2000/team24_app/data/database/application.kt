@@ -22,7 +22,7 @@ object MyDatabase {
             AppDatabase::class.java,
             "AppDatabase"
         )
-            .addCallback(AppDatabaseCallback()) // Flyttet til dette punktet
+            .addCallback(AppDatabaseCallback())
             .build()
     }
 

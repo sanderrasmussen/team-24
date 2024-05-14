@@ -4,28 +4,15 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+
 
 class LocationTracker(
     val context: Context,
@@ -33,12 +20,9 @@ class LocationTracker(
     ){
     private val TAG:String ="LocationTracker"
 
-    //var userLocation
-    //if this returns null, remember to create a default
     fun getLocation() : Task<Location?> {
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
 
-        var userLocation : Location? = null
         val cancellationToken : CancellationToken = CancellationTokenSource().token
         val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
