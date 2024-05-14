@@ -16,6 +16,10 @@ val long_sleeve = Torso("Long Sleeve", 5, R.drawable.torso_long_sleeves, 25, R.d
 val short_sleeve = Torso("Short Sleeve", 25, R.drawable.torso_short_sleeves, 15, R.drawable.alt_torso_short_sleeve)
 
 //run blocking is only for testing that the database works
+/**
+ * Function that returns a list of all the unlocked torsos
+ * @return List<Torso> list of all the unlocked torsos
+ */
 fun torsos(): List<Torso> = runBlocking {
     clothesRepo.getAllOwnedTorsos()
 }
