@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
@@ -32,7 +33,8 @@ fun SatisfactionBar(vm: HomeScreenViewModel){
             .height(20.dp)
     ) {
         Image(
-            modifier = Modifier.padding(horizontal = 4.dp),
+            modifier = Modifier.padding(horizontal = 4.dp)
+                .size(30.dp),
             painter = painterResource(id = satisfaction.unsatisfiedIcon),
             contentDescription = "unsatisfied"
         )
@@ -44,8 +46,10 @@ fun SatisfactionBar(vm: HomeScreenViewModel){
             color = satisfaction.color
         )
         Image(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            painter = painterResource(id = R.drawable.happy_emoji), contentDescription = "satisfied"
+            modifier = Modifier.padding(horizontal = 4.dp)
+                .size(30.dp),
+            painter = painterResource(id = R.drawable.happy_emoji),
+            contentDescription = "satisfied"
         )
     }
 }
