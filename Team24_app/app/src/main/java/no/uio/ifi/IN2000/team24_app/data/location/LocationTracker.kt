@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,12 +34,19 @@ class LocationTracker(
     ){
     private val TAG:String ="LocationTracker"
 
+    fun showGPSNotEnabledDialog(context: Context) {
+        Toast.makeText(
+            context,
+            "NO GPS PROVIDER ENABLED!",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     //var userLocation
     //if this returns null, remember to create a default
     fun getLocation() : Task<Location?> {
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
 
-        var userLocation : Location? = null
         val cancellationToken : CancellationToken = CancellationTokenSource().token
         val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -57,10 +65,21 @@ class LocationTracker(
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            Log.e(TAG, "no location permission (THIS SHOULDN'T EVER HAPPEN, IF YOU READ THIS LOG ASYNC HAS BECOME DESYNC)")
 
             //this should be null, return null as missing permission
             return fusedLocationClient.lastLocation
         }
+
+            val locationManager :LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                showGPSNotEnabledDialog(context)
+                Log.e(TAG, "no location provider enabled!")
+                //this will probably still be null, handled on the outside
+                return fusedLocationClient.lastLocation
+            }
+
+
         val eventListener = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationToken)
             .addOnSuccessListener { location->
                 Log.d(TAG, "in onSuccessListener w/ lotation: $location")

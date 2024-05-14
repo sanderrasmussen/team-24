@@ -104,17 +104,9 @@ fun HomeScreen(
 
     val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
 
-    val alertsUiState = homevm.alerts.collectAsState()
 
+    AlertCardCarousel(homevm)
 
-
-    val showAlerts = remember {mutableStateOf(
-        //alertsUiState.value.alerts.isNotEmpty()
-        false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
-    )}
-    if(showAlerts.value){
-        AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
-    }
     WeatherDetailCard(homevm)
 
     val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
@@ -131,16 +123,9 @@ fun HomeScreen(
         else -> gray
     }
 
-    val character by homevm.characterState.collectAsState()
-
-    //when character is updated, the satisfaction should also update.
-    LaunchedEffect(character) {
-        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
-    }
 
 
-
-    val currentWeatherDetails = currentWeatherState?.firstOrNull()
+    val currentWeatherDetails = currentWeatherState.firstOrNull()
 
     val currentTemp = currentWeatherDetails?.next_1_hours_symbol_code
     val isRaining = currentTemp?.contains("rain", ignoreCase = true)
@@ -266,6 +251,12 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center,
                 )
                 {
+                    val character by homevm.characterState.collectAsState()
+
+                    //when character is updated, the satisfaction should also update.
+                    LaunchedEffect(character) {
+                        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
+                    }
                     Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
                     Column(
                         modifier = Modifier.align(CenterEnd),
@@ -273,17 +264,7 @@ fun HomeScreen(
 
                         ) {//the column with the inventory and the alert button
                         Button(
-                            onClick = {
-                                if (alertsUiState.value.alerts.isNotEmpty()) {
-                                    showAlerts.value = true
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Ingen farevarsler for din posisjon",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
+                            onClick = { homevm.showAlerts(true) },
                         ) {
                             Icon(
                                 iconName = "icon_warning_generic_orange",
@@ -339,14 +320,8 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                            currentWeatherState.let {
-                                WeatherCardsToday(
-                                    //currentHour = currentHour,
-                                    weatherDetails = it,
-                                    vm = homevm
-                                )
-                            }
-                        } else {
+                                WeatherCardsToday(vm = homevm)
+                        }else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
                                     //currentHour,
@@ -442,7 +417,8 @@ fun CurrentWeatherInfo(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherCardsToday(weatherDetails: List<WeatherDetails>, vm: HomeScreenViewModel) {
+fun WeatherCardsToday(vm: HomeScreenViewModel) {
+    val weatherDetails by vm.currentWeatherState.collectAsState()
     val scrollState = rememberScrollState()
     Row(
         modifier = Modifier
@@ -533,22 +509,6 @@ fun AlertCardPreview(){
 */
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun AlertCarouselPreview(){
-    val cards = listOf(
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
-        VarselKort("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
-    )
-    val alertsUi = AlertsUiState(cards)
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ){
-        AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
-    }
-}
 
 /*
 @Preview()

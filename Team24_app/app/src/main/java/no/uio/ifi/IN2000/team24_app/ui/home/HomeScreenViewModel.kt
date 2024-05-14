@@ -56,7 +56,8 @@ import kotlin.math.abs
 import kotlin.reflect.typeOf
 
 data class AlertsUiState(
-    val alerts: List<VarselKort> = emptyList()
+    val alerts: List<VarselKort> = emptyList(),
+    val show:Boolean = false
 )
 data class WeatherDetailsUiState(
     var weatherDetails: List<WeatherDetails>? = null,
@@ -134,6 +135,12 @@ class HomeScreenViewModel(
         }
     }
 
+    fun showAlerts(show:Boolean){
+        _alerts.update {
+            AlertsUiState(alerts = _alerts.value.alerts, show = show)
+        }
+    }
+
 
     fun loadClothesFromDisk(): Character {
         var character = getDefaultBackupCharacter()
@@ -208,7 +215,6 @@ class HomeScreenViewModel(
             backupLocation.latitude = 59.913868
             backupLocation.longitude = 10.752245
          viewModelScope.launch(Dispatchers.IO) {
-            if (_userLocation.value == null) {
                 val tracker = LocationTracker(context)
                 tracker.getLocation().addOnSuccessListener { location ->
                     Log.d(TAG, "In onSuccessListener w/ location: $location")
@@ -228,7 +234,6 @@ class HomeScreenViewModel(
                     Log.e(TAG, "Failed to get location: ${e.message}.(failureListener")
                     makeRequestsWithoutLocation()
                 }
-            }
          }
     }
     fun makeRequestsWithoutLocation(){
