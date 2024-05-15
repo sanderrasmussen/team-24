@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -83,6 +82,8 @@ import java.util.Locale
 
     }
 
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun backgroundColour(): Color {
         return when (LocalTime.now().hour)  {
@@ -90,6 +91,25 @@ import java.util.Locale
             in 12 until 18 -> Color(android.graphics.Color.parseColor("#24552E"))
             in  18 until 22 -> Color(android.graphics.Color.parseColor("#354779"))
             else -> Color(android.graphics.Color.parseColor("#000d48"))
+        }
+    }
+
+    // function to return a color based on sky
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun skyColour(): Color {
+        return when (LocalTime.now().hour) {
+            in 6 until 12 -> Color(android.graphics.Color.parseColor("#98C5E2"))
+            in 12 until 18 -> Color(android.graphics.Color.parseColor("#0C91D9"))
+            in  18 until 22 -> Color(android.graphics.Color.parseColor("#5E80CD"))
+            else -> Color(android.graphics.Color.parseColor("#0c0a4c"))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun textColour(): Color {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Color.Black
+            else -> Color.White
         }
     }
 
@@ -114,8 +134,6 @@ import java.util.Locale
         }
     }
 
-
-
     //This function returns the resourceID for a given icon name.
     @SuppressLint("DiscouragedApi")
     @Composable
@@ -131,26 +149,44 @@ import java.util.Locale
         )
     }
 
-//Navigation bar which allows users to navigate between three different screens
+
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun arrow(size: Int) : Any {
+        return when (LocalTime.now().hour) {
+            in 6 until 22 -> Icon("arrow", size)
+            else -> Icon("arrow_white", size)
+        }
+
+    }
+
+    // navigation bar which allows users to navigate between three different screens
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-    //get the route assosiated with the current back stack entry
+        //get the route assosiated with the current back stack entry
         val currentRoute = navBackStackEntry?.destination?.route
 
         var isClicked by remember { mutableStateOf(false) }
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White),
+            .background(backgroundColour()),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(modifier = Modifier
-                .clickable { isClicked = true }
+                .clickable {
+                    if (currentRoute != "CategoriesScreen") { //navigates to Categoriesscreen if not already on it
+                        navController.navigate("CategoriesScreen")
+                    }
+                }
                 .padding(8.dp)
+
             ) {
-                Icon("quiz", 40)}
+                Icon("quiz_white",60)
+            }
 
             Spacer(modifier = Modifier.padding(8.dp))
 
@@ -162,7 +198,7 @@ import java.util.Locale
                 }
                 .padding(8.dp)
             ) {
-                Icon("home", 40)
+                Icon("home_white",60)
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -176,7 +212,7 @@ import java.util.Locale
                 .padding(8.dp)
 
             ) {
-                Icon("clothing_store", 40)
+                Icon("clothing_store_white",60)
             }
         }
 

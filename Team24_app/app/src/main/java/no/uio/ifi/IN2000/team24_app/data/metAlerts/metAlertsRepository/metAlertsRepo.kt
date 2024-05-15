@@ -1,34 +1,23 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts.metAlertsRepository
 
 import android.annotation.SuppressLint
-import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.Features
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.Geometry
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.MetAlerts
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.MetAlertsDataSource
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.MultiPolygon
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.Point
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.Polygon
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.Properties
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.Resources
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
-import java.text.DateFormat
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
-import kotlin.math.max
-import kotlin.math.min
 
 
 
 class MetAlertsRepo {
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
-    fun hentInterval(feature: Features): List<String> {
+    fun getInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun omFarePaagaar(interval: List<String>): String {
+    fun ongoingWarning(interval: List<String>): String {
         val pattern = "yyyy-MM-dd'T'HH:mm:ssXXX"
         val sdf = SimpleDateFormat(pattern)
         val startTime = sdf.parse(interval[0])
@@ -45,17 +34,17 @@ class MetAlertsRepo {
     }
 
 
-    fun hentFareNivaFraAwarenessLevel(awarenessLevel: String?): String? {
-        val deler = awarenessLevel?.split(";")
-        var nivaa: String? = null
+    fun getDangerLevelFromAwarenessLevel(awarenessLevel: String?): String? {
+        val awareness = awarenessLevel?.split(";")
+        var level: String? = null
 
-        if (deler != null) {
-            if (deler.size > 1) {
-                nivaa = deler[1].trim()
+        if (awareness != null) {
+            if (awareness.size > 1) {
+                level = awareness[1].trim()
             }
         }
 
-        return when (nivaa) {
+        return when (level) {
             "yellow" -> "Gult nivå"
             "orange" -> "Oransje nivå"
             "red" -> "Rødt nivå"
@@ -65,20 +54,20 @@ class MetAlertsRepo {
 
     }
 
-    fun hentFarge(awarenessLevel: String?):String?{
-        val deler = awarenessLevel?.split(";")
-        var nivaa: String? = null
+    fun getColour(awarenessLevel: String?):String?{
+        val awareness = awarenessLevel?.split(";")
+        var level: String? = null
 
-        if (deler != null) {
-            if (deler.size > 1) {
-                nivaa = deler[1].trim()
+        if (awareness != null) {
+            if (awareness.size > 1) {
+                level = awareness[1].trim()
             }
         }
-        return nivaa
+        return level
 
     }
 
-    fun hentIkonID(event: String?): String {
+    fun getIconId(event: String?): String {
         return when (event) {
             "avalanches" -> "icon_warning_avalanches"
             "blowingSnow" -> "icon_warning_snow"
@@ -101,15 +90,15 @@ class MetAlertsRepo {
     }
 
 
-    suspend fun henteVarselKort(latitude:Double, longitude:Double): ArrayList<VarselKort> {
-        val fareVarsler = arrayListOf<VarselKort>()
+    suspend fun getWarningCards(latitude:Double, longitude:Double): ArrayList<WarningCard> {
+        val warnings = arrayListOf<WarningCard>()
         val features: List<Features> =
             dataSource.getMetAlertData(latitude, longitude)?.features ?: listOf()
         features.forEach { feature ->
             val geometry: Geometry? = feature.geometry
             if (geometry != null) {
 
-                lagKort(feature, fareVarsler)
+                makeCard(feature, warnings)
             }
         }
 
@@ -126,20 +115,20 @@ class MetAlertsRepo {
 
          */
         //end debug
-        return fareVarsler
+        return warnings
     }
 
-    fun lagKort(feature:Features, farevarsler: ArrayList<VarselKort> ){
-        val interval = hentInterval(feature)
-        val farge = hentFarge(feature.properties?.awarenessLevel)
-        val farePaagar = omFarePaagaar(interval)
-        val kortImageUrl = "${hentIkonID(feature.properties?.event)}_$farge"
-        val lokasjon = feature.properties?.area
-        val fareNiva = hentFareNivaFraAwarenessLevel(feature.properties?.awarenessLevel)
-        if(lokasjon!= null && fareNiva != null){
-            val varselKort= VarselKort(farePaagar, kortImageUrl, lokasjon, fareNiva)
-            if(farePaagar != "Ferdig") {    //simple way to remove the warnings that have passed. no param at endpoint for this.
-                farevarsler.add(varselKort)
+    fun makeCard(feature:Features, warnings: ArrayList<WarningCard> ){
+        val interval = getInterval(feature)
+        val colour = getColour(feature.properties?.awarenessLevel)
+        val ongoingDanger = ongoingWarning(interval)
+        val imageURL = "${getIconId(feature.properties?.event)}_$colour"
+        val location = feature.properties?.area
+        val riskLevel = getDangerLevelFromAwarenessLevel(feature.properties?.awarenessLevel)
+        if(location!= null && riskLevel != null){
+            val warningCard= WarningCard(ongoingDanger, imageURL, location, riskLevel)
+            if(ongoingDanger != "Ferdig") {    //simple way to remove the warnings that have passed. no param at endpoint for this.
+                warnings.add(warningCard)
             }
         }
     }

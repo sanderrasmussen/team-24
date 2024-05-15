@@ -3,18 +3,13 @@ package no.uio.ifi.IN2000.team24_app.data.character
 
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.bank.BankRepository
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import java.time.LocalDate
-import java.util.Calendar
-import java.util.Date
 import kotlin.math.abs
 
 /**
