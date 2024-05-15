@@ -79,11 +79,11 @@ class LocationForecastRepository{
      * @see WeatherDetails
      */
     fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
-        var time: String? = getTimeseries()?.get(timeseries_Index)?.time
-        var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
-        var next_1_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next1Hours
-        var next_6_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next6Hours
-        var next_12_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next12Hours
+        val time: String? = getTimeseries()?.get(timeseries_Index)?.time
+        val details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
+        val next_1_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next1Hours
+        val next_6_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next6Hours
+        val next_12_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next12Hours
 
         return WeatherDetails(
             time,
@@ -141,17 +141,17 @@ class LocationForecastRepository{
      * @see WeatherDetails
      */
     fun getTodayWeather(): ArrayList<WeatherDetails> {
-        var data = getTimeseries()?.subList(0,24)
-        var todayDate = data?.get(0)?.time?.split("T")?.get(0)
-        var todayWeather : ArrayList<WeatherDetails> = ArrayList<WeatherDetails>()
+        val data = getTimeseries()?.subList(0,24)
+        val todayDate = data?.get(0)?.time?.split("T")?.get(0)
+        val todayWeather : ArrayList<WeatherDetails> = ArrayList<WeatherDetails>()
 
         data?.forEachIndexed { index, e ->
-            var date = e.time?.split("T")?.get(0)
-            var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
+            val date = e.time?.split("T")?.get(0)
+            val time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
             if (date==todayDate){
-                var weather : WeatherDetails = createWeatherDetailObject(index)
+                val weather : WeatherDetails = createWeatherDetailObject(index)
                 weather.time= time
-                todayWeather?.add(weather)
+                todayWeather.add(weather)
             }
         }
         return todayWeather
@@ -163,7 +163,7 @@ class LocationForecastRepository{
 
     @SuppressLint("NewApi")
     fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
-        var next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
+        val next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
 
         for (i in 0..6) {
             val current = LocalDateTime.now().plusDays(i.toLong())
@@ -179,12 +179,12 @@ class LocationForecastRepository{
     }
     @SuppressLint("NewApi")
     fun getNext6daysForecast() :ArrayList<WeatherDetails?> { //returns next 6 days with 12:00 as only weatherdetails object of each day
-        var next6DaysForecast = ArrayList<WeatherDetails?>()
+        val next6DaysForecast = ArrayList<WeatherDetails?>()
         for (i in 1..7) {
             val current = LocalDateTime.now().plusDays(i.toLong())
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val date = current.format(formatter)
-            var weather = getWeatherOnDate(date)
+            val weather = getWeatherOnDate(date)
             weather?.forEach{
                 if (it.time == "12"){
                     next6DaysForecast.add(it)
@@ -196,11 +196,11 @@ class LocationForecastRepository{
 
     }
     fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>> {
-        var ForecastMap  = HashMap<String?, ArrayList<WeatherDetails>>()
+        val ForecastMap  = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
-            var weatherObject : WeatherDetails = createWeatherDetailObject(index)
-            var date = e.time?.split("T")?.get(0)
-            var time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
+            val weatherObject : WeatherDetails = createWeatherDetailObject(index)
+            val date = e.time?.split("T")?.get(0)
+            val time = e.time?.split("T")?.get(1)?.split(":")?.get(0)
 
             weatherObject.time= time
 
