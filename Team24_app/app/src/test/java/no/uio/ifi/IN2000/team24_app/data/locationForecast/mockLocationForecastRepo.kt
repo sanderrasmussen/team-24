@@ -24,7 +24,7 @@ data class WeatherDetails(
 )
 
 
-class LocationForecastRepository{
+class mockLocationForecastRepo{
     private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
     private var locationForecast : LocationForecast? = null //PREFEREABLY only locationforecast should be nullable
 
@@ -60,7 +60,7 @@ class LocationForecastRepository{
         }
         catch (e: Exception) {
             // Handle eventual exeptions
-            Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
+            //Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
             if(e is ApiAccessException){
                 throw e
             }
@@ -106,32 +106,32 @@ class LocationForecastRepository{
     @SuppressLint("NewApi") //THIS CODE HAS BENN REFACTORED AND SHOULD NOT CASE INDEX OUT OF BOUNDS ANYMORE
     fun keepFirstIndexUpToDate()  {
 
-            var currentTime = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
+        var currentTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
 
-            var forecast = getTimeseries()?.get(0)?.time
+        var forecast = getTimeseries()?.get(0)?.time
+        forecast = forecast?.replace("Z", "")
+        forecast = forecast?.replace("T", ":")
+        var forecastTime = LocalDateTime.parse(forecast, formatter)
+
+        // Make a copy of the list to avoid ConcurrentModificationException
+        val timeseriesCopy = ArrayList(getTimeseries())
+
+        while (forecastTime.isBefore(currentTime.minusHours(1))) {
+
+            // Remove outdated weather data from the copied list
+            timeseriesCopy.removeAt(0)
+
+            currentTime = LocalDateTime.now()
+
+            forecast = timeseriesCopy.getOrNull(0)?.time
             forecast = forecast?.replace("Z", "")
             forecast = forecast?.replace("T", ":")
-            var forecastTime = LocalDateTime.parse(forecast, formatter)
+            forecastTime = LocalDateTime.parse(forecast, formatter)
 
-            // Make a copy of the list to avoid ConcurrentModificationException
-            val timeseriesCopy = ArrayList(getTimeseries())
-
-            while (forecastTime.isBefore(currentTime.minusHours(1))) {
-
-                // Remove outdated weather data from the copied list
-                timeseriesCopy.removeAt(0)
-
-                currentTime = LocalDateTime.now()
-
-                forecast = timeseriesCopy.getOrNull(0)?.time
-                forecast = forecast?.replace("Z", "")
-                forecast = forecast?.replace("T", ":")
-                forecastTime = LocalDateTime.parse(forecast, formatter)
-
-            }
-            // Update the original list with the modified copy
-            locationForecast?.properties?.timeseries = timeseriesCopy
+        }
+        // Update the original list with the modified copy
+        locationForecast?.properties?.timeseries = timeseriesCopy
     }
 
     /**
