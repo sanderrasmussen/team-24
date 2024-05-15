@@ -42,14 +42,19 @@ class LocationTracker(
         ).show()
     }
 
-    //var userLocation
     //if this returns null, remember to create a default
+    /**
+     * This method is used to get the current location of the user. It will return a Task<Location?>, which can be used to get the location of the user.
+     * This method will NOT request the permission to access the location, this should be done before calling this method.
+     * @return Task<Location?>: a task that will return the location of the user on success or null on failure. The null/failure should be handled by the caller.
+     */
     fun getLocation() : Task<Location?> {
         //first, check if we have permission to access the coarse location. no need to try fine location, the forecast isn't that granular anyway
         //the way control flow is set up, this will always be granted. This method is only called AFTER the permission is granted
-        val cancellationToken : CancellationToken = CancellationTokenSource().token
+        val cancellationToken : CancellationToken = CancellationTokenSource().token     //used to cancel the request, i think this happens on navigate or recompose(when caller is destroyed)
         val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+        //this makes the compiler happy - I know that the permission is granted, but the compiler doesn't
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -66,7 +71,6 @@ class LocationTracker(
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             Log.e(TAG, "no location permission (THIS SHOULDN'T EVER HAPPEN, IF YOU READ THIS LOG ASYNC HAS BECOME DESYNC)")
-
             //this should be null, return null as missing permission
             return fusedLocationClient.lastLocation
         }
@@ -79,7 +83,10 @@ class LocationTracker(
                 return fusedLocationClient.lastLocation
             }
 
-
+        /**
+         * This is the event listener that will be returned to the caller.
+         *Note that successListener may return a null-value due to the nature of the fusedLocationClient, which is why the caller should handle this.
+         */
         val eventListener = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationToken)
             .addOnSuccessListener { location->
                 Log.d(TAG, "in onSuccessListener w/ lotation: $location")

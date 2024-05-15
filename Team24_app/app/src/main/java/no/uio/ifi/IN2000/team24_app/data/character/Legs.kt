@@ -14,6 +14,10 @@ val paintLegs = Legs("Paint", 0, R.drawable.paint_legs, 10000, R.drawable.paint_
 val pants = Legs("Pants", 5, R.drawable.legs_pants, 25, R.drawable.alt_legs_pants)
 val shorts = Legs("Shorts", 25, R.drawable.legs_shorts, 15, R.drawable.alt_legs_shorts)
 
+/**
+ * Function that returns a list of all the unlocked legs
+ * @return List<Legs> list of all the unlocked legs
+ */
 fun legs(): List<Legs> = runBlocking{
     clothesRepo.getAllOwnedLegs()
 }

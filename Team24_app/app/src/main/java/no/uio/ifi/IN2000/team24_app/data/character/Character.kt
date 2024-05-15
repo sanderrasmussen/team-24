@@ -13,6 +13,11 @@ data class Character(var head: Head, var torso: Torso, var legs: Legs, var tempe
        temperature = findAppropriateTemp()
     }
 
+    /**
+     * Function to find the appropriate temperature for the character.
+     *
+     * @return The average temperature of the clothing items.
+     */
     fun findAppropriateTemp():Double{
         return (head.heatValue + torso.heatValue + legs.heatValue)/3.0
     }
