@@ -15,12 +15,31 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
+/**
+ * This class is responsible for fetching the metalerts data from the metalerts API.
+ * It uses the Ktor HTTP client to make a GET request to the API, and then parses the response
+ * into a MetAlerts object.
+ *
+ * @param TAG: The tag used for logging
+ * @param metAlerts: The MetAlerts object that is fetched from the API
+ * @param testSource: A boolean that determines whether to use the test endpoint or the real endpoint
+ */
 class MetAlertsDataSource(
     private val TAG: String = "MetAlertsDataSource",
     private var metAlerts: MetAlerts? = null,
     private val testSource:Boolean = false
 ) {
-
+    /**
+     * This function fetches the metalerts data from the API.
+     * It uses the Ktor HTTP client to make a GET request to the API, and then parses the response
+     * into a MetAlerts object.
+     *
+     * @param latitude: The latitude of the location to fetch metalerts data for
+     * @param Longitude: The longitude of the location to fetch metalerts data for
+     * @return The MetAlerts object that is fetched from the API on success, or null on failure
+     * @throws Exception if the request fails
+     * @see MetAlerts
+     */
     suspend fun getMetAlertData(latitude: Double, Longitude: Double): MetAlerts?{
         if(metAlerts != null){
             return metAlerts        //added caching to avoid recalling on the recompose bug

@@ -13,10 +13,20 @@ import java.util.Date
 class MetAlertsRepo (
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
 ) {
+    /**
+     * Returns the interval of the warning as a list of two strings; start and end time.
+     * @param feature: The feature to get the interval from.
+     * @return List of two strings; start and end time.
+     */
     fun getInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
-
+    /**
+     * Returns the ongoing status of the warning, based on the interval of the warning supplied in the same format as [getInterval].
+     * @param interval: The interval of the warning.
+     * @return String representing the ongoing status of the warning. Either "Pågår", "Ventes" or "Ferdig".
+     * @see getInterval
+     */
     @SuppressLint("SimpleDateFormat")
     fun ongoingWarning(interval: List<String>): String {
         val pattern = "yyyy-MM-dd'T'HH:mm:ssXXX"
@@ -35,15 +45,14 @@ class MetAlertsRepo (
     }
 
 
+    /**
+     * Returns the danger level of the warning based on the awareness level of the warning.
+     * @param awarenessLevel: The awareness level of the warning, in the format supplied by the MET-api.
+     * @return String representing the danger level of the warning. Either "Gult nivå", "Oransje nivå" or "Rødt nivå".
+     * @see getColour
+     */
     fun getDangerLevelFromAwarenessLevel(awarenessLevel: String?): String? {
-        val awareness = awarenessLevel?.split(";")
-        var level: String? = null
-
-        if (awareness != null) {
-            if (awareness.size > 1) {
-                level = awareness[1].trim()
-            }
-        }
+        val level = getColour(awarenessLevel)
 
         return when (level) {
             "yellow" -> "Gult nivå"
@@ -51,10 +60,13 @@ class MetAlertsRepo (
             "red" -> "Rødt nivå"
             else -> null
         }
-
-
     }
 
+    /**
+     * Returns the colour of the warning based on the awareness level of the warning.
+     * @param awarenessLevel: The awareness level of the warning, in the format supplied by the MET-api.
+     * @return String representing the colour of the warning. Either "yellow", "orange" or "red".
+     */
     fun getColour(awarenessLevel: String?):String?{
         val awareness = awarenessLevel?.split(";")
         var level: String? = null
@@ -68,6 +80,11 @@ class MetAlertsRepo (
 
     }
 
+    /**
+     * Returns the icon id of the warning based on the event of the warning.
+     * @param event: The event of the warning, in the format supplied by the MET-api.
+     * @return String representing the icon id of the warning. This, with an associated colour as postfix, is the drawable id of the icon.
+     */
     fun getIconId(event: String?): String {
         return when (event) {
             "avalanches" -> "icon_warning_avalanches"
@@ -91,6 +108,13 @@ class MetAlertsRepo (
     }
 
 
+    /**
+     * Returns a list of warning cards based on the latitude and longitude supplied. Only warnings that are ongoing or upcoming are included.
+     * @param latitude: The latitude of the location to get the warnings for.
+     * @param longitude: The longitude of the location to get the warnings for.
+     * @return List of warning cards.
+     * @see WarningCard
+     */
     suspend fun getWarningCards(latitude:Double, longitude:Double): ArrayList<WarningCard> {
         val warnings = arrayListOf<WarningCard>()
         val features: List<Features> =
@@ -102,21 +126,15 @@ class MetAlertsRepo (
                 makeCard(feature, warnings)
             }
         }
-
-        //debug
-        /*
-        val cards = arrayListOf(
-            VarselKort("Pågår", "icon_warning_avalanches_red", "Oslo", "2;yellow;moderate"),
-            VarselKort("Ventes", "icon_warning_avalanches_orange", "Viken", "2;yellow;moderate"),
-            VarselKort("Ferdig", "icon_warning_avalanches_yellow", "Vestland", "2;yellow;moderate"),
-            VarselKort("Pågår", "icon_warning_extreme", "Oslo", "2;yellow;moderate"),
-        )
-        return cards
-         */
-        //end debug
         return warnings
     }
 
+    /**
+     * Creates a warning card based on the feature supplied and adds it to the list of warnings if it hasn't already passed.
+     * @param feature: The feature to create the warning card from.
+     * @param warnings: The list of warnings to add the warning card to.
+     * @see WarningCard
+     */
     fun makeCard(feature:Features, warnings: ArrayList<WarningCard> ){
         val interval = getInterval(feature)
         val colour = getColour(feature.properties?.awarenessLevel)

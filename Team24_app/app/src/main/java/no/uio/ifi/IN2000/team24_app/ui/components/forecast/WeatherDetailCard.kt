@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.components.forecast
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

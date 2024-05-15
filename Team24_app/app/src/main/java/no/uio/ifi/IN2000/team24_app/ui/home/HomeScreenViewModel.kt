@@ -31,37 +31,65 @@ import no.uio.ifi.IN2000.team24_app.data.metAlerts.metAlertsRepository.MetAlerts
 import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 import kotlin.math.abs
 
+/**
+ * A ui dataclass for the alerts
+ * @param alerts a list of warning cards
+ * @param show a boolean to show the alerts
+ * @see WarningCard
+ * @see no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCard
+ * @see no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
+ */
 data class AlertsUiState(
 
     val alerts: List<WarningCard> = emptyList(),
     val show:Boolean = false
 )
+/**
+ * A ui dataclass for the weather details card that appears on click
+ * @param weatherDetails a list of weather details - 1 if the card is for an hour today, multiple if for a day in the future
+ * @param dayStr a string for the day - null if the card is for an hour today, the day if for a day in the future
+ * @see WeatherDetails
+ * @see no.uio.ifi.IN2000.team24_app.ui.components.forecast.WeatherDetailCard
+ */
 data class WeatherDetailsUiState(
-    var weatherDetails: List<WeatherDetails>? = null,
+    var weatherDetails: List<WeatherDetails>? = null, //basically, we don't need a show variable, because if this is null, we don't show the card
     val dayStr : String? = null
 )
+
+/**
+ * A ui dataclass for the satisfaction meter
+ * @param fillPercent a float for the fill percentage of the meter
+ * @param color a color for the meter
+ * @param unsatisfiedIcon an int for the icon to show when the user is unsatisfied
+ * @see no.uio.ifi.IN2000.team24_app.ui.components.character.SatisfactionBar
+ */
 data class SatisfactionUiState(
     val fillPercent: Float = 0.0f,
     val color : Color = Color.Green,
     val unsatisfiedIcon: Int = R.drawable.too_cold
     )
 
-
+/**
+ * A ViewModel for the HomeScreen
+ * @param locationForecastRepo a repository for the location forecast
+ * @param metAlertsRepo a repository for the met alerts
+ * @param bankRepo a repository for the bank
+ * @param alerts a stateflow for the alerts
+ * @param satisfaction a stateflow for the satisfaction
+ * @param weatherDetails a stateflow for the weather details card
+ * @param currentWeatherState a stateflow for the current weather - hour by hour, for the day
+ * @param next6DaysState a stateflow for the weather for the next 6 days
+ */
 class HomeScreenViewModel(
     private val TAG:String = "HomeScreenViewModel",
     private val locationForecastRepo : LocationForecastRepository = LocationForecastRepository(),
     private val metAlertsRepo: MetAlertsRepo = MetAlertsRepo(),
     private val bankRepo : BankRepository = BankRepository(),
 
-    private var _userLocation : MutableStateFlow<Location?> = MutableStateFlow(null),
-    val userLocation : StateFlow<Location?> = _userLocation.asStateFlow(),
     private var _alerts : MutableStateFlow<AlertsUiState> = MutableStateFlow(AlertsUiState()),
     val alerts : StateFlow<AlertsUiState> = _alerts.asStateFlow(),
     private var _satisfaction : MutableStateFlow<SatisfactionUiState> = MutableStateFlow(SatisfactionUiState()),
     val satisfaction : StateFlow<SatisfactionUiState> = _satisfaction.asStateFlow(),
-    private var _balance: MutableStateFlow<Int?> = MutableStateFlow(0),
-    val balance: StateFlow<Int?> = _balance.asStateFlow(),
-
 
     private val _weatherDetails : MutableStateFlow<WeatherDetailsUiState> = MutableStateFlow(WeatherDetailsUiState()),
     val weatherDetails : StateFlow<WeatherDetailsUiState> = _weatherDetails.asStateFlow(),
@@ -80,10 +108,15 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             characterState.update { loadSelectedClothes() }
         }
-        getBalanceFromDb()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /**
+     * Function to update the weather details card
+     * @param weatherDetails a list of weather details - 1 if the card is for an hour today, multiple if for a day in the future. null if the card should be hidden
+     * @param dayStr a string for the day - null if the card is for an hour today, the day if for a day in the future
+     * @see WeatherDetails
+     * @see WeatherDetailsUiState
+     */
     fun updateWeatherDetails(weatherDetails: WeatherDetails?, dayStr: String? = null) {
         _weatherDetails.update {
             if (weatherDetails == null) {
@@ -106,13 +139,23 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * Function to show or hide the alerts
+     * @param show a boolean to show the alerts
+     * @see AlertsUiState
+     */
     fun showAlerts(show:Boolean){
         _alerts.update {
             AlertsUiState(alerts = _alerts.value.alerts, show = show)
         }
     }
 
-    fun loadClothesFromDisk(): Character {
+    /**
+     * Function to get the stored character.
+     * @return the [Character] as stored in the database
+     * @see Character
+     */
+    private fun loadClothesFromDisk(): Character {
         var character = getDefaultBackupCharacter()
         viewModelScope.launch {
             character = loadSelectedClothes()
@@ -123,17 +166,14 @@ class HomeScreenViewModel(
         return character
     }
 
-    fun getBalanceFromDb() {
-
-        viewModelScope.launch {
-            _balance.update {
-
-                bankRepo.getBankBalance()
-            }
-        }
-    }
-
-     fun updateSatisfaction(characterTemp: Double, actualTemp: Double = (_currentWeatherState.value.firstOrNull()?.air_temperature ?:0.0)) {
+    /**
+     * Function to update the satisfaction meter
+     * @param characterTemp the temperature the character is dressed for
+     * @param actualTemp the actual temperature
+     * @see SatisfactionUiState
+     * @see Character.findAppropriateTemp
+     */
+    fun updateSatisfaction(characterTemp: Double, actualTemp: Double = (_currentWeatherState.value.firstOrNull()?.air_temperature ?:0.0)) {
 
         var newFillPercent = 0.0f
         var newColor = Color.Green
@@ -178,10 +218,14 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * function to make the api requests. There are two paths to make requests to the api: with or without location.
+     * If the app has permission to use location, this function is called, the location is fetched, and the requests are made.
+     * If the app does not have permission to use location, or the location services are disabled, the function [makeRequestsWithoutLocation] is called.
+     * @param context the context of the app
+     * @see LocationTracker
+     */
      fun makeRequests(context: Context) {
-         val backupLocation = Location("")
-            backupLocation.latitude = 59.913868
-            backupLocation.longitude = 10.752245
          viewModelScope.launch(Dispatchers.IO) {
                 val tracker = LocationTracker(context)
                 tracker.getLocation().addOnSuccessListener { location ->
@@ -218,9 +262,9 @@ class HomeScreenViewModel(
          }
     }
 
-    /*
-    This function is called when the app fails to get the user's location.
-    This can be either due to refused permission, or the user's location services being disabled or unavailable.
+    /**
+    *This function is called when the app fails to get the user's location.
+    *This can be either due to refused permission, or the user's location services being disabled or unavailable.
      */
     @Throws(ApiAccessException::class)
     fun makeRequestsWithoutLocation(){
@@ -237,6 +281,14 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * Function to get the current weather
+     * @param location the location to get the weather for
+     * @throws ApiAccessException if the api access fails
+     * @see LocationForecastRepository.fetchLocationForecast
+     * @see LocationForecastRepository.getTodayWeather
+     * @see LocationForecastRepository.getNext6daysForecast
+     */
     @Throws(ApiAccessException::class)
     fun getCurrentWeather(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -265,6 +317,11 @@ class HomeScreenViewModel(
     }
 
 
+    /**
+     * Function to get the relevant alerts
+     * @param location the location to get the alerts for
+     * @see MetAlertsRepo.getWarningCards
+     */
     fun getRelevantAlerts(location : Location) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG,

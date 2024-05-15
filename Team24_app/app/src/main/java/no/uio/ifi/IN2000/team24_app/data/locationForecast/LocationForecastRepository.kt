@@ -157,10 +157,16 @@ class LocationForecastRepository{
         return todayWeather
     }
 
+
     fun getWeatherOnDate(date : String) : ArrayList<WeatherDetails>? {
         return forecastMap?.get(date)
     }
 
+    /**
+     * this function returns the weather for the next 7 days, as a full list of WeatherDetails-objects (01 to 23).
+     * @return ArrayList<ArrayList<WeatherDetails>?>: The weather details for the next 7 days
+     * @see WeatherDetails
+     */
     @SuppressLint("NewApi")
     fun getNext7DaysForecast() : ArrayList<ArrayList<WeatherDetails>?> {
         val next7DaysForecast = ArrayList<ArrayList<WeatherDetails>?>()
@@ -174,6 +180,15 @@ class LocationForecastRepository{
 
         return next7DaysForecast
     }
+
+    /**
+     * this function returns the weather for the next 6 days, as a list of WeatherDetails-objects. only the weather for 12:00 is included.
+     * For more details, use [getWeatherOnDate] or [getNext7DaysForecast]
+     * @return ArrayList<WeatherDetails>: The weather details for the next 6 days
+     * @see WeatherDetails
+     * @see getWeatherOnDate
+     * @see getNext7DaysForecast
+     */
     @SuppressLint("NewApi")
     fun getNext6daysForecast() :ArrayList<WeatherDetails?> { //returns next 6 days with 12:00 as only weatherdetails object of each day
         val next6DaysForecast = ArrayList<WeatherDetails?>()
@@ -192,7 +207,7 @@ class LocationForecastRepository{
 
 
     }
-    fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>> {
+    private fun organizeForecastIntoMapByDay() : HashMap<String?, ArrayList<WeatherDetails>> {
         val ForecastMap  = HashMap<String?, ArrayList<WeatherDetails>>()
         getTimeseries()?.forEachIndexed { index, e ->
             val weatherObject : WeatherDetails = createWeatherDetailObject(index)
@@ -208,9 +223,4 @@ class LocationForecastRepository{
         }
         return ForecastMap
     }
-
-
-
-
-
 }

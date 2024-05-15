@@ -44,15 +44,23 @@ import no.uio.ifi.IN2000.team24_app.data.character.legs
 import no.uio.ifi.IN2000.team24_app.data.character.torsos
 import no.uio.ifi.IN2000.team24_app.data.character.writeEquippedClothesToDisk
 
+/**
+ * Composable function to display the inventory.
+ * @param characterState The character to update when an item is selected.
+ * @param temperature The current temperature. used to give points.
+ * @param modifier The modifier to apply to the layout.
+ * @see Character
+ * @see Clothing
+ */
 @Composable
 fun Inventory(characterState: MutableStateFlow<Character>,temperature: Double, modifier: Modifier = Modifier){
     var showInventory by remember { mutableStateOf(false) }
     val character = characterState.collectAsState()
+
     //this function has to be declared at this level so it can close the Dialog
     // Advantages of this is that 1. it is tied to the state and 2. it is passed through all levels, where closing is needed. By this i mean that ...
     //... closing is necessary on the bottom of the hierarchy when an item is clicked, but also on dialog-level when ondismiss() is called.
     // this function at the top handles all that.
-
     fun selectedClothing(clothing: Clothing){
         Log.d("Inventory", "Selected clothing: ${clothing.name}")
         when(clothing){ //first, change the character.
@@ -98,6 +106,13 @@ fun Inventory(characterState: MutableStateFlow<Character>,temperature: Double, m
     }
 }
 
+/**
+ * Composable function to display a popup card when the inventory button is clicked.
+ * @param character The character to update when an item is selected.
+ * @param closeFunction The function to call when an item is selected or the dialog needs to be closed.
+ * @param modifier The modifier to apply to the layout.
+ * @see Character
+ */
 @Composable
 fun ClothingMenuCard(character: State<Character>, closeFunction: (clothing: Clothing)->Unit, modifier: Modifier = Modifier) {
     Dialog(
@@ -119,6 +134,11 @@ fun ClothingMenuCard(character: State<Character>, closeFunction: (clothing: Clot
     }
 }
 
+/**
+ * Composable function to display the clothing menu grid itself.
+ * @param closeFunction The function to call when an item is selected.
+ * @param modifier The modifier to apply to the layout.
+ */
 @Composable
 fun ClothingMenu(closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier = Modifier){
     Column(
@@ -152,7 +172,12 @@ fun ClothingMenu(closeFunction: (clothing: Clothing) -> Unit, modifier: Modifier
         }
     }
 }
-
+/**
+ * Composable function to display a card for a clothing item.
+ * @param clothing The clothing item to display.
+ * @param closeFunction The function to call when the item is selected.
+ * @param modifier The modifier to apply to the layout.
+ */
 @Composable
 fun ClothingCard(
     clothing: Clothing,

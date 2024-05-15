@@ -47,6 +47,12 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.ui.home.AlertsUiState
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
 
+/**
+ * Composable function that creates a carousel for alert cards
+ * @param vm the [HomeScreenViewModel] to get the alerts from
+ * @param modifier the modifier for the carousel
+ * @see HomeScreenViewModel
+ */
 @Composable
 fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
     val alertsUi by vm.alerts.collectAsState()
@@ -59,7 +65,7 @@ fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
+    //scroll to the correct index when the index changes
     LaunchedEffect(index) {
         coroutineScope.launch {
             scrollState.animateScrollToItem(index)
