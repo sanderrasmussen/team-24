@@ -1,5 +1,7 @@
 ■ Beskriver arkitekturen som er benyttet i appen.
-![Architecture](https://media.github.uio.no/user/9649/files/2eb25934-7818-4747-be2d-837260cd8c2d)
+![Arkitektur](https://media.github.uio.no/user/9649/files/808208ab-37b4-4961-980e-9089bca96305)
+
+Arkitekturen i appen bygger på MVVM, som knytter sammen både frontend og backend. 
 
 
 UI Elements --> State Holders --> Repositories --> DataSources \
