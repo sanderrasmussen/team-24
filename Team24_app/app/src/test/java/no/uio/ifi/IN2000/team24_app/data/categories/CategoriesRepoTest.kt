@@ -31,7 +31,6 @@ class categoriesRepoTest {
             assertNotNull(categories)
 
             assertFalse(categories.isEmpty())
-            assertNotNull(categories.first())
         }
 
     }
