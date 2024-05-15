@@ -21,14 +21,10 @@ import kotlin.math.min
 
 
 
-class MetAlertsRepo(
+class MetAlertsRepo (
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
-) {
-    /**
-     * this function gets the interval of the feature
-     * @param feature: the feature to get the interval from
-     * @return List<String>: a list of strings containing the start and end time of the interval
-     */
+)
+{
     fun hentInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
@@ -114,9 +110,24 @@ class MetAlertsRepo(
         features.forEach { feature ->
             val geometry: Geometry? = feature.geometry
             if (geometry != null) {
+
                 lagKort(feature, fareVarsler)
             }
         }
+
+        //debug
+        /*
+        val cards = arrayListOf(
+
+            VarselKort("Pågår", "icon_warning_avalanches_red", "Oslo", "2;yellow;moderate"),
+            VarselKort("Ventes", "icon_warning_avalanches_orange", "Viken", "2;yellow;moderate"),
+            VarselKort("Ferdig", "icon_warning_avalanches_yellow", "Vestland", "2;yellow;moderate"),
+            VarselKort("Pågår", "icon_warning_extreme", "Oslo", "2;yellow;moderate"),
+        )
+        return cards
+
+         */
+        //end debug
         return fareVarsler
     }
 
@@ -127,7 +138,6 @@ class MetAlertsRepo(
         val kortImageUrl = "${hentIkonID(feature.properties?.event)}_$farge"
         val lokasjon = feature.properties?.area
         val fareNiva = hentFareNivaFraAwarenessLevel(feature.properties?.awarenessLevel)
-
         if(lokasjon!= null && fareNiva != null){
             val varselKort= VarselKort(farePaagar, kortImageUrl, lokasjon, fareNiva)
             if(farePaagar != "Ferdig") {    //simple way to remove the warnings that have passed. no param at endpoint for this.
