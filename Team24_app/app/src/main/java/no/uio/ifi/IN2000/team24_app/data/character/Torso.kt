@@ -3,6 +3,10 @@ package no.uio.ifi.IN2000.team24_app.data.character
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.IN2000.team24_app.R
 
+/**
+ * Torso class that extends the clothing class
+ * @see Clothing
+ */
 data class Torso (
     override val name: String, override val heatValue: Int, override val imageAsset: Int, override val price: Int,
     override val altAsset: Int,

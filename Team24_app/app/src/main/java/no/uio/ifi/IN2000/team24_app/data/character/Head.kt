@@ -5,6 +5,7 @@ import no.uio.ifi.IN2000.team24_app.R
 
 /**
  * Head class that extends the Clothing class
+ * @see Clothing
  */
 data class Head(
     override val name: String, override val heatValue: Int, override val imageAsset: Int, override val price: Int,

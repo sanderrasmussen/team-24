@@ -151,7 +151,6 @@ import java.util.Locale
 
 
     @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
     fun arrow(size: Int) : Any {
         return when (LocalTime.now().hour) {
             in 6 until 22 -> Icon("arrow", size)
@@ -161,7 +160,6 @@ import java.util.Locale
     }
 
     // navigation bar which allows users to navigate between three different screens
-    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController

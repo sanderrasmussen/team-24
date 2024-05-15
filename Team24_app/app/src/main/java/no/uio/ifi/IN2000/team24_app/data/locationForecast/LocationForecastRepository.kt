@@ -31,6 +31,14 @@ class LocationForecastRepository{
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
 
     //re-fetching api every hour is what i have in mind
+    /**
+     * Fetches location forecast data from the datasource
+     * @param lat: Latitude of the location
+     * @param lon: Longitude of the location
+     * @return LocationForecast: The location forecast data
+     * @throws ApiAccessException: If there is a server error on the API side
+     * @see ApiAccessException
+     */
     @Throws(ApiAccessException::class)
     suspend fun fetchLocationForecast(lat:Double, lon: Double): LocationForecast? {
         try {
@@ -53,6 +61,9 @@ class LocationForecastRepository{
         catch (e: Exception) {
             // Handle eventual exeptions
             Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
+            if(e is ApiAccessException){
+                throw e
+            }
         }
         return locationForecast;
     }
@@ -61,6 +72,12 @@ class LocationForecastRepository{
         return locationForecast?.properties?.timeseries
     }
 
+    /**
+     * Creates a WeatherDetails object from the given timeseries data
+     * @param timeseries_Index: Index of the timeseries object in the list
+     * @return WeatherDetails: The weather details object
+     * @see WeatherDetails
+     */
     fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
         var time: String? = getTimeseries()?.get(timeseries_Index)?.time
         var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
@@ -85,10 +102,6 @@ class LocationForecastRepository{
         )
     }
 
-    /*fun getWeatherNow(): WeatherDetails? {
-        var weatherNow =  createWeatherDetailObject(0)
-        return weatherNow
-    }*/
 
     @SuppressLint("NewApi") //THIS CODE HAS BENN REFACTORED AND SHOULD NOT CASE INDEX OUT OF BOUNDS ANYMORE
     fun keepFirstIndexUpToDate()  {
@@ -120,6 +133,13 @@ class LocationForecastRepository{
             // Update the original list with the modified copy
             locationForecast?.properties?.timeseries = timeseriesCopy
     }
+
+    /**
+     * this function returns the weather for today, as a list of WeatherDetails-objects.
+     * The first object will be the details for the hour that the function is called. these objects are hourly, until midnight.
+     * @return ArrayList<WeatherDetails>: The weather details for today
+     * @see WeatherDetails
+     */
     fun getTodayWeather(): ArrayList<WeatherDetails> {
         var data = getTimeseries()?.subList(0,24)
         var todayDate = data?.get(0)?.time?.split("T")?.get(0)
@@ -158,7 +178,7 @@ class LocationForecastRepository{
         return next7DaysForecast
     }
     @SuppressLint("NewApi")
-    fun getNext6daysForecast() :ArrayList<WeatherDetails?>? { //returns next 6 days with 12:00 as only weatherdetails object of each day
+    fun getNext6daysForecast() :ArrayList<WeatherDetails?> { //returns next 6 days with 12:00 as only weatherdetails object of each day
         var next6DaysForecast = ArrayList<WeatherDetails?>()
         for (i in 1..7) {
             val current = LocalDateTime.now().plusDays(i.toLong())

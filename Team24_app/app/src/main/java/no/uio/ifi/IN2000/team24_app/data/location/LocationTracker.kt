@@ -22,6 +22,10 @@ class LocationTracker(
     ){
     private val TAG:String ="LocationTracker"
 
+    /**
+     * This method is used to show a dialog to the user, telling them that they need to enable GPS.
+     */
+    //since we already have context for the FusedLocationProvider, we can use this to show a simple dialog. This could be more complex in future.
     private fun showGPSNotEnabledDialog(context: Context) {
         Toast.makeText(
             context,
