@@ -23,8 +23,8 @@ For å installere og komme i gang med appen:
 - Etter ferdig gradle buuild kan appen kjøres på en emulator med Google tjenester og API-nivå 26 eller høyere. 
 
 Biblioteker som er brukt: \
-ktor \
-coil \
-google play services \
+Ktor \
+Coil \
+Google Play Services \
 Room \
 Jetpack Compose navigation 
