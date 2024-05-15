@@ -36,14 +36,18 @@ class BankRepository()  {
     suspend fun getBankBalance(): Int {
         try {
             return withContext(Dispatchers.IO) {
-                return@withContext bankDao.get().get(0).balance
+                val bankBalance = bankDao.get()
+                if (bankBalance.isNotEmpty()) {
+                    return@withContext bankBalance[0].balance
+                } else {
+                    Log.e(TAG, "No bank records found")
+                    return@withContext -1
+                }
             }
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             Log.e(TAG, "An error occurred while getting bank balance: ${e.message}", e)
             return -1
         }
-
     }
 
 }

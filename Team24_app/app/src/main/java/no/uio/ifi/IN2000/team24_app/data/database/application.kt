@@ -94,7 +94,6 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
 
             //val oeving = Category("Farevarsler", 5, false)
             //MyDatabase.getInstance().categoryDao().insertAll(oeving)
-            
 
         }
 
