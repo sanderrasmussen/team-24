@@ -21,19 +21,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -45,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -97,9 +92,9 @@ fun StoreScreen(navController: NavController) {
 @Composable
 @RequiresApi(Build.VERSION_CODES.O)
 fun GridView(viewModel: StoreScreenViewModel) {
-    val hodeplagg by viewModel.hodePlagg.collectAsState()
-    val overDeler by viewModel.overdeler.collectAsState()
-    val plaggBukser by viewModel.bukser.collectAsState()
+    val heads by viewModel.head.collectAsState()
+    val tops by viewModel.torso.collectAsState()
+    val pants by viewModel.legs.collectAsState()
     val character by viewModel.character.collectAsState()
 
     val currentSum by viewModel.currentSum.collectAsState()
@@ -109,15 +104,14 @@ fun GridView(viewModel: StoreScreenViewModel) {
         else -> Color.White
     }
 
-    val allClothingList by remember(viewModel.hodePlagg, viewModel.overdeler, viewModel.bukser) {
+    val allClothingList by remember(viewModel.head, viewModel.torso, viewModel.legs) {
         derivedStateOf {
-            hodeplagg + overDeler + plaggBukser
+            heads + tops + pants
         }
     }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            //.background(blue)
             .padding(16.dp)
     ) {
 
@@ -135,7 +129,7 @@ fun GridView(viewModel: StoreScreenViewModel) {
                     modifier = Modifier.size(40.dp)
                 )
                 Text(
-                    text = "${currentSum}",
+                    text = "$currentSum",
                     color = textColour,
                     fontSize = 30.sp
                 )
@@ -153,31 +147,26 @@ fun GridView(viewModel: StoreScreenViewModel) {
         // Display all clothing items
         item {
             Spacer(modifier = Modifier.height(35.dp))
-            /*Text(
-                "MOTEARTIKLER",
-                horizontalArrangement = Arrangement.Center,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold
-            )*/
-            HentInfoPlagg(viewModel, allClothingList, currentSum)
+
+            getInfoClothing(viewModel, allClothingList, currentSum)
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
+fun getInfoClothing(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
                   currentSum: Int?) {
-    val scrollState = rememberScrollState()
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
-        items(allClothingList) { plagg ->
+        items(allClothingList) { clothing ->
             Card(
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
-                        selectedClothingStore(plagg, viewModel, currentSum)
+                        selectedClothingStore(clothing, viewModel, currentSum)
                     }
             ) {
                 Column(
@@ -189,17 +178,15 @@ fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothi
                 ) {
                     Box(modifier = Modifier.size(150.dp)) {
                         AsyncImage(
-                            plagg.altAsset,
+                            clothing.altAsset,
                             contentScale = ContentScale.Crop,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
-                            //.wrapContentHeight()
-                            //.height(100.dp)
 
 
                         )
-                        if (!plagg.unlocked) {
+                        if (!clothing.unlocked) {
                             Icon(
                                 painter = painterResource(id = R.drawable.lock_outline_filled),
                                 contentDescription = null,
@@ -212,16 +199,16 @@ fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothi
                     }
                     Spacer(modifier = Modifier.height(9.dp))
                     Column(modifier = Modifier.fillMaxSize()) {
-                        // Inneholdet av kortet (teksten)
+
 
                         val showAlertMessage = remember { mutableStateOf(false) }
 
                         if (showAlertMessage.value) {
-                            SimpleAlertDialog(plagg, viewModel, onDismissRequest = {
+                            SimpleAlertDialog(clothing, viewModel, onDismissRequest = {
                                 showAlertMessage.value = false }, currentSum)
                         }
 
-                        // Knappen nederst i kortet
+                        // Button on the bottom of the card
                         Button(
                             onClick = {
                                 showAlertMessage.value = true
@@ -241,7 +228,7 @@ fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothi
                                 modifier = Modifier.size(40.dp)
                             )
                             Text(
-                                text = "${plagg.price}",
+                                text = "${clothing.price}",
                                 fontSize = 26.sp,
                                 modifier = Modifier.padding(4.dp),
                                 color = Color.Black
@@ -254,9 +241,10 @@ fun HentInfoPlagg(viewModel: StoreScreenViewModel,  allClothingList: List<Clothi
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SimpleAlertDialog(
-    plagg: Clothing,
+    clothing: Clothing,
     viewModel: StoreScreenViewModel,
     onDismissRequest: () -> Unit,
     currentSum: Int?
@@ -268,7 +256,7 @@ fun SimpleAlertDialog(
             onDismissRequest = { onDismissRequest() }, // Call onDismissRequest when dismiss button is clicked
             confirmButton = {
                 ConfirmButton(
-                    plagg = plagg,
+                    clothing = clothing,
                     viewModel = viewModel,
                     currentSum = currentSum,
                     onDismissRequest = onDismissRequest
@@ -283,13 +271,14 @@ fun SimpleAlertDialog(
                 }
             },
             title = { Text(text = "Vennligst bekreft") },
-            text = { Text(text = "Ønsker du å kjøpe plagget: ${plagg.name}?") }
+            text = { Text(text = "Ønsker du å kjøpe plagget: ${clothing.name}?") }
         )
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun ConfirmButton(
-    plagg: Clothing,
+    clothing: Clothing,
     viewModel: StoreScreenViewModel,
     currentSum: Int?,
     onDismissRequest: () -> Unit
@@ -298,10 +287,10 @@ private fun ConfirmButton(
 
     TextButton(onClick = {
         // Perform action when confirm button is clicked
-        if (plagg.price <= currentSum!!) {
+        if (clothing.price <= currentSum!!) {
             coroutineScope.launch {
-                viewModel.subtractMoney(plagg.price)
-                viewModel.unlockPlagg(plagg)
+                viewModel.subtractMoney(clothing.price)
+                viewModel.unlockClothing(clothing)
                 onDismissRequest()
             }
         }
@@ -310,6 +299,7 @@ private fun ConfirmButton(
         Text(text = "OK")
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 fun selectedClothingStore(clothing: Clothing, viewModel:StoreScreenViewModel, currentSum: Int?) {
     val price = clothing.price
 
@@ -336,18 +326,6 @@ fun selectedClothingStore(clothing: Clothing, viewModel:StoreScreenViewModel, cu
     else{
         Log.d("InventoryStore", "Insufficient funds to purchase ${clothing.name}")
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
-    TopAppBar(title = {
-        Text(
-            text = "Butikk",
-            fontSize = 25.sp,
-            textAlign = TextAlign.Center
-        )
-    })
 }
 
 

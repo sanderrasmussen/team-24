@@ -7,26 +7,14 @@ import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+
 
 class LocationTracker(
     val context: Context,
@@ -75,7 +63,7 @@ class LocationTracker(
             return fusedLocationClient.lastLocation
         }
 
-            val locationManager :LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager : LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
                 showGPSNotEnabledDialog(context)
                 Log.e(TAG, "no location provider enabled!")

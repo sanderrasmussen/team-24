@@ -19,3 +19,4 @@ notes/*
 *.tar.gz
 *.rar
 *.xml
+/Team24_app/.idea

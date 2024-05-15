@@ -1,8 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.Next12Hours
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.Next1Hours
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.Next6Hours
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

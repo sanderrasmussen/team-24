@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.VarselKort
+import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
@@ -105,10 +105,7 @@ fun HomeScreen(
 
 
     AlertCardCarousel(homevm)
-
     WeatherDetailCard(homevm)
-
-    val blue = Color(android.graphics.Color.parseColor("#DCF6FF"))
 
 
     val white = Color.White
@@ -323,7 +320,6 @@ fun HomeScreen(
                         }else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
-                                    //currentHour,
                                     vm = homevm
                                 )
                             }
@@ -351,7 +347,6 @@ fun HomeScreen(
 @Composable
 fun WeatherCardsNextSixDays(vm:HomeScreenViewModel) {
     val next6DaysWeatherState by vm.next6DaysState.collectAsState()
-
     val days = getNextSixDays()
     val scrollState = rememberScrollState()
     val today = day()
@@ -505,6 +500,7 @@ fun AlertCardPreview(){
     }
 }
 */
+
 
 
 

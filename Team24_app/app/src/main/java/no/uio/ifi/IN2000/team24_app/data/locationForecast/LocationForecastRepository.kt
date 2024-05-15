@@ -4,21 +4,8 @@ import android.annotation.SuppressLint
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import okhttp3.internal.toImmutableList
-import java.lang.reflect.Array
-import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 data class WeatherDetails(
     var time : String? = null,
@@ -64,7 +51,7 @@ class LocationForecastRepository{
 
         }
         catch (e: Exception) {
-            // Håndter eventuelle unntak
+            // Handle eventual exeptions
             Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
         }
         return locationForecast;
@@ -75,7 +62,6 @@ class LocationForecastRepository{
     }
 
     fun createWeatherDetailObject(timeseries_Index : Int): WeatherDetails {
-        //HUSK SKRIVE TRY CATCH
         var time: String? = getTimeseries()?.get(timeseries_Index)?.time
         var details: InstantDetails? = getTimeseries()?.get(timeseries_Index)?.data?.instant?.details
         var next_1_hours_details = getTimeseries()?.get(timeseries_Index)?.data?.next1Hours
@@ -99,10 +85,10 @@ class LocationForecastRepository{
         )
     }
 
-    fun getWeatherNow(): WeatherDetails? {
+    /*fun getWeatherNow(): WeatherDetails? {
         var weatherNow =  createWeatherDetailObject(0)
         return weatherNow
-    }
+    }*/
 
     @SuppressLint("NewApi") //THIS CODE HAS BENN REFACTORED AND SHOULD NOT CASE INDEX OUT OF BOUNDS ANYMORE
     fun keepFirstIndexUpToDate()  {
@@ -198,10 +184,8 @@ class LocationForecastRepository{
 
             weatherObject.time= time
 
-            if (ForecastMap != null) {
-                if (!ForecastMap.containsKey(date)){
-                    ForecastMap[date] = arrayListOf<WeatherDetails>()
-                }
+            if (!ForecastMap.containsKey(date)){
+                ForecastMap[date] = arrayListOf<WeatherDetails>()
             }
             ForecastMap[date]?.add(weatherObject)
         }

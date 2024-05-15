@@ -10,9 +10,9 @@ data class Torso (
 
 }
 private val clothesRepo = ClothesRepository()
-val paintTorso = Torso("Paint", 0, R.drawable.paint_torso, 10000, R.drawable.paint_torso_alt)
+
+//val paintTorso = Torso("Paint", 0, R.drawable.paint_torso, 10000, R.drawable.paint_torso_alt)
 val long_sleeve = Torso("Long Sleeve", 5, R.drawable.torso_long_sleeves, 25, R.drawable.alt_torso_long_sleeve)
-val short_sleeve = Torso("Short Sleeve", 25, R.drawable.torso_short_sleeves, 15, R.drawable.alt_torso_short_sleeve)
 
 //run blocking is only for testing that the database works
 /**

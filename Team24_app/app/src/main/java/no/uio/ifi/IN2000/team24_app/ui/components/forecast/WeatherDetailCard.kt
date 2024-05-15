@@ -32,12 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
-import no.uio.ifi.IN2000.team24_app.ui.home.WeatherDetailsUiState
 
 
 /**

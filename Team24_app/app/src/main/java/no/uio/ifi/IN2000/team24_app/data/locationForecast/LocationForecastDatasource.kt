@@ -8,7 +8,6 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.utils.EmptyContent.headers
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent

@@ -1,12 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.R
@@ -15,7 +10,6 @@ import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
 
 /**
  * Repository for the clothes in the game - interacts with the database

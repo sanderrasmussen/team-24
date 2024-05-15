@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
-import no.uio.ifi.IN2000.team24_app.ui.home.SatisfactionUiState
 
 /**
  * This composable displays a satisfaction bar, which shows the user's satisfaction with the weather.
