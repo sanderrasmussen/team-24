@@ -1,11 +1,8 @@
-package no.uio.ifi.IN2000.team24_app.data.questions
+package no.uio.ifi.IN2000.team24_app.data.question
 
-import junit.framework.TestCase
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.IN2000.team24_app.data.question.QuestionRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

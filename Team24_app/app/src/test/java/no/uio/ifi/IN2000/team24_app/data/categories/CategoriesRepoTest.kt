@@ -1,8 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.categories
 
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.IN2000.team24_app.data.bankTest.MockBankRepository
-import no.uio.ifi.IN2000.team24_app.data.database.BankDao
 import no.uio.ifi.IN2000.team24_app.data.database.CategoryDao
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -47,11 +45,5 @@ class categoriesRepoTest {
         }
     }
 
-    @Test
-    fun testUpdateCategory(){
-        runBlocking {
-            var cate
-        }
-    }
 
 }

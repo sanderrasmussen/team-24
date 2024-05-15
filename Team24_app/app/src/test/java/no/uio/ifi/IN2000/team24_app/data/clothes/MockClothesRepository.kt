@@ -1,4 +1,4 @@
-package no.uio.ifi.IN2000.team24_app.data.clothesTest
+package no.uio.ifi.IN2000.team24_app.data.clothes
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -10,7 +10,6 @@ import no.uio.ifi.IN2000.team24_app.data.character.Legs
 import no.uio.ifi.IN2000.team24_app.data.character.Torso
 import no.uio.ifi.IN2000.team24_app.data.database.Clothes
 import no.uio.ifi.IN2000.team24_app.data.database.ClothesDao
-import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

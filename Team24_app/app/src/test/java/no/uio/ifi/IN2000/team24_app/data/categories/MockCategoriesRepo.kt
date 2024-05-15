@@ -12,7 +12,6 @@ import java.util.Date
 
 class mockCategoriesRepo(CategoryDao : CategoryDao){
 
-    private val database = MyDatabase.getInstance()
     private val categoryDao = CategoryDao
 
     // FUNCTIONS FOR FETCHING CATEGORIES

@@ -1,12 +1,9 @@
-package no.uio.ifi.IN2000.team24_app.data.clothesTest
+package no.uio.ifi.IN2000.team24_app.data.clothes
 
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.IN2000.team24_app.data.bankTest.MockBankRepository
-import no.uio.ifi.IN2000.team24_app.data.character.ClothesRepository
-import no.uio.ifi.IN2000.team24_app.data.database.BankDao
+import no.uio.ifi.IN2000.team24_app.data.clothes.MockClothesRepository
 import no.uio.ifi.IN2000.team24_app.data.database.ClothesDao
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
