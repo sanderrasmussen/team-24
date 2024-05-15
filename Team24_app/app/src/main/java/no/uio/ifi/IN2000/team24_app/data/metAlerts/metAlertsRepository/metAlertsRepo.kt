@@ -23,8 +23,7 @@ import kotlin.math.min
 
 class MetAlertsRepo (
     val dataSource: MetAlertsDataSource = MetAlertsDataSource()
-)
-{
+){
     fun hentInterval(feature: Features): List<String> {
         return feature.wen?.interval ?: emptyList()
     }
