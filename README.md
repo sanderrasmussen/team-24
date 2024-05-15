@@ -27,4 +27,5 @@ Ktor \
 Coil \
 Google Play Services \
 Room \
-Jetpack Compose navigation 
+Jetpack Compose \
+Jetpack Compose Navigation 
