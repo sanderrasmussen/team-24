@@ -43,7 +43,7 @@ data class WeatherDetailsUiState(
 data class SatisfactionUiState(
     val fillPercent: Float = 0.0f,
     val color : Color = Color.Green,
-    val unsatisfiedIcon: Int = R.drawable.too_cold //TODO this should be a custom icon
+    val unsatisfiedIcon: Int = R.drawable.too_cold
     )
 
 
@@ -72,12 +72,8 @@ class HomeScreenViewModel(
 
 ): ViewModel() {
 
-
-
-
-         //this is now default value in case of failed load form disk
+    //this is now default value in case of failed load form disk
     val characterState = MutableStateFlow(loadClothesFromDisk())
-
 
     init {
         //I will now laod selected clothes from disk
@@ -116,7 +112,6 @@ class HomeScreenViewModel(
         }
     }
 
-
     fun loadClothesFromDisk(): Character {
         var character = getDefaultBackupCharacter()
         viewModelScope.launch {
@@ -138,13 +133,11 @@ class HomeScreenViewModel(
         }
     }
 
-
      fun updateSatisfaction(characterTemp: Double, actualTemp: Double = (_currentWeatherState.value.firstOrNull()?.air_temperature ?:0.0)) {
 
         var newFillPercent = 0.0f
         var newColor = Color.Green
-        var newIcon = R.drawable.too_cold
-
+        var newIcon = R.drawable.cold_emoji
 
         Log.d("updateSatisfaction", "Actual Temp: $actualTemp, Character Temp: $characterTemp")
         val delta = abs(actualTemp - characterTemp)

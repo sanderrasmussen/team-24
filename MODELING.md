@@ -1,14 +1,12 @@
-Beskrivelse og diagrammer
-
 Modellering og systemdesign
-
-● De viktigste funksjonelle kravene til applikasjonen bør beskrives – bruk gjerne use case diagram, samt sekvensdiagram og tekstlig beskrivelse av de viktigste use-casene.
 
 
 [UseCase.pdf](https://github.uio.no/IN2000-V24/team-24/files/371/UseCase.pdf) \
 [SekvensDiagram.pdf](https://github.uio.no/IN2000-V24/team-24/files/378/SekvensDiagram.pdf)\
 [Klassediagram.pdf](https://github.uio.no/IN2000-V24/team-24/files/379/Klassediagram.pdf)\
+[Klassediagram_detaljert.pdf](https://github.uio.no/IN2000-V24/team-24/files/382/Klassediagram_detaljert.pdf)\
 [Aktivitetsdiagram.pdf](https://github.uio.no/IN2000-V24/team-24/files/372/Aktivitetsdiagram.pdf)
+
 
 **Use case: Sjekk været** \
 Primæraktør: Bruker \
@@ -65,12 +63,4 @@ Postbetingelse: Brukeren får endret klær på avataren
 1aa. Bruker har ikke nok penger til å kjøpe nye klær \
 1ab. Bruker går til quiz og spiller spill for å tjene penger \
 1ac. Bruker svarer riktig og tjener penger 
-
-
-
-● Modelleringen bør også inneholde klassediagram som reflekterer use-case og sekvensdiagrammene.
-
-
-
-● Andre diagrammer bør også være inkludert for å få frem andre perspektiver, for eksempel aktivitetsdiagram (flytdiagram) eller tilstandsdiagram.
 
