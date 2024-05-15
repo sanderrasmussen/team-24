@@ -3,7 +3,6 @@ package no.uio.ifi.IN2000.team24_app.data.locationForecast
 import android.annotation.SuppressLint
 
 import android.content.ContentValues.TAG
-import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -25,7 +24,7 @@ data class WeatherDetails(
 
 
 class mockLocationForecastRepo{
-    private val dataSource : LocationForecastDatasource = LocationForecastDatasource()
+    private val dataSource : mockLocationDatasource = mockLocationDatasource()
     private var locationForecast : LocationForecast? = null //PREFEREABLY only locationforecast should be nullable
 
     private var forecastMap : HashMap<String?, ArrayList<WeatherDetails>>? = null
@@ -60,7 +59,6 @@ class mockLocationForecastRepo{
         }
         catch (e: Exception) {
             // Handle eventual exeptions
-            //Log.e(TAG, "An error occurred while fetching location forecast: ${e.message}", e)
             if(e is ApiAccessException){
                 throw e
             }

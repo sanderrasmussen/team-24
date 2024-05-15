@@ -7,7 +7,7 @@ import org.junit.Test
 
 class locationForecastDatasourceKtTest {
 
-    val source = mockLocationForecastDatasource()
+    val source = mockLocationDatasource()
     @Test
     fun test(){
         runBlocking {

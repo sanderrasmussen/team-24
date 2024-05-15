@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -18,7 +17,7 @@ import kotlinx.serialization.json.Json
  * Datasource for fetching location forecast data from the met.no API
  *
  */
-class mockLocationForecastDatasource (
+class mockLocationDatasource (
     private val TAG:String ="LocationForecastDatasource",
     private var forecast: LocationForecast? = null
 ){
@@ -55,10 +54,8 @@ class mockLocationForecastDatasource (
         }
         var forecastResponse: LocationForecast? = null;
         try {
-            //Log.d(TAG, "Getting location forecast data")
             val response: HttpResponse =
                 client.get("weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}")
-            //Log.d(TAG, response.status.toString())
             if (response.status.isSuccess()) {
                 val content: LocationForecast = response.body();
                 forecastResponse = content;
