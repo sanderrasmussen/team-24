@@ -48,7 +48,7 @@ fun SatisfactionBar(vm: HomeScreenViewModel){
         Image(
             modifier = Modifier.padding(horizontal = 4.dp)
                 .size(30.dp),
-            painter = painterResource(id = R.drawable.happy_emoji),
+            painter = painterResource(id = R.drawable.happy),
             contentDescription = "satisfied"
         )
     }

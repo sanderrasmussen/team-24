@@ -65,7 +65,7 @@ data class WeatherDetailsUiState(
 data class SatisfactionUiState(
     val fillPercent: Float = 0.0f,
     val color : Color = Color.Green,
-    val unsatisfiedIcon: Int = R.drawable.cold_emoji
+    val unsatisfiedIcon: Int = R.drawable.too_cold
     )
 
 
@@ -168,10 +168,10 @@ class HomeScreenViewModel(
         //ICON
         newIcon = if (delta > 0) {
             Log.d("updateSatisfaction", "Too hot")
-            R.drawable.hot_emoji
+            R.drawable.too_hot
         } else {
             Log.d(TAG, "Too cold")
-            R.drawable.cold_emoji
+            R.drawable.too_cold
         }
 
         //COLOR
