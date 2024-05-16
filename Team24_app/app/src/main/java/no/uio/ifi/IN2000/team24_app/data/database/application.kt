@@ -44,6 +44,7 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             val questionDao = database.questionDao()
 
             database.bankDao().insertAll(Bank(50))
+            database.bankDao().insertAll(Bank(50))
 
             val clothingList = listOf(
 
