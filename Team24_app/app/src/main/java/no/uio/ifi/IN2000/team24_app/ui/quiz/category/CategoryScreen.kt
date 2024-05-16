@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +43,15 @@ import no.uio.ifi.IN2000.team24_app.ui.skyColour
 import no.uio.ifi.IN2000.team24_app.ui.textColour
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * Composable function for the category screen for a single category
+ * @param onBackPressed: function to navigate back to categories screen
+ * @param categoryName: name of the category to display
+ * @param categoryScreenViewModel: view model for the category screen
+ * @param onNavigateToQuestionScreen: function to navigate to question screen
+ * @see CategoryScreenViewModel
+ * @see no.uio.ifi.IN2000.team24_app.ui.quiz.question.QuestionScreen
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(

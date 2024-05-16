@@ -15,6 +15,11 @@ import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.data.question.QuestionRepository
 
+/**
+ * Ui state for the category screen.
+ *
+ * This class holds the ui state for the category screen, specifically the category
+ */
 data class CategoryUiState(
 
     val category: Category? = null
@@ -27,6 +32,12 @@ data class QuestionsUiState(
 
 )
 
+/**
+ * ViewModel for the category screen.
+ *
+ * This ViewModel is responsible for fetching the category and questions for the category.
+ * It uses the [CategoryRepository] and [QuestionRepository] to fetch the data.
+ */
 class CategoryScreenViewModel: ViewModel() {
 
     // category and question repo to fetch category and question from
@@ -61,6 +72,13 @@ class CategoryScreenViewModel: ViewModel() {
     }
 
     // function to fetch category
+    /**
+     * Function to fetch the category from the database.
+     *
+     * This function fetches the category from the database using the [CategoryRepository].
+     * It updates the ui state with the fetched category.
+     * @param categoryName the name of the category to fetch
+     */
     private fun loadCategoryInfo(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -85,13 +103,17 @@ class CategoryScreenViewModel: ViewModel() {
     }
 
 
-    // function to load 3 random category questions to pass to question screen
+    /**
+     * Function to fetch 3 random questions for the category, to pass to the question screen
+     * @param categoryName the name of the category to fetch questions for
+     * @see QuestionRepository
+     * @see no.uio.ifi.IN2000.team24_app.ui.quiz.question.QuestionScreen
+     */
     fun loadQuestionsForCategory(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-
                 _questionsUiState.update { currentQuestionsUiState ->
 
                     val questionList = questionRepository.getCategoryQuestions(categoryName)
