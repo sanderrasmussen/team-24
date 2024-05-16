@@ -1,9 +1,7 @@
 package no.uio.ifi.IN2000.team24_app.ui.store
 
 import android.content.ContentValues.TAG
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +21,11 @@ import no.uio.ifi.IN2000.team24_app.data.character.Torso
 import no.uio.ifi.IN2000.team24_app.data.character.getDefaultBackupCharacter
 import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * ViewModel for the StoreScreen.
+ * Contains the logic for loading the clothes that are not owned by the user,
+ * and the logic for buying clothes.
+ */
 class StoreScreenViewModel(): ViewModel() {
 
     val bankRepository: BankRepository = BankRepository()
@@ -55,7 +57,10 @@ class StoreScreenViewModel(): ViewModel() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /**
+     * function for loading the character from disk. this is how the character starts, before the user potentially previews a locked clothing item.
+     * @return the character with the default clothes
+     */
     fun loadClothesFromDisk(): Character {
         var character = getDefaultBackupCharacter()
         runBlocking {
@@ -64,7 +69,12 @@ class StoreScreenViewModel(): ViewModel() {
         return character
     }
 
-    fun loadBalanceFromDisk(): Int? {
+    /**
+     * function for loading the bank balance from disk. this is how the bank balance starts, before the user potentially buys a clothing item.
+     * @return the bank balance
+     * @return null if the bank balance is not found
+     */
+    private fun loadBalanceFromDisk(): Int? {
         var balance: Int? = null
         runBlocking {
             balance = bankRepository.getBankBalance()
@@ -72,6 +82,12 @@ class StoreScreenViewModel(): ViewModel() {
         return balance
     }
 
+    /**
+     * function for subtracting money from the bank balance when a clothing item is bought.
+     * This both sends the request to the bankRepository to withdraw the money, and updates the currentSum state.
+     * @param clothingPrice the price of the clothing item
+     * @see BankRepository.withdraw
+     */
     fun subtractMoney(clothingPrice: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -82,36 +98,53 @@ class StoreScreenViewModel(): ViewModel() {
             }
         }
     }
+
+    /**
+     * function for buying a clothing item. this function is called when the user clicks the buy button on a clothing item.
+     * This both sets it to owned in the clothesRepository, and removes it from the state list of not owned clothes.
+     */
     fun unlockClothing(clothing: Clothing) {
         viewModelScope.launch(Dispatchers.IO) {
             clothesRepository.setClothingToOwned(clothing.imageAsset)
         }
         when (clothing) {
             is Head -> {
-                val test = _head.value.toMutableList()
-                test.remove(clothing)
-                _head.update { test }
+                val oldHeads = _head.value.toMutableList()
+                oldHeads.remove(clothing)
+                _head.update { oldHeads }
             }
             is Torso -> {
-                val test = _torso.value.toMutableList()
-                test.remove(clothing)
-                _torso.update { test }
+                val oldTorsos = _torso.value.toMutableList()
+                oldTorsos.remove(clothing)
+                _torso.update { oldTorsos }
 
             }
             is Legs -> {
-                val test = _legs.value.toMutableList()
-                test.remove(clothing)
-                _legs.update { test }
+                val oldLegs = _legs.value.toMutableList()
+                oldLegs.remove(clothing)
+                _legs.update { oldLegs }
             }
         }
     }
-    fun loadNotOwnedHeads() : List<Head> {
+
+    /**
+     * function for loading the heads that are not owned by the user, gotten from the database.
+     * @return a list of heads that are not owned by the user
+     * @see ClothesRepository.getAllNotOwnedHeads
+     */
+    private fun loadNotOwnedHeads() : List<Head> {
         var heads: List<Head> = emptyList()
         runBlocking {
             heads = clothesRepository.getAllNotOwnedHeads()
         }
         return heads
     }
+
+    /**
+     * function for loading the torsos that are not owned by the user, gotten from the database.
+     * @return a list of torsos that are not owned by the user
+     * @see ClothesRepository.getAllNotOwnedTorsos
+     */
     fun loadNotOwnedTorsos() : List<Torso>{
         var torsos : List<Torso> = emptyList()
         runBlocking {
@@ -119,6 +152,12 @@ class StoreScreenViewModel(): ViewModel() {
         }
         return torsos
     }
+
+    /**
+     * function for loading the legs that are not owned by the user, gotten from the database.
+     * @return a list of legs that are not owned by the user
+     * @see ClothesRepository.getAllNotOwnedLegs
+     */
     fun loadNotOwnedLegs() : List<Legs>{
         var legs : List<Legs> = emptyList()
         runBlocking {

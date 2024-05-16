@@ -180,11 +180,11 @@ class HomeScreenViewModel(
         var newIcon = R.drawable.cold_emoji
 
         Log.d("updateSatisfaction", "Actual Temp: $actualTemp, Character Temp: $characterTemp")
-        val delta = abs(actualTemp - characterTemp)
+        val delta = actualTemp - characterTemp
         Log.d("updateSatisfaction", "Delta: $delta")
 
         //FILL%
-        newFillPercent = maxOf((1 - (delta / 10)).toFloat(), 0.01f)
+        newFillPercent = maxOf((1 - (abs(delta / 10))).toFloat(), 0.01f)
         Log.d("updateSatisfaction", "Satisfaction%: $newFillPercent")
 
         //ICON
