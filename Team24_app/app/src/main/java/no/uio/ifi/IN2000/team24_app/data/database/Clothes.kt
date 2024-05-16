@@ -3,7 +3,7 @@ package no.uio.ifi.IN2000.team24_app.data.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity//database table
 data class Clothes(
     @PrimaryKey val imageAsset: Int,
     val name:String,

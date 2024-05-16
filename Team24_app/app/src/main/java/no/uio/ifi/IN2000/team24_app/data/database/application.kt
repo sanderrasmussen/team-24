@@ -38,13 +38,14 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
         super.onCreate(db)
         //prepopulating the database/ inserting tables with default values the first time the app is started with no stored data.
         CoroutineScope(Dispatchers.IO).launch {
+            //getting the DAO's for use when prepopulating database
             val database = MyDatabase.getInstance()
             val clothesDao = database.clothesDao()
             val categoryDao = database.categoryDao()
-            val questionDao = database.questionDao()
 
             database.bankDao().insertAll(Bank(50))
 
+            //all clothing that will be inserted into database on initialization
             val clothingList = listOf(
 
                 // Heads
@@ -84,9 +85,10 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
                 Clothes(R.drawable.legs_pants_pajamas, "Pajama pants", 15, 30, R.drawable.alt_legs_pants_pajamas, "legs", false),
 
             )
-
+            //inseting all clothes
             clothesDao.insertAll(*clothingList.toTypedArray())
 
+            //inserting equiped clothes table with standard clothes equiped
             val equippedClothes = EquipedClothes(
                 0,
                 short_hair.imageAsset,
@@ -98,12 +100,15 @@ class AppDatabaseCallback : RoomDatabase.Callback() {
             clothesDao.insertEquipedClothesTable(equippedClothes)
             clothesDao.updateDate()
 
+            //inserting category tables
             val weatherCategory = Category("Om været")
             val warningCategory = Category("Farevarsler")
             categoryDao.insertAll(weatherCategory, warningCategory)
         }
     }
 }
+//this application class should only be created one time. The database is initialized within it and prepopulated only one time,
+//or untill app data is cleared and app is started again.
 class application : Application() {
     override fun onCreate() {
         super.onCreate()

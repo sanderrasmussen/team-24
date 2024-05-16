@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.TypeConverter
 import java.util.Date
 
-@Dao
+@Dao //methods for sql queries
 interface ClothesDao{
     @Insert
     fun insertAll(vararg clothing: Clothes)
