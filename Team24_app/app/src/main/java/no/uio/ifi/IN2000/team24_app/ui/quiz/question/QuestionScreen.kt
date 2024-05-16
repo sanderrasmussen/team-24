@@ -107,7 +107,7 @@ fun QuestionScreen(
         var readingTime by remember {
 
             if (categoryUiState.category!!.category == "Øving") mutableIntStateOf(0)
-            else mutableIntStateOf(8)
+            else mutableIntStateOf(5)
 
         }
         var answeringTime by remember { mutableIntStateOf(categoryUiState.category!!.points) }

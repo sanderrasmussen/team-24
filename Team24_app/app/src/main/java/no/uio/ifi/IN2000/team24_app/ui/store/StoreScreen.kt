@@ -156,6 +156,8 @@ fun GridView(viewModel: StoreScreenViewModel) {
 @Composable
 fun getInfoClothing(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
                   currentSum: Int?) {
+
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -208,19 +210,24 @@ fun getInfoClothing(viewModel: StoreScreenViewModel,  allClothingList: List<Clot
                                 showAlertMessage.value = false }, currentSum)
                         }
 
+
                         // Button on the bottom of the card
                         Button(
                             onClick = {
                                 showAlertMessage.value = true
                             },
+                            enabled = clothing.price <= currentSum!!, // Enable or disable the button based on whether you have enough money
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(android.graphics.Color.parseColor("#47C947"))
+                                containerColor = if (clothing.price <= currentSum!!) {
+                                    Color(android.graphics.Color.parseColor("#47C947"))
+                                } else {
+                                    Color.Gray
+                                }
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
                             shape = RoundedCornerShape(0.dp)
-
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.coin),
@@ -264,7 +271,7 @@ fun SimpleAlertDialog(
             },
             dismissButton = {
                 TextButton(onClick = {
-                    //Kaller paa onDismissRequest naar cancel knappen er trykket paa
+                    //Call onDismissRequest when dismiss button is clicked
                     onDismissRequest()
                 }) {
                     Text(text = "Cancel")
