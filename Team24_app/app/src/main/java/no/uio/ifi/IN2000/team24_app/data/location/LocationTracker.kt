@@ -79,6 +79,7 @@ class LocationTracker(
          * This is the event listener that will be returned to the caller.
          *Note that successListener may return a null-value due to the nature of the fusedLocationClient, which is why the caller should handle this.
          */
+        //the success- and failure-listener HERE are only for logging, could in theory be removed - new success and failure listeners are added by the caller.
         val eventListener = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationToken)
             .addOnSuccessListener { location->
                 Log.d(TAG, "in onSuccessListener w/ lotation: $location")
