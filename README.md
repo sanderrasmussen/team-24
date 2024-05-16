@@ -19,6 +19,7 @@ Det anbefales å emulere gjennom Android Studio for å kunne bruke emulator. Fys
 Siden appen ennå ikke er tilgjengelig for offentlig bruk, kan den fås gjennom filene i mappen "Team24_app" på Devilry. 
 For å installere og komme i gang med appen: 
 - Last ned zip filen fra Devilry og pakk den ut. 
+- Tillat synkronisering av Android SDK. 
 - Åpne prosjektmappen i Android Studio og synkroniser projektet med grade filer. Dette gjøres ved å trykke "Sync now" knappen øverst til høyre. 
 - Etter ferdig gradle build kan appen kjøres på en emulator med Google tjenester og API-nivå 26 eller høyere. 
 
