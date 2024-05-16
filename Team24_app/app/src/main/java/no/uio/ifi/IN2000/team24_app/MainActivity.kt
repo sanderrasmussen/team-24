@@ -46,7 +46,12 @@ class MainActivity : ComponentActivity() {
 
     }
 
-
+    /**
+     * Controller for the app navigation
+     * This function contains the navigation logic for the app
+     * It uses the NavHost composable to navigate between different screens
+     * @see NavHost
+     */
     @Composable
     fun Controller() {
         val navController = rememberNavController()
@@ -174,7 +179,11 @@ class MainActivity : ComponentActivity() {
 
     }
 
-
+    /**
+     * Function for checking if the network is available
+     * @param context the context of the app
+     * @return true if the network is available, false otherwise
+     */
     fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
