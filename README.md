@@ -10,7 +10,8 @@ Mila Toneff
 
 ## README
 
-Brukerdokumentasjonen, Produktokumentasjonen og Prosessdokumentasjonen ligger i Rapport filen: *LENKE TIL RAPPORTEN*. \
+Brukerdokumentasjonen, Produktokumentasjonen og Prosessdokumentasjonen ligger i Rapport filen:[IN2000 - Rapport.pdf](https://github.uio.no/IN2000-V24/team-24/files/383/IN2000.-.Rapport.pdf)
+  \
 Applikasjonen VærBuddy er utviklet for Android mobilenheter med minimum API nivå 26. \
 For å kunne bruke appen gjennom en emulator i f.eks Android Studio må det sørges for at operativsystemet tillater emulering. Emulering vil mest sannsynlig fungere uten vesentlige endringer i systeminnstillingene. 
 
