@@ -1,12 +1,10 @@
 package no.uio.ifi.IN2000.team24_app.data.category
 
-import androidx.room.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
-import java.util.Calendar
-import java.util.Date
+
 
 class CategoryRepository {
 

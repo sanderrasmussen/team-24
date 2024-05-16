@@ -1,20 +1,9 @@
 package no.uio.ifi.IN2000.team24_app.data.bank
 
-import android.app.Application
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.util.Log
-import androidx.annotation.WorkerThread
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import no.uio.ifi.IN2000.team24_app.data.database.AppDatabase
-import no.uio.ifi.IN2000.team24_app.data.database.Bank
-import no.uio.ifi.IN2000.team24_app.data.database.BankDao
 import no.uio.ifi.IN2000.team24_app.data.database.MyDatabase
 
 class BankRepository()  {

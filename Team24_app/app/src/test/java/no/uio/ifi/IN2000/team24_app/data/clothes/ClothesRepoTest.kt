@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.clothes
 
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.IN2000.team24_app.data.clothes.MockClothesRepository
 import no.uio.ifi.IN2000.team24_app.data.database.ClothesDao
 import org.junit.Assert.assertNotNull
 import org.junit.Before

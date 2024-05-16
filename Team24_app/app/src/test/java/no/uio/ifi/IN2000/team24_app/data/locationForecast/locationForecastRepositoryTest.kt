@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 

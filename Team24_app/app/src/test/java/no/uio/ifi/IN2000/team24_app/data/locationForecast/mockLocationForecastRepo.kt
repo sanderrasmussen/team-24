@@ -2,7 +2,6 @@ package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import android.annotation.SuppressLint
 
-import android.content.ContentValues.TAG
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
