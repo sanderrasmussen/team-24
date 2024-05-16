@@ -22,6 +22,11 @@ data class QuestionUiState(
 
 )
 
+/**
+ * ViewModel for the QuestionScreen.
+ * This ViewModel is responsible for fetching the category and question information
+ * from the database and updating the UI with the fetched information.
+ */
 class QuestionScreenViewModel: ViewModel() {
 
     // question and category and repo to fetch category and question from
@@ -58,6 +63,11 @@ class QuestionScreenViewModel: ViewModel() {
 
 
     // function to fetch question
+    /**
+     * Function to fetch question information from the database. Updates the UI state with the fetched information.
+     * @param questionIds List of question ids to fetch from the database.
+     * @param index Index of the question to fetch from the list of question ids.
+     */
     private fun loadQuestionInfo(questionIds: List<Long>, index: Int) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -83,6 +93,10 @@ class QuestionScreenViewModel: ViewModel() {
     }
 
     // function to fetch category
+    /**
+     * Fetches the category information from the database and updates the UI with the fetched information.
+     * @param categoryName The name of the category to fetch.
+     */
     private fun loadCategoryInfo(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {

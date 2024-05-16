@@ -65,7 +65,22 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 import no.uio.ifi.IN2000.team24_app.ui.skyColour
 
 // quiz question screen with question
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * Composable function for the QuestionScreen.
+ * This composable is responsible for displaying the question and answer alternatives
+ * for the user to answer.
+ * @param onBackPressed: Function that navigates back to the previous screen.
+ * @param categoryName: The name of the category the question belongs to.
+ * @param questions: The list of questions to display.
+ * @param index: The index of the current question.
+ * @param coinsWon: The amount of coins the user has won so far.
+ * @param questionScreenViewModel: The view model for the QuestionScreen.
+ * @param onNavigateToNextQuestionScreen: Function that navigates to the next question screen.
+ * @param onNavigateToResultQuestionScreen: Function that navigates to the result screen.
+ * @see QuestionScreenViewModel
+ * @see QuestionUiState
+ * @see QuestionResultScreen
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
@@ -509,7 +524,13 @@ fun AnswerOption(
 
 }
 
-// function for making a less intense version of a color:
+/**
+ * Function for making a less intense version of a color.
+ * @param color: The color to make less intense.
+ * @param intensity: The intensity of the color.
+ * @return A less intense version of the color.
+ * @see Color
+ */
 fun mutedColor(color: Color, intensity: Float): Color {
 
     // changes value of color components to a more muted version

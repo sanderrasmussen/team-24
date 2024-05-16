@@ -22,6 +22,11 @@ data class BalanceUiState(
 
 )
 
+/**
+ * ViewModel for the QuestionResultScreen.
+ * This ViewModel is responsible for fetching the category and balance information
+ * from the database and updating the UI with the fetched information.
+ */
 class QuestionResultScreenViewModel: ViewModel() {
 
     // question and category and repo to fetch category and question from
@@ -60,7 +65,10 @@ class QuestionResultScreenViewModel: ViewModel() {
 
     }
 
-    // function to fetch category
+    /**
+     * Fetches the category information from the database and updates the UI with the fetched information.
+     * @param categoryName The name of the category to fetch.
+     */
     private fun loadCategoryInfo(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,7 +92,12 @@ class QuestionResultScreenViewModel: ViewModel() {
 
     }
 
-    // function for updating answered value for questions
+    /**
+     * Updates the answered value for the questions in the list.
+     * @param questionList The list of questions to update the answered value for.
+     * @see QuestionRepository.updateQuestionAnsweredValue
+     * @see QuestionRepository
+     */
     private fun updateAnsweredQuestionValue(questionList: List<String>) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -107,7 +120,12 @@ class QuestionResultScreenViewModel: ViewModel() {
 
     }
 
-    // function to update last date answered category value
+    /**
+     * Updates the last date answered value for the category.
+     * @param categoryName The name of the category to update the last date answered value for.
+     * @see CategoryRepository.updateCategoryLastDateAnswered
+     * @see CategoryRepository
+     */
     private fun updateLastDateAnsweredCategoryValue(categoryName: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -126,7 +144,9 @@ class QuestionResultScreenViewModel: ViewModel() {
 
     }
 
-    // function to fetch balance from bank
+    /**
+     * Fetches the balance information from the database and updates the UI with the fetched information.
+     */
     private fun loadBalanceInfo() {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -155,7 +175,9 @@ class QuestionResultScreenViewModel: ViewModel() {
 
     }
 
-    // function to update balance with coins won
+    /**
+     * deposits the amount of coins won to the balance in the database.
+     */
     private fun updateBalance(coinsWon: Int) {
 
         viewModelScope.launch(Dispatchers.IO) {
