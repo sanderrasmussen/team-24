@@ -11,7 +11,7 @@ Mila Toneff
 ## README
 
 Brukerdokumentasjonen, Produktokumentasjonen og Prosessdokumentasjonen ligger i Rapport filen: *LENKE TIL RAPPORTEN*. \
-Applikasjonen ## *APPNAVN* er utviklet for Android mobilenheter med minimum API nivå 26. \
+Applikasjonen værBuddy er utviklet for Android mobilenheter med minimum API nivå 26. \
 For å kunne bruke appen gjennom en emulator i f.eks Android Studio må det sørges for at operativsystemet tillater emulering. Emulering vil mest sannsynlig fungere uten vesentlige endringer i systeminnstillingene. 
 
 Det anbefales å emulere gjennom Android Studio for å kunne bruke emulator. Fysiske Android enheter med tilstrekkelig API-nivå kan også brukes til å kjøre appen. 
