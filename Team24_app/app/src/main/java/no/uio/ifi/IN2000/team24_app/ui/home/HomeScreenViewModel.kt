@@ -30,7 +30,6 @@ import kotlin.math.abs
 /**
  * A ui dataclass for the alerts
  * @param alerts a list of warning cards
- * @param show a boolean to show the alerts
  * @see WarningCard
  * @see no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCard
  * @see no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
@@ -38,8 +37,8 @@ import kotlin.math.abs
 data class AlertsUiState(
 
     val alerts: List<WarningCard> = emptyList(),
-    val show:Boolean = false
-)
+
+    )
 /**
  * A ui dataclass for the weather details card that appears on click
  * @param weatherDetails a list of weather details - 1 if the card is for an hour today, multiple if for a day in the future
@@ -63,7 +62,7 @@ data class SatisfactionUiState(
     val fillPercent: Float = 0.0f,
     val color : Color = Color.Green,
     val unsatisfiedIcon: Int = R.drawable.too_cold
-    )
+)
 
 /**
  * A ViewModel for the HomeScreen
@@ -135,16 +134,6 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Function to show or hide the alerts
-     * @param show a boolean to show the alerts
-     * @see AlertsUiState
-     */
-    fun showAlerts(show:Boolean){
-        _alerts.update {
-            AlertsUiState(alerts = _alerts.value.alerts, show = show)
-        }
-    }
 
     /**
      * Function to get the stored character.
@@ -221,41 +210,41 @@ class HomeScreenViewModel(
      * @param context the context of the app
      * @see LocationTracker
      */
-     fun makeRequests(context: Context) {
-         viewModelScope.launch(Dispatchers.IO) {
-                val tracker = LocationTracker(context)
-                tracker.getLocation().addOnSuccessListener { location ->
-                    Log.d(TAG, "In onSuccessListener w/ location: $location")
+    fun makeRequests(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tracker = LocationTracker(context)
+            tracker.getLocation().addOnSuccessListener { location ->
+                Log.d(TAG, "In onSuccessListener w/ location: $location")
 
-                    if(location !=null) {
-                        try {
-                            getCurrentWeather(location)
-                            getRelevantAlerts(location)
-                        }catch(e:ApiAccessException){
-                            Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
-                            return@addOnSuccessListener
-                        }
+                if(location !=null) {
+                    try {
+                        getCurrentWeather(location)
+                        getRelevantAlerts(location)
+                    }catch(e:ApiAccessException){
+                        Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
+                        return@addOnSuccessListener
                     }
-                    else{
-                        Log.e(TAG, "Location in success is null")
-                        Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
-                        try {
-                            makeRequestsWithoutLocation()
-                        }catch(e:ApiAccessException){
-                            Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
-                            return@addOnSuccessListener
-                        }
-
-                    }
-                }.addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to get location: ${e.message}.")
+                }
+                else{
+                    Log.e(TAG, "Location in success is null")
+                    Toast.makeText(context, "Klarte ikke finne din posisjon \n standard-posisjon er Oslo", Toast.LENGTH_LONG).show()
                     try {
                         makeRequestsWithoutLocation()
                     }catch(e:ApiAccessException){
                         Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
+                        return@addOnSuccessListener
                     }
+
                 }
-         }
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Failed to get location: ${e.message}.")
+                try {
+                    makeRequestsWithoutLocation()
+                }catch(e:ApiAccessException){
+                    Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     /**
@@ -324,8 +313,8 @@ class HomeScreenViewModel(
                 "Position in getRelevantAlerts: ${location.latitude}, ${location.longitude}"
             )
             val cards = metAlertsRepo.getWarningCards(
-                    latitude = location.latitude,
-                    longitude = location.longitude
+                latitude = location.latitude,
+                longitude = location.longitude
             )
             _alerts.update { currentState ->
                 currentState.copy(alerts = cards)
