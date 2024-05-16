@@ -31,4 +31,14 @@ Coil \
 Google Play Services \
 Room \
 Jetpack Compose \
-Jetpack Compose Navigation 
+Jetpack Compose Navigation \
+
+Redegjøring av Warnings \
+Vi får primært følgende warnings i vår applikasjon:
+Remove empty primary constructor- Ligger i Geometry \
+Noen metoder og variabler kan være private - Dette er noe som kommer opp i de fleste filene som f.eks MainActivity \
+Noen variabler er redundante- variabler som ikke brukes, kommer opp i flere filer \
+'smallTopAppBarColors(Color = ..., Color = ..., Color = ..., Color = ..., Color = ...): TopAppBarColors' is deprecated. Use topAppBarColors instead - Denne får vi .eks QuestionsScreen \
+xxx is deprecated. Use yyy instead - kommer opp i en del filer. Kode som fungerer men som blir fjernet i framtidige versjoner\
+Unnecessary non-null assertion (!!) on a non-null receiver of type Int - kommer opp i StoreScreen.kt. Int kan ikke være null \
+
