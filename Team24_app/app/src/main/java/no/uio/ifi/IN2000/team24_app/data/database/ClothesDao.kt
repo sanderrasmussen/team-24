@@ -21,7 +21,7 @@ interface ClothesDao{
     @Query("UPDATE Clothes SET unlocked=1 WHERE imageAsset= :clothingId")
     fun setClothingToOwned(clothingId: Int)
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=0 AND bodyPart='head'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=1 AND bodyPart='head'")
     fun getAllOwnedHeads(): List<Clothes>
 
     @Query("SELECT * FROM Clothes WHERE unlocked=1 AND bodyPart='torso'")
