@@ -18,25 +18,25 @@ interface ClothesDao{
     @Delete
     fun delete(clothing : Clothes)
 
-    @Query("UPDATE Clothes SET unlocked=true WHERE imageAsset= :clothingId")
+    @Query("UPDATE Clothes SET unlocked=1 WHERE imageAsset= :clothingId")
     fun setClothingToOwned(clothingId: Int)
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='head'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=0 AND bodyPart='head'")
     fun getAllOwnedHeads(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='torso'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=1 AND bodyPart='torso'")
     fun getAllOwnedTorsos(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=true AND bodyPart='legs'")
+    @Query("SELECT * FROM Clothes WHERE unlocked=1 AND bodyPart='legs'")
     fun getAllOwnedLegs(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='head' ORDER BY price ASC ")
+    @Query("SELECT * FROM Clothes WHERE unlocked=0 AND bodyPart='head' ORDER BY price ASC ")
     fun getAllNotOwnedHeads(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='torso' ORDER BY price ASC ")
+    @Query("SELECT * FROM Clothes WHERE unlocked=0 AND bodyPart='torso' ORDER BY price ASC ")
     fun getAllNotOwnedTorsos(): List<Clothes>
 
-    @Query("SELECT * FROM Clothes WHERE unlocked=false AND bodyPart='legs' ORDER BY price ASC ")
+    @Query("SELECT * FROM Clothes WHERE unlocked=0 AND bodyPart='legs' ORDER BY price ASC ")
     fun getAllNotOwnedLegs(): List<Clothes>
 
     @Query("SELECT * FROM Clothes WHERE imageAsset=(SELECT EquipedHead FROM EquipedClothes )")
