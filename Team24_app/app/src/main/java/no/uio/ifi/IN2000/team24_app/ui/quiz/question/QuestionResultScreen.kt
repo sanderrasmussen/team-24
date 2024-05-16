@@ -1,7 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.question
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,13 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,7 +39,14 @@ import no.uio.ifi.IN2000.team24_app.ui.quiz.category.CategoryUiState
 import no.uio.ifi.IN2000.team24_app.ui.skyColour
 import no.uio.ifi.IN2000.team24_app.ui.textColour
 
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * Composable function for displaying the result of a quiz category
+ * @param onBackPressed: function to navigate back to categories screen
+ * @param categoryName: name of the category
+ * @param questions: list of questions
+ * @param coinsWon: number of coins won
+ * @param questionResultScreenViewModel: view model for the question result screen
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionResultScreen(
