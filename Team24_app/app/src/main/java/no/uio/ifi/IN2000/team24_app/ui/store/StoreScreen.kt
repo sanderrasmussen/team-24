@@ -57,8 +57,12 @@ import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import java.time.LocalTime
 
+/**
+ * StoreScreen is the main screen for the store. It displays the character and all the clothing items
+ * that can be bought. The user can click on the clothing items to buy them.
+ * @param navController: NavController
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StoreScreen(navController: NavController) {
     val viewModel = StoreScreenViewModel()
@@ -88,9 +92,13 @@ fun StoreScreen(navController: NavController) {
     }
 }
 
+/**
+ * GridView is a composable that displays the character and all the clothing items that can be bought.
+ * The user can click on the clothing items to buy them.
+ * @param viewModel the associated [StoreScreenViewModel]
+ */
 @SuppressLint("NotConstructor")
 @Composable
-@RequiresApi(Build.VERSION_CODES.O)
 fun GridView(viewModel: StoreScreenViewModel) {
     val heads by viewModel.head.collectAsState()
     val tops by viewModel.torso.collectAsState()
@@ -152,7 +160,17 @@ fun GridView(viewModel: StoreScreenViewModel) {
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/**
+ * getInfoClothing is a composable that displays all the clothing items that can be bought in a row.
+ * The user can click on the clothing items to buy them.
+ * @param viewModel the associated [StoreScreenViewModel]
+ * @param allClothingList a list of all the clothing items that can be bought
+ * @param currentSum the current sum of money the user has
+ * @see StoreScreenViewModel
+ * @see Clothing
+ *
+ */
 @Composable
 fun getInfoClothing(viewModel: StoreScreenViewModel,  allClothingList: List<Clothing>,
                   currentSum: Int?) {
@@ -241,7 +259,15 @@ fun getInfoClothing(viewModel: StoreScreenViewModel,  allClothingList: List<Clot
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/**
+ * SimpleAlertDialog is a composable that displays an alert dialog when the user tries to buy a clothing item.
+ * The user can confirm or cancel the purchase.
+ * @param clothing the clothing item the user is trying to buy
+ * @param viewModel the associated [StoreScreenViewModel]
+ * @param onDismissRequest a lambda that is called when the user dismisses the alert dialog
+ * @param currentSum the current sum of money the user has
+ */
 @Composable
 fun SimpleAlertDialog(
     clothing: Clothing,
@@ -275,7 +301,19 @@ fun SimpleAlertDialog(
         )
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/**
+ * ConfirmButton is a composable that displays a confirm button in the alert dialog.
+ * This is the function that is responsible for the purchase of the clothing item,
+ * IE subtracting from bank and setting the clothing item to unlocked in the database.
+ * @param clothing the clothing item the user is trying to buy
+ * @param viewModel the associated [StoreScreenViewModel]
+ * @param currentSum the current sum of money the user has
+ * @param onDismissRequest a lambda that is called when the user dismisses the alert dialog
+ * @see StoreScreenViewModel
+ * @see Clothing
+ * @see SimpleAlertDialog
+ */
 @Composable
 private fun ConfirmButton(
     clothing: Clothing,
@@ -299,7 +337,18 @@ private fun ConfirmButton(
         Text(text = "OK")
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/**
+ * selectedClothingStore is a function that is called when the user tries to buy a clothing item.
+ * This function is responsible for updating the character with the new clothing item, so the user can see a preview of what they could look like,
+ * for the small sum of **currentSum**.
+ * @param clothing the clothing item the user is trying to buy
+ * @param viewModel the associated [StoreScreenViewModel]
+ * @param currentSum the current sum of money the user has
+ * @see StoreScreenViewModel
+ * @see Clothing
+ * @see Player
+ */
 fun selectedClothingStore(clothing: Clothing, viewModel:StoreScreenViewModel, currentSum: Int?) {
     val price = clothing.price
 
