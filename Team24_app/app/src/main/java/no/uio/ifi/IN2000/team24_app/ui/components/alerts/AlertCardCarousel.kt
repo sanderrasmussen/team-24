@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
+import no.uio.ifi.IN2000.team24_app.ui.home.AlertsUiState
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
 
 /**
@@ -49,9 +51,7 @@ import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
  * @see HomeScreenViewModel
  */
 @Composable
-fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
-    val alertsUi by vm.alerts.collectAsState()
-    // val showAlerts = remember{ mutableStateOf(false)}
+fun AlertCardCarousel(alertsUi : AlertsUiState, showAlerts: MutableState<Boolean>, modifier: Modifier = Modifier) {
     //val alertsState by alertsFlow.collectAsState()
     val alerts = alertsUi.alerts
     Log.d("ALERTDEBUGcomponent", "AlertCardCarousel called w alerts: ${alerts.size}")
@@ -60,30 +60,23 @@ fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
 
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    //scroll to the correct index when the index changes
+
     LaunchedEffect(index) {
         coroutineScope.launch {
             scrollState.animateScrollToItem(index)
         }
     }
 
-    if (alertsUi.show) {
-        if(alerts.isEmpty()){
-            Toast.makeText(
-                LocalContext.current,
-                "Ingen farevarsler for din posisjon",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
+
+    if (showAlerts.value) {
         Dialog(
-            onDismissRequest = { vm.showAlerts(false) },
+            onDismissRequest = { showAlerts.value = false },
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         ) {
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(260.dp)
+                    .height(200.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -97,7 +90,7 @@ fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
                             .height(24.dp)
                     ) {
                         IconButton(
-                            onClick = { vm.showAlerts(false) },
+                            onClick = { showAlerts.value = false },
                             modifier = Modifier
                                 .width(24.dp)
                                 .height(24.dp)
@@ -139,7 +132,7 @@ fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
                                 state = scrollState,
                                 horizontalArrangement = Arrangement.Center,
                                 modifier = Modifier
-                                    //.height(130.dp)
+                                //.height(130.dp)
                             ) {
                                 itemsIndexed(alerts) { i, card ->
                                     if (i == index) {
@@ -187,5 +180,5 @@ fun AlertCardCarousel(vm: HomeScreenViewModel, modifier: Modifier = Modifier) {
             }
 
         }
-            }
-        }
+    }
+}

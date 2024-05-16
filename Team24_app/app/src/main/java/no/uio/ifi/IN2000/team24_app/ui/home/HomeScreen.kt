@@ -79,9 +79,12 @@ fun HomeScreen(
     isNetworkAvailable: Boolean,
     homevm: HomeScreenViewModel = viewModel(),
     TAG: String = "HomeScreen"
-    ){
+){
     val snackbarHostState = remember{SnackbarHostState()}
     val context = LocalContext.current
+
+    var locationToastShown by remember { mutableStateOf(false) }
+
     LocationPermission(
         LocalContext.current,
         snackbarHostState)
@@ -93,7 +96,9 @@ fun HomeScreen(
             }
             is PermissionAction.OnPermissionDenied -> {
                 Log.d(TAG, "Location permission denied")
-                Toast.makeText(context, "Uten din posisjon brukes standard-posisjon: Oslo.", Toast.LENGTH_LONG).show()
+                if (!locationToastShown) {
+                    Toast.makeText(context, "Uten din posisjon brukes standard-posisjon: Oslo.", Toast.LENGTH_LONG).show()
+                    locationToastShown = true}
                 try {
                     homevm.makeRequestsWithoutLocation()
                 }catch(e:ApiAccessException){
@@ -106,9 +111,17 @@ fun HomeScreen(
     Log.d(TAG, "HomeScreen Composable")
 
     val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
+    val alertsUiState = homevm.alerts.collectAsState()
 
 
-    AlertCardCarousel(homevm)
+
+    val showAlerts = remember {mutableStateOf(
+        false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
+    )}
+    if(showAlerts.value){
+        AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
+    }
+
     WeatherDetailCard(homevm)
 
 
@@ -264,7 +277,17 @@ fun HomeScreen(
 
                         ) {//the column with the inventory and the alert button
                         Button(
-                            onClick = { homevm.showAlerts(true) },
+                            onClick = {
+                                if (alertsUiState.value.alerts.isNotEmpty()) {
+                                    showAlerts.value = true
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Ingen farevarsler for din posisjon",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
                         ) {
                             Icon(
                                 iconName = "icon_warning_generic_orange",
@@ -320,7 +343,7 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                                WeatherCardsToday(vm = homevm)
+                            WeatherCardsToday(vm = homevm)
                         }else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
