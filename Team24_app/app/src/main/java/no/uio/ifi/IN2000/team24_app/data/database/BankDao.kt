@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
-@Dao
+@Dao //methods for sql queries
 interface BankDao{
     @Insert
     fun insertAll(vararg bank: Bank)

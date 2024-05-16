@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity
+@Entity //database table
 data class Category(
 
     @PrimaryKey val category: String,
