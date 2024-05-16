@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.TypeConverter
 import java.util.Date
 
-@Dao
+@Dao //methods for sql queries
 interface ClothesDao{
     @Insert
     fun insertAll(vararg clothing: Clothes)
@@ -63,7 +63,6 @@ interface ClothesDao{
     @Query("UPDATE EquipedClothes SET lastLoginDate= :timestamp") //i still don't get the WHERE-part
     fun updateDate(timestamp: Long = System.currentTimeMillis())
 
-    //TODO: check with Sander that these are right
     @Query("SELECT temperatureAtLastLogin FROM EquipedClothes") //WHERE id=0??
     fun getTemperatureAtLastLogin(): Int
 

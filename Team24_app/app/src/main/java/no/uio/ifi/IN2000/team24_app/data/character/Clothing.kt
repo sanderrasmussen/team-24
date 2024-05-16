@@ -32,21 +32,31 @@ abstract class Clothing(
  )
 
 private val clothingRepo = ClothesRepository()
+
+/**
+ * this function writes the character to the database, to be read on next load
+ * @param character the character to be written to the database
+ * @param temperature the temperature at the time of writing
+ */
 fun writeEquippedClothesToDisk(character: Character, temperature: Double) {
+    //the temperature needs to be known, to give the player points for wearing the right clothes based on actual temperature
     CoroutineScope(Dispatchers.IO).launch {
         clothingRepo.writeEquipedHead(character.head.imageAsset)
         clothingRepo.writeEquipedTorso(character.torso.imageAsset)
         clothingRepo.writeEquipedLegs(character.legs.imageAsset)
 
         clothingRepo.updateDate()
-        //todo: any better way to do this? maybe pass the temp as a parameter to this function?
-        //TODO: yeah i think i'll do that, but this works for testing. I'll ask Sander, he knows this part better than me
-
         clothingRepo.setTemperatureAtLastLogin(temperature.toInt())
 
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/**
+ * This function loads the clothes that the player has equipped.
+ * It also checks if the player has logged in previously before today, and if so, gives the player points for wearing the right clothes.
+ * @return The character with the equipped clothes.
+ * @see Character
+ */
 suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
     //this code checks the value of the clothes yesterday and the actual temperature, and
     val character  = Character(
@@ -65,7 +75,14 @@ suspend fun loadSelectedClothes(): Character = withContext(Dispatchers.IO) {
     return@withContext character
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * This function gives the player points based on the temperature of the clothes they wore last time they logged in.
+ * The player gets 10 points if the clothes were within 10 degrees of the actual temperature.
+ * @param lastDate The date of the last login.
+ * @param playerTemperature The temperature of the clothes the player wore last time they logged in.
+ * @see BankRepository
+ * @see ClothesRepository
+ */
 fun givePoints(lastDate:LocalDate, playerTemperature:Double){
     val today= LocalDate.now()
 
@@ -89,6 +106,10 @@ fun givePoints(lastDate:LocalDate, playerTemperature:Double){
         Log.d("loadSelectedClothes", "date was not before today, no points given")}
 }
 
+/**
+ * fetches the default backup character from the database, to be used in case of failure
+ * @return the default backup character
+ */
 fun getDefaultBackupCharacter(): Character {
 
     return Character(

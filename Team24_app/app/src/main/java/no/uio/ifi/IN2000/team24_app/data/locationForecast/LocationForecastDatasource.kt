@@ -13,11 +13,24 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.serialization.json.Json
 
+/**
+ * Datasource for fetching location forecast data from the met.no API
+ *
+ */
 class LocationForecastDatasource (
     private val TAG:String ="LocationForecastDatasource",
     private var forecast: LocationForecast? = null
 ){
-
+/**
+     * Fetches location forecast data from the met.no API
+     *
+     * @param lat: Latitude of the location
+     * @param lon: Longitude of the location
+     * @return LocationForecast: The location forecast data
+     * @throws ApiAccessException: If there is a server error on the API side
+     * @see ApiAccessException
+     */
+    @Throws(ApiAccessException::class)
     suspend fun getLocationForecastData(lat:Double, lon: Double): LocationForecast?{
         if(forecast != null){
             return forecast
@@ -45,24 +58,36 @@ class LocationForecastDatasource (
             val response: HttpResponse =
                 client.get("weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}")
             Log.d(TAG, response.status.toString())
-                if (response.status.isSuccess()) {
-                   val content: LocationForecast = response.body();
+            if (response.status.isSuccess()) {
+                val content: LocationForecast = response.body();
                 forecastResponse = content;
             }
-
+            else if(response.status.value in 500..599){
+                throw ApiAccessException("Server error")
+            }
+            else{
+                throw Exception("Failed to get location forecast data") //TODO better
+            }
         }
-        catch(e: Exception){    //TODO better exception handling
-          e.printStackTrace()
+        catch(e: ApiAccessException){
+            throw e
         }
-
+        catch(e: Exception){
+            e.printStackTrace()
+            throw e
+        }
      finally {
         client.close()
     }
         forecast = forecastResponse
         return forecast
     }
-
-
-
-
+}
+/**
+ * Exception class for API access errors
+ *
+ * @param msg: The error message
+ */
+class ApiAccessException(msg:String) : Exception() {
+    override val message: String = msg
 }

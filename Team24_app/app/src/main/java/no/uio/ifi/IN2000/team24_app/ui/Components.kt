@@ -33,11 +33,16 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 
-    //This function returns a list of the name of next six days in a short format
-    //for example man for Mandag. The language it returns it in is norwegian which is determined
-    //by the locale variable
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getNextSixDays(): List<String> {
+/**
+ * This file contains functions that are used in multiple screens in the app.
+ */
+
+/**
+ * This function returns a list of the name of next six days in a short format
+ * for example man for Mandag. The language it returns it in is norwegian which is determined
+ * by the locale variable.
+ */
+fun getNextSixDays(): List<String> {
         val currentDay = LocalDate.now()
         val formatter = TextStyle.SHORT
         val locale = Locale("no", "NO")
@@ -50,9 +55,11 @@ import java.util.Locale
         return days
     }
 
-    //This function returns the current date in the format dd.MMMM yyyy in Norwegian
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun date(): String? {
+/**
+ * this function returns the current date in the format dd.MMMM yyyy in Norwegian
+ * @see LocalDate
+ */
+fun date(): String? {
         val currentDate = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale("no", "NO"))
         val formattedDate = currentDate.format(formatter)
@@ -60,18 +67,20 @@ import java.util.Locale
 
     }
 
-    //This function returns the current day in Norwegian
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun day(): String? {
+/**
+ * This function returns the current day in Norwegian
+ */
+fun day(): String? {
         val currentDate = LocalDate.now()
         val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("no", "NO"))
         return (dayOfWeek)
 
     }
 
-    // This function returns the resource ID of the background image determined by the time
-    // of the day
-    @RequiresApi(Build.VERSION_CODES.O)
+    /**
+     * This function returns the resource ID of the background image determined by the time
+     * of the day
+     */
     fun BackgroundImage(): Int {
         return when (LocalTime.now().hour){
             in 6 until 12 -> R.drawable.weather_morning// 6am to 12 pm
@@ -83,9 +92,11 @@ import java.util.Locale
     }
 
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun backgroundColour(): Color {
+/**
+ * function to get the background color based on the time of the day, so that it corresponds with the background image
+ * @see BackgroundImage
+ */
+fun backgroundColour(): Color {
         return when (LocalTime.now().hour)  {
             in 6 until 12 -> Color(android.graphics.Color.parseColor("#123A44"))
             in 12 until 18 -> Color(android.graphics.Color.parseColor("#24552E"))
@@ -95,8 +106,10 @@ import java.util.Locale
     }
 
     // function to return a color based on sky
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun skyColour(): Color {
+/**
+ * function to get the color of the sky based on the time of the day
+ */
+fun skyColour(): Color {
         return when (LocalTime.now().hour) {
             in 6 until 12 -> Color(android.graphics.Color.parseColor("#98C5E2"))
             in 12 until 18 -> Color(android.graphics.Color.parseColor("#0C91D9"))
@@ -105,7 +118,9 @@ import java.util.Locale
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /**
+     * function to get the color of the text based on the time of the day
+     */
     fun textColour(): Color {
         return when (LocalTime.now().hour) {
             in 6 until 22 -> Color.Black
@@ -113,9 +128,11 @@ import java.util.Locale
         }
     }
 
-    //This function takes an icon name and size as arguments and then displays the icon
-    //in a composable UI
-    @Composable
+/**
+ * This function takes an icon name and size as arguments and then displays the icon
+ * in a composable UI
+ */
+@Composable
     fun Icon(iconName: String?, size: Int) {
         // if iconName is empty, return
         if (iconName.isNullOrEmpty()) {
@@ -135,7 +152,13 @@ import java.util.Locale
     }
 
     //This function returns the resourceID for a given icon name.
-    @SuppressLint("DiscouragedApi")
+/**
+ * This function takes an icon or image name as an argument and returns the resource ID
+ * @param iconName the name of the icon or image
+ * @return the resource ID of the icon or image
+ * @see Icon
+ */
+@SuppressLint("DiscouragedApi")
     @Composable
     fun getDrawableResourceId(iconName: String): Int {
         val context = LocalContext.current
@@ -149,9 +172,10 @@ import java.util.Locale
         )
     }
 
-
-    @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
+/**
+ * This function returns an arrow icon with a color based on the time of the day
+ */
+@Composable
     fun arrow(size: Int) : Any {
         return when (LocalTime.now().hour) {
             in 6 until 22 -> Icon("arrow", size)
@@ -160,8 +184,11 @@ import java.util.Locale
 
     }
 
-    // navigation bar which allows users to navigate between three different screens
-    @RequiresApi(Build.VERSION_CODES.O)
+/**
+ * This function returns a navigation bar that allows users to navigate between three different screens.
+ * @param navController the navController that is used to navigate between screens
+ * @see NavController
+ */
     @Composable
     fun NavBar(navController: NavController){
         //get the current back stack entry associated with the navController

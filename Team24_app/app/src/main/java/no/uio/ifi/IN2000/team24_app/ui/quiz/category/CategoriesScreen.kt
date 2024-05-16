@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.quiz.category
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +36,13 @@ import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.textColour
 
-@RequiresApi(Build.VERSION_CODES.O)
+/**
+ * Composable function for the categories screen.
+ *
+ * @param navController the navigation controller
+ * @param categoriesScreenViewModel the view model for the categories screen
+ * @param onNavigateToCategoryScreen the function to navigate to the specific category screen
+ */
 @Composable
 fun CategoriesScreen(
 

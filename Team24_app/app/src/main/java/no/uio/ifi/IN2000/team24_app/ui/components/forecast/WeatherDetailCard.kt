@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.ui.components.forecast
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +37,11 @@ import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
 import no.uio.ifi.IN2000.team24_app.ui.home.HomeScreenViewModel
 
 
+/**
+ * This function converts degrees to a wind direction. It has 8 directions as precision.
+ * @param degrees the degrees to convert
+ * @return the wind direction as a string
+ */
 private fun windDirection(degrees: Double?): String {
     if(degrees == null) return "ukjent"
     val directions = arrayOf("N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV")
@@ -45,13 +49,11 @@ private fun windDirection(degrees: Double?): String {
     return directions[index]
 }
 
-/*
-alright these params are a mess, but basically:
-- weatherDetailState is the state that holds the weatherDetails object that is to be displayed in the card. if this is null, the card will not be displayed.
-- modifier is the modifier for the card itself
-- dayStr is the string for the day to display(e.g. "man." , "tir."...) IF the card is for one of the next 6 days. if this is null, the card is for a time today.
- */
-@RequiresApi(Build.VERSION_CODES.O)
+    /**
+    * This composable displays a card with detailed weather information.
+    * @param vm is the viewmodel for the home screen
+    * @param modifier is the modifier for the card itself
+    */
 @Composable
 fun WeatherDetailCard(vm: HomeScreenViewModel, modifier: Modifier = Modifier,){
     //TODO the units are hardcoded as string-values, but could well change from the API.
@@ -62,9 +64,7 @@ fun WeatherDetailCard(vm: HomeScreenViewModel, modifier: Modifier = Modifier,){
     Dialog(
         onDismissRequest = { vm.updateWeatherDetails(null) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
-
         ) {
-
             val dayStr = weatherDetailState.dayStr
             Card(
                 modifier = modifier

@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId = "no.uio.ifi.IN2000.team24_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.media3:media3-test-utils:1.3.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-android:2.8.0-rc01")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -101,24 +102,6 @@ dependencies {
     // To use Kotlin Symbol Processing (KSP)
     //ksp("androidx.room:room-compiler:$room_version")
 
-    """    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-
-    // optional - RxJava2 support for Room
-    implementation("androidx.room:room-rxjava2:$room_version")
-
-    // optional - RxJava3 support for Room
-    implementation("androidx.room:room-rxjava3:$room_version")
-
-    // optional - Guava support for Room, including Optional and ListenableFuture
-    implementation("androidx.room:room-guava:$room_version")
-
-    // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
-
-    // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
-"""
     val espressoVersion = "3.4.0"
     val androidxTestVersion = "1.4.0"
 

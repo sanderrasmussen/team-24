@@ -17,11 +17,18 @@ import no.uio.ifi.IN2000.team24_app.data.database.Category
 import java.util.Calendar
 import java.util.Date
 
+/**
+ * data class to represent the ui state of categories
+ */
 data class CategoriesUiState(
 
     val categories: List<Category> = emptyList()
 
 )
+
+/**
+ * view model class for categories screen
+ */
 
 class CategoriesScreenViewModel: ViewModel() {
 
@@ -50,7 +57,12 @@ class CategoriesScreenViewModel: ViewModel() {
 
     }
 
-    // function to fetch categories
+    /**
+     * function to update categories ui state with categories fetched from the database
+     * @see CategoriesScreen
+     * @see CategoryRepository
+     * @See CategoriesUiState
+     */
     private fun loadCategories() {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -74,7 +86,12 @@ class CategoriesScreenViewModel: ViewModel() {
 
     }
 
-    // function to fetch category locked value
+    /**
+     * function to fetch whether or not a category is locked
+     * @param category the category to check if locked
+     * @return `true` if category is locked, `false` if category is not locked
+     * @see Category
+     */
     fun loadCategoryLockedValue(category: Category): Boolean {
 
         // check if category is training category

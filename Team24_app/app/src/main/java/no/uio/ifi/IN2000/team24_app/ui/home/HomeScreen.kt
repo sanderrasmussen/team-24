@@ -2,13 +2,10 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 
 
 
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -28,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalTime
@@ -49,32 +41,38 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.launch
 import no.uio.ifi.IN2000.team24_app.R
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Inventory
 import no.uio.ifi.IN2000.team24_app.ui.components.character.Player
-import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import no.uio.ifi.IN2000.team24_app.data.locationForecast.ApiAccessException
 import no.uio.ifi.IN2000.team24_app.ui.BackgroundImage
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 import no.uio.ifi.IN2000.team24_app.ui.NavBar
 import no.uio.ifi.IN2000.team24_app.ui.components.alerts.AlertCardCarousel
 import no.uio.ifi.IN2000.team24_app.ui.components.character.SatisfactionBar
 import no.uio.ifi.IN2000.team24_app.ui.date
-import no.uio.ifi.IN2000.team24_app.ui.backgroundColour
+import no.uio.ifi.IN2000.team24_app.ui.components.forecast.WeatherCardsNextSixDays
+import no.uio.ifi.IN2000.team24_app.ui.components.forecast.WeatherCardsToday
 import no.uio.ifi.IN2000.team24_app.ui.components.forecast.WeatherDetailCard
 import no.uio.ifi.IN2000.team24_app.ui.components.permission.LocationPermission
 import no.uio.ifi.IN2000.team24_app.ui.components.permission.PermissionAction
 import no.uio.ifi.IN2000.team24_app.ui.day
-import no.uio.ifi.IN2000.team24_app.ui.getNextSixDays
 
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPermissionsApi::class)
+/**
+ * HomeScreen is the main screen of the app. It displays the current weather, the weather for the next 6 days, and the alerts.
+ * It also displays the character and the inventory.
+ * @param navController the [NavController] used to navigate between screens
+ * @param isNetworkAvailable whether or not the device has an active internet connection
+ * @param homevm the associated [HomeScreenViewModel].
+ * @param TAG String used for logging
+ * @see NavController
+ * @see HomeScreenViewModel
+ */
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -96,7 +94,11 @@ fun HomeScreen(
             is PermissionAction.OnPermissionDenied -> {
                 Log.d(TAG, "Location permission denied")
                 Toast.makeText(context, "Uten din posisjon brukes standard-posisjon: Oslo.", Toast.LENGTH_LONG).show()
-                homevm.makeRequestsWithoutLocation()
+                try {
+                    homevm.makeRequestsWithoutLocation()
+                }catch(e:ApiAccessException){
+                    Toast.makeText(context, "MET-tjenestene er ikke tilgjengelige for øyeblikket - prøv igjen senere", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -105,16 +107,8 @@ fun HomeScreen(
 
     val currentWeatherState : ArrayList<WeatherDetails> by homevm.currentWeatherState.collectAsState()
 
-    val alertsUiState = homevm.alerts.collectAsState()
 
-
-
-    val showAlerts = remember {mutableStateOf(
-        false       //would rather start with this closed - this is to avoid showing on every recomposition, specifically for screen rotates
-    )}
-    if(showAlerts.value){
-        AlertCardCarousel(alertsUiState.value, showAlerts = showAlerts)
-    }
+    AlertCardCarousel(homevm)
     WeatherDetailCard(homevm)
 
 
@@ -129,16 +123,9 @@ fun HomeScreen(
         else -> gray
     }
 
-    val character by homevm.characterState.collectAsState()
-
-    //when character is updated, the satisfaction should also update.
-    LaunchedEffect(character) {
-        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
-    }
 
 
-
-    val currentWeatherDetails = currentWeatherState?.firstOrNull()
+    val currentWeatherDetails = currentWeatherState.firstOrNull()
 
     val currentTemp = currentWeatherDetails?.next_1_hours_symbol_code
     val isRaining = currentTemp?.contains("rain", ignoreCase = true)
@@ -264,6 +251,12 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center,
                 )
                 {
+                    val character by homevm.characterState.collectAsState()
+
+                    //when character is updated, the satisfaction should also update.
+                    LaunchedEffect(character) {
+                        homevm.updateSatisfaction(characterTemp = character.findAppropriateTemp())
+                    }
                     Player(character = character, modifier = Modifier.fillMaxSize(0.5f))
                     Column(
                         modifier = Modifier.align(CenterEnd),
@@ -271,17 +264,7 @@ fun HomeScreen(
 
                         ) {//the column with the inventory and the alert button
                         Button(
-                            onClick = {
-                                if (alertsUiState.value.alerts.isNotEmpty()) {
-                                    showAlerts.value = true
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Ingen farevarsler for din posisjon",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
+                            onClick = { homevm.showAlerts(true) },
                         ) {
                             Icon(
                                 iconName = "icon_warning_generic_orange",
@@ -337,11 +320,8 @@ fun HomeScreen(
                             )
                         }
                         if (showToday) {
-                            WeatherCardsToday(
-                                weatherDetails = currentWeatherState,
-                                vm = homevm
-                            )
-                        } else {
+                                WeatherCardsToday(vm = homevm)
+                        }else {
                             if (currentWeatherDetails != null) {
                                 WeatherCardsNextSixDays(
                                     vm = homevm
@@ -367,33 +347,12 @@ fun HomeScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun WeatherCardsNextSixDays(vm:HomeScreenViewModel) {
-    val next6DaysWeatherState by vm.next6DaysState.collectAsState()
-    val days = getNextSixDays()
-    val scrollState = rememberScrollState()
-    val today = day()
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        days.forEach { day ->
-            if (today != null && next6DaysWeatherState != null) {
-                val index = days.indexOf(day)
-                val weatherDetails = next6DaysWeatherState!![index]
-                if (weatherDetails != null) {
-                    WeatherCard(
-                        weatherDetail = weatherDetails,
-                        titleOverride = day,
-                        onClick = { vm.updateWeatherDetails(weatherDetails = weatherDetails, dayStr = day) })
-                }
-            }
-        }
-    }
-}
+/**
+ * CurrentWeatherInfo displays the current weather icon and temperature.
+ * @param textColour the color of the text
+ * @param currentTemperature the current temperature
+ * @param currentWeatherIcon the current weather icon
+ */
 @Composable
 fun CurrentWeatherInfo(
     textColour: Color,
@@ -433,83 +392,6 @@ fun CurrentWeatherInfo(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun WeatherCardsToday(weatherDetails: List<WeatherDetails>, vm: HomeScreenViewModel) {
-    val scrollState = rememberScrollState()
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-
-    ) {
-        weatherDetails.forEachIndexed { index, weatherDetail ->
-            WeatherCard(
-                weatherDetail = weatherDetail,
-                onClick = { vm.updateWeatherDetails(weatherDetail) },
-            )
-        }
-    }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun WeatherCard(
-    weatherDetail: WeatherDetails,
-    onClick : () -> Unit,
-    modifier : Modifier = Modifier,
-    titleOverride: String? = null,   //if this is non-zero, the title(weatherDetails.time) will be overridden.
-) {
-
-    Card(
-        modifier = modifier
-            .padding(vertical = 16.dp, horizontal = 4.dp)
-            .height(150.dp),
-        shape = RoundedCornerShape(40.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColour()
-        ),
-        onClick = { onClick() },
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = titleOverride ?: "kl. ${ weatherDetail.time}",
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            //this if-else is a hotfix, but this is what it does
-            //for the next couple of days from call, the api returns a valid symbol code for the next 1 hour.
-            //however, for long term forecasts(more than 2 days), this info is not available, so we use the next_6_hours_symbol_code
-            if(weatherDetail.next_1_hours_symbol_code != null) {
-                Icon(weatherDetail.next_1_hours_symbol_code, 50)
-            }else{
-                Icon(weatherDetail.next_6_hours_symbol_code, 50)
-            }
-            Text(
-                text = "${weatherDetail.air_temperature}°C",
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-    Spacer(modifier = Modifier.padding(10.dp))
-}
-
-
 /*
 @Preview(showSystemUi = true)
 @Composable
@@ -526,22 +408,7 @@ fun AlertCardPreview(){
 */
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun AlertCarouselPreview(){
-    val cards = listOf(
-        WarningCard("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
-        WarningCard("pågår", "icon_warning_avalanches_yellow", "Agder, deler av Østlandet og Rogaland", "Gult Nivå"),
-    )
-    val alertsUi = AlertsUiState(cards)
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ){
-        AlertCardCarousel(alertsUi, remember { mutableStateOf(true) })
-    }
-}
+
 
 /*
 @Preview()

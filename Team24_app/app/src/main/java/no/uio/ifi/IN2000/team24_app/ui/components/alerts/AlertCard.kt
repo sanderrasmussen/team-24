@@ -11,6 +11,12 @@ import androidx.compose.ui.unit.dp
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard
 import no.uio.ifi.IN2000.team24_app.ui.Icon
 
+/**
+ * Composable function that creates a card for an alert
+ * @param card the [WarningCard] to be displayed
+ * @param modifier the modifier for the card
+ * @see WarningCard
+ */
 @Composable
 fun AlertCard(card: WarningCard, modifier: Modifier = Modifier){
 
