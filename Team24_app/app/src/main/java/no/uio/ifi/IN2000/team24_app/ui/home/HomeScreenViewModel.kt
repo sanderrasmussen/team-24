@@ -263,8 +263,8 @@ class HomeScreenViewModel(
     }
 
     /**
-    *This function is called when the app fails to get the user's location.
-    *This can be either due to refused permission, or the user's location services being disabled or unavailable.
+     *This function is called when the app fails to get the user's location.
+     *This can be either due to refused permission, or the user's location services being disabled or unavailable.
      */
     @Throws(ApiAccessException::class)
     fun makeRequestsWithoutLocation(){
