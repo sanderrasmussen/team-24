@@ -1,7 +1,6 @@
 package no.uio.ifi.IN2000.team24_app.data.character
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.R

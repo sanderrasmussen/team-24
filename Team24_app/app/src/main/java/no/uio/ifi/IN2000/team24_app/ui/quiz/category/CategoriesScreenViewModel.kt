@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import no.uio.ifi.IN2000.team24_app.data.category.CategoryRepository
 import no.uio.ifi.IN2000.team24_app.data.database.Category
 import java.util.Calendar

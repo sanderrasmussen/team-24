@@ -2,7 +2,6 @@ package no.uio.ifi.IN2000.team24_app.data.locationForecast
 
 import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.SerialName
 import org.junit.Test
 
 class locationForecastDatasourceKtTest {

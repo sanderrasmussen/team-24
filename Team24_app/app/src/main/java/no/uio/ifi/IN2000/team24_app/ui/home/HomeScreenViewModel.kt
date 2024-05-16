@@ -2,10 +2,8 @@ package no.uio.ifi.IN2000.team24_app.ui.home
 
 import android.content.Context
 import android.location.Location
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,8 +20,6 @@ import no.uio.ifi.IN2000.team24_app.data.character.getDefaultBackupCharacter
 import no.uio.ifi.IN2000.team24_app.data.character.loadSelectedClothes
 import no.uio.ifi.IN2000.team24_app.data.location.LocationTracker
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.ApiAccessException
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecast
-import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastDatasource
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.LocationForecastRepository
 import no.uio.ifi.IN2000.team24_app.data.locationForecast.WeatherDetails
 import no.uio.ifi.IN2000.team24_app.data.metAlerts.WarningCard

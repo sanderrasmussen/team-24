@@ -1,6 +1,5 @@
 package no.uio.ifi.IN2000.team24_app.data.metAlerts
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android

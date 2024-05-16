@@ -4,8 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.TypeConverter
-import java.util.Date
+
 
 @Dao //methods for sql queries
 interface ClothesDao{
